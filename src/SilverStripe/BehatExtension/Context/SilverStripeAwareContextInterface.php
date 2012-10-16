@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\SilverStripeExtension\Context;
+namespace SilverStripe\BehatExtension\Context;
 
 /*
  * This file is part of the Behat/SilverStripeExtension

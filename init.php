@@ -11,10 +11,10 @@
 
 spl_autoload_register(function($class)
 {
-    if (false !== strpos($class, 'Behat\\SilverStripeExtension')) {
+    if (false !== strpos($class, 'SilverStripe\\BehatExtension')) {
         require_once(__DIR__ . '/src/' . str_replace('\\', '/', $class) . '.php');
         return true;
     }
 }, true, false);
 
-return new Behat\SilverStripeExtension\Extension;
+return new SilverStripe\BehatExtension\Extension;

@@ -1,12 +1,12 @@
 <?php
 
-namespace Behat\SilverStripeExtension\Compiler;
+namespace SilverStripe\BehatExtension\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder,
     Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /*
- * This file is part of the Behat\SilverStripeExtension
+ * This file is part of the SilverStripe\BehatExtension
  *
  * (c) Michał Ochman <ochman.d.michal@gmail.com>
  *

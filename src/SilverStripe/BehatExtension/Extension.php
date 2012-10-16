@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\SilverStripeExtension;
+namespace SilverStripe\BehatExtension;
 
 use Symfony\Component\Config\FileLocator,
     Symfony\Component\DependencyInjection\ContainerBuilder,
@@ -9,7 +9,7 @@ use Symfony\Component\Config\FileLocator,
 use Behat\Behat\Extension\Extension as BaseExtension;
 
 /*
- * This file is part of the Behat\SilverStripeExtension
+ * This file is part of the SilverStripe\BehatExtension
  *
  * (c) Michał Ochman <ochman.d.michal@gmail.com>
  *

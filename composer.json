@@ -1,5 +1,5 @@
 {
-    "name": "behat/silverstripe-extension",
+    "name": "silverstripe/behat-extension",
     "type": "behat-extension",
     "description": "SilverStripe framework extension for Behat",
     "keywords": ["framework", "web", "bdd", "silverstripe"],
@@ -7,8 +7,12 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Michał Ochman",
+            "name": "Michal Ochman",
             "email": "ochman.d.michal@gmail.com"
+        },
+        {
+            "name": "Ingo Schommer",
+            "email": "ingo@silverstripe.com"
         }
     ],
 

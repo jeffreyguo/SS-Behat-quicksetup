@@ -1,11 +1,11 @@
 <?php
 
-namespace Behat\SilverStripeExtension\Context\Initializer;
+namespace SilverStripe\BehatExtension\Context\Initializer;
 
 use Behat\Behat\Context\Initializer\InitializerInterface,
 Behat\Behat\Context\ContextInterface;
 
-use Behat\SilverStripeExtension\Context\SilverStripeAwareContextInterface;
+use SilverStripe\BehatExtension\Context\SilverStripeAwareContextInterface;
 
 /*
  * This file is part of the Behat/SilverStripeExtension
