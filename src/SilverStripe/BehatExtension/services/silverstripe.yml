@@ -1,5 +1,5 @@
 parameters:
-  behat.silverstripe_extension.context.initializer.class: Behat\SilverStripeExtension\Context\Initializer\SilverStripeAwareInitializer
+  behat.silverstripe_extension.context.initializer.class: SilverStripe\BehatExtension\Context\Initializer\SilverStripeAwareInitializer
   behat.silverstripe_extension.framework_path: ~
   behat.silverstripe_extension.ajax_steps: ~
 services:
