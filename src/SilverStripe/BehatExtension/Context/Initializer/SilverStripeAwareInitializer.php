@@ -73,8 +73,10 @@ class SilverStripeAwareInitializer implements InitializerInterface
         global $_FILE_TO_URL_MAPPING;
         $_FILE_TO_URL_MAPPING[dirname($framework_path)] = $framework_host;
 
-        // Connect to database
+        // Connect to database and build manifest
+        $_GET['flush'] = 1;
         require_once $framework_path . '/core/Core.php';
+        unset($_GET['flush']);
 
         // Remove the error handler so that PHPUnit can add its own
         restore_error_handler();
