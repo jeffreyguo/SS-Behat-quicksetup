@@ -18,10 +18,12 @@ It provides the following helpers:
  * Provide access to SilverStripe classes in your Behat contexts
  * Set up a temporary database automatically
  * Reset the database content on every scenario
- * Prebuilt Contexts for SilverStripe login
+ * Prebuilt Contexts for SilverStripe's login forms and other common tasks
  * Creating of member fixtures with predefined permissions
  * YML fixture definitions inside your Behat scenarios
  * Waiting for jQuery Ajax responses (rather than fixed wait timers)
+ * Captures JavaScript errors and logs them through Selenium
+ * Saves screenshots to filesystem whenever an assertion error is detected
 
 In order to achieve this, the extension makes on basic assumption:
 Your Behat tests are run from the same application as the tested
@@ -184,6 +186,20 @@ Selenium will also try to use chrome browser. Refer to `behat.yml` for details.
     # This will run all feature tests using chrome profile
     vendor/behat --config mymodule/tests/behat/behat.yml --profile=chrome
 
+    # This will run a specific feature test
+    vendor/behat --config mymodule/tests/behat/behat.yml mymodule/tests/behat/features/my-steps.feature
+
+### Available Step Definitions
+
+The extension comes with several `BehatContext` subclasses come with some extra step defintions.
+Some of them are just helpful in general website testing, other's are specific to SilverStripe. 
+To find out all available steps (and the files they are defined in), run the following:
+
+	vendor/bin/behat --config mymodule/tests/behat/behat.yml --definitions=i
+
+Note: There are more specific step definitions in the SilverStripe `framework` module
+for interacting with the CMS interfaces (see `framework/tests/behat/features/bootstrap`).
+
 ### Fixtures
 
 Fixtures should be provided in YAML format (standard SilverStripe fixture format)
@@ -255,6 +271,21 @@ endpoint.
 It also populates this temporary database with the default records if necessary.
 
 It is possible to include your own fixtures, it is explained further.
+
+### Why do tests pass in a fresh installation, but fail in my own project?
+
+Because we're testing the interface directly, any changes to the
+viewed elements have the potential to disrupt testing. 
+By building a test database from scratch, we're trying to minimize this impact.
+Some examples where things can go wrong nevertheless:
+
+ * Thirdparty SilverStripe modules which install default data
+ * Changes to the default interface language
+ * Configurations which remove admin areas or specific fields
+
+Currently there's no way to exclude offending modules from a test run.
+You either have to adjust the tests to work around these changes,
+or run tests on a "sandbox" projects without these modules.
 
 ### How do I debug when something goes wrong?
 

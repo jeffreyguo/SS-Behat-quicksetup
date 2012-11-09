@@ -171,6 +171,7 @@ JS;
 
     public function handleAjaxTimeout()
     {
+        // Wait for an ajax request to complete, but only for a maximum of 5 seconds to avoid deadlocks
         $this->getSession()->wait(5000,
             "(typeof window.__ajaxStatus !== 'undefined' ? window.__ajaxStatus() : 'no ajax') !== 'waiting'"
         );
@@ -252,17 +253,17 @@ JS;
     }
 
     /**
-     * @Given /^I wait for "(\d+)"$/
+     * @Given /^I wait for ([\d\.]+) seconds$/
      */
-    public function stepIWaitFor($ms)
+    public function stepIWaitFor($secs)
     {
-        $this->getSession()->wait($ms);
+        $this->getSession()->wait((float)$secs*1000);
     }
 
     /**
-     * @Given /^I press "([^"]*)" button$/
+     * @Given /^I press the "([^"]*)" button$/
      */
-    public function stepIPressButton($button)
+    public function stepIPressTheButton($button)
     {
         $page = $this->getSession()->getPage();
 
