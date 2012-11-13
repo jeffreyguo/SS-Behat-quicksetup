@@ -44,7 +44,7 @@ Then require this extension:
 Install PHPUnit through PEAR:
 
 	pear channel-discover pear.phpunit.de
-  pear install phpunit/PHPUnit
+	pear install phpunit/PHPUnit
 
 And get the latest Selenium2 server (requires Java):
 
