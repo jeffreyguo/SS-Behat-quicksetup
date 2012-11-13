@@ -2,12 +2,21 @@ parameters:
   behat.silverstripe_extension.context.initializer.class: SilverStripe\BehatExtension\Context\Initializer\SilverStripeAwareInitializer
   behat.silverstripe_extension.framework_path: ~
   behat.silverstripe_extension.ajax_steps: ~
+  behat.silverstripe_extension.ajax_timeout: ~
+  behat.silverstripe_extension.admin_url: ~
+  behat.silverstripe_extension.login_url: ~
+  behat.silverstripe_extension.screenshot_path: ~
 services:
   behat.silverstripe_extension.context.initializer:
     class: %behat.silverstripe_extension.context.initializer.class%
     arguments:
       - %behat.silverstripe_extension.framework_path%
       - %behat.silverstripe_extension.framework_host%
-      - %behat.silverstripe_extension.ajax_steps%
+    calls:
+      - [setAjaxSteps, [%behat.silverstripe_extension.ajax_steps%]]
+      - [setAjaxTimeout, [%behat.silverstripe_extension.ajax_timeout%]]
+      - [setAdminUrl, [%behat.silverstripe_extension.admin_url%]]
+      - [setLoginUrl, [%behat.silverstripe_extension.login_url%]]
+      - [setScreenshotPath, [%behat.silverstripe_extension.screenshot_path%]]
     tags:
       - { name: behat.context.initializer }

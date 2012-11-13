@@ -30,5 +30,5 @@ interface SilverStripeAwareContextInterface
      * 
      * @param array $ajax_steps Array of step name parts to match
      */
-     public function setAjaxEnabledSteps($ajax_steps);
+     public function setAjaxSteps($ajax_steps);
 }

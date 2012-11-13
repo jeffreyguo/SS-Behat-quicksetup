@@ -26,8 +26,37 @@ require_once 'vendor/autoload.php';
  */
 class SilverStripeContext extends MinkContext implements SilverStripeAwareContextInterface
 {
-    private $database_name;
-    private $ajax_steps;
+    protected $database_name;
+
+    /**
+     * @var Array Partial string match for step names
+     * that are considered to trigger Ajax request in the CMS,
+     * and hence need special timeout handling.
+     * @see \SilverStripe\BehatExtension\Context\BasicContext->handleAjaxBeforeStep().
+     */
+    protected $ajaxSteps;
+
+    /**
+     * @var Int Timeout in milliseconds, after which the interface assumes
+     * that an Ajax request has timed out, and continues with assertions.
+     */
+    protected $ajaxTimeout;
+
+    /**
+     * @var String Relative URL to the SilverStripe admin interface.
+     */
+    protected $adminUrl;
+
+    /**
+     * @var String Relative URL to the SilverStripe login form.
+     */
+    protected $loginUrl;
+
+    /**
+     * @var String Relative path to a writeable folder where screenshots can be stored.
+     * If set to NULL, no screenshots will be stored.
+     */
+    protected $screenshotPath;
 
     protected $context;
     protected $fixtures;
@@ -52,17 +81,54 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         $this->database_name = $database_name;
     }
 
-    public function setAjaxEnabledSteps($ajax_steps)
+    public function setAjaxSteps($ajaxSteps)
     {
-        if (empty($ajax_steps)) {
-            $ajax_steps = array();
-        }
-        $this->ajax_steps = $ajax_steps;
+        if($ajaxSteps) $this->ajaxSteps = $ajaxSteps;
     }
 
-    public function getAjaxEnabledSteps()
+    public function getAjaxSteps()
     {
-        return $this->ajax_steps;
+        return $this->ajaxSteps;
+    }
+
+    public function setAjaxTimeout($ajaxTimeout)
+    {
+        $this->ajaxTimeout = $ajaxTimeout;
+    }
+
+    public function getAjaxTimeout()
+    {
+        return $this->ajaxTimeout;
+    }
+
+    public function setAdminUrl($adminUrl)
+    {
+        $this->adminUrl = $adminUrl;
+    }
+
+    public function getAdminUrl()
+    {
+        return $this->adminUrl;
+    }
+
+    public function setLoginUrl($loginUrl)
+    {
+        $this->loginUrl = $loginUrl;
+    }
+
+    public function getLoginUrl()
+    {
+        return $this->loginUrl;
+    }
+
+    public function setScreenshotPath($screenshotPath)
+    {
+        $this->screenshotPath = $screenshotPath;
+    }
+
+    public function getScreenshotPath()
+    {
+        return $this->screenshotPath;
     }
 
     public function getFixture($data_object)

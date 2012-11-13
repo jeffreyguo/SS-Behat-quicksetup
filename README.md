@@ -102,46 +102,37 @@ Example: behat.yml
 
 	default:
 	  context:
-	    parameters:
-	      admin_url: /admin/
-	      login_url: /Security/login
-	      screenshot_path: %behat.paths.features%/screenshots/
+      class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
 	  extensions:
-	    SilverStripe\BehatExtension\Extension:
-	      # Assumes path relative to vendor/silverstripe/silverstripe-behat
-	      framework_path: ../../../framework/
-	      ajax_steps:
-	        - go to
-	        - follow
-	        - press
-	        - click
-	        - submit
+	    SilverStripe\BehatExtension\Extension: ~
 	    Behat\MinkExtension\Extension:
 	      # Adjust this to your local environment
 	      base_url:  http://localhost/
-	      files_path: %behat.paths.features%/files/
 	      default_session: selenium2
 	      javascript_session: selenium2
 	      goutte: ~
 	      selenium2:
 	        browser: firefox
 
-Here's an overview of the non-stndard settings we've added.
-You'll need to customize at least the `framework_path` and `base_url` setting.
+You'll need to customize at least the `base_url` setting to match the URL where
+the tested SilverStripe instance is hosted locally. 
+Overview of settings (all in the `extensions.SilverStripe\BehatExtension\Extension` path):
 
- * `default.context.parameters.screenshot_path`: Used to store screenshot of a last known state
-of a failed step. It defaults to whatever is returned by PHP's `sys_get_temp_dir()`.
-Screenshot names within that directory consist of feature file filename and line
-number that failed.
- * `default.extensions.SilverStripe\BehatExtension\Extension.framework_path`: Path to the SilverStripe Framework folder. It supports both absolute and relative (to `behat.yml` file) paths.
- * `default.extensions.Behat\MinkExtension\Extension.base_url`: You will probably need to change the base URL that is used during the test process.
+ * `framework_path`: Path to the SilverStripe Framework folder. It supports both absolute and relative (to `behat.yml` file) paths.
+ * `extensions.Behat\MinkExtension\Extension.base_url`: You will probably need to change the base URL that is used during the test process.
 It is used every time you use relative URLs in your feature descriptions.
 It will also be used by [file to URL mapping](http://doc.silverstripe.org/framework/en/topics/commandline#configuration) in `SilverStripeExtension`.
- * `default.extensions.Behat\MinkExtension\Extension.files_path`: Change to support file uploads in your tests.  Currently only absolute paths are supported.
- * `default.extensions.SilverStripe\BehatExtension\Extension.ajax_steps`: Because SilverStripe uses AJAX requests quite extensively, we had to invent a way
+ * `extensions.Behat\MinkExtension\Extension.files_path`: Change to support file uploads in your tests.  Currently only absolute paths are supported.
+ * `ajax_steps`: Because SilverStripe uses AJAX requests quite extensively, we had to invent a way
 to deal with them more efficiently and less verbose than just
 Optional `ajax_steps` is used to match steps defined there so they can be "caught" by
 [special AJAX handlers](http://blog.scur.pl/2012/06/ajax-callback-support-behat-mink/) that tweak the delays. You can either use a pipe delimited string or a list of substrings that match step definition.
+ * `ajax_timeout`: Milliseconds after which an Ajax request is regarded as timed out, 
+ and the script continues with its assertions to avoid a deadlock (Default: 5000).
+ * `screenshot_path`: Used to store screenshot of a last known state
+of a failed step. It defaults to whatever is returned by PHP's `sys_get_temp_dir()`.
+Screenshot names within that directory consist of feature file filename and line
+number that failed.
 
 ### Additional profiles
 

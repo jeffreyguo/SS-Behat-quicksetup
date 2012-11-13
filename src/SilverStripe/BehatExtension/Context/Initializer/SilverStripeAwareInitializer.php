@@ -24,17 +24,41 @@ use SilverStripe\BehatExtension\Context\SilverStripeAwareContextInterface;
  */
 class SilverStripeAwareInitializer implements InitializerInterface
 {
+    
     private $database_name;
-    private $ajax_steps;
+    
+    /**
+     * @var Array
+     */
+    protected $ajaxSteps;
+
+    /**
+     * @var Int Timeout in milliseconds
+     */
+    protected $ajaxTimeout;
+
+    /**
+     * @var String {@link see SilverStripeContext}
+     */
+    protected $adminUrl;
+
+    /**
+     * @var String {@link see SilverStripeContext}
+     */
+    protected $loginUrl;
+
+    /**
+     * @var String {@link see SilverStripeContext}
+     */
+    protected $screenshotPath;
 
     /**
      * Initializes initializer.
      */
-    public function __construct($framework_path, $framework_host, $ajax_steps)
+    public function __construct($framework_path, $framework_host)
     {
         $this->bootstrap($framework_path, $framework_host);
         $this->database_name = $this->initializeTempDb();
-        $this->ajax_steps = $ajax_steps;
     }
 
     public function __destruct()
@@ -62,7 +86,61 @@ class SilverStripeAwareInitializer implements InitializerInterface
     public function initialize(ContextInterface $context)
     {
         $context->setDatabase($this->database_name);
-        $context->setAjaxEnabledSteps($this->ajax_steps);
+        $context->setAjaxSteps($this->ajaxSteps);
+        $context->setAjaxTimeout($this->ajaxTimeout);
+        $context->setScreenshotPath($this->screenshotPath);
+        $context->setAdminUrl($this->adminUrl);
+        $context->setLoginUrl($this->loginUrl);
+    }
+
+    public function setAjaxSteps($ajaxSteps)
+    {
+        if($ajaxSteps) $this->ajaxSteps = $ajaxSteps;
+    }
+
+    public function getAjaxSteps()
+    {
+        return $this->ajaxSteps;
+    }
+
+    public function setAjaxTimeout($ajaxTimeout)
+    {
+        $this->ajaxTimeout = $ajaxTimeout;
+    }
+
+    public function getAjaxTimeout()
+    {
+        return $this->ajaxTimeout;
+    }
+
+    public function setAdminUrl($adminUrl)
+    {
+        $this->adminUrl = $adminUrl;
+    }
+
+    public function getAdminUrl()
+    {
+        return $this->adminUrl;
+    }
+
+    public function setLoginUrl($loginUrl)
+    {
+        $this->loginUrl = $loginUrl;
+    }
+
+    public function getLoginUrl()
+    {
+        return $this->loginUrl;
+    }
+
+    public function setScreenshotPath($screenshotPath)
+    {
+        $this->screenshotPath = $screenshotPath;
+    }
+
+    public function getScreenshotPath()
+    {
+        return $this->screenshotPath;
     }
 
     protected function bootstrap($framework_path, $framework_host)

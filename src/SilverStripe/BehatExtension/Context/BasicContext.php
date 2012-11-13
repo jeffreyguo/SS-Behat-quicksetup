@@ -107,7 +107,7 @@ JS;
      */
     public function handleAjaxBeforeStep(StepEvent $event)
     {
-        $ajax_enabled_steps = $this->getMainContext()->getAjaxEnabledSteps();
+        $ajax_enabled_steps = $this->getMainContext()->getAjaxSteps();
         $ajax_enabled_steps = implode('|', array_filter($ajax_enabled_steps));
 
         if (empty($ajax_enabled_steps) || !preg_match('/(' . $ajax_enabled_steps . ')/i', $event->getStep()->getText())) {
@@ -150,7 +150,7 @@ JS;
      */
     public function handleAjaxAfterStep(StepEvent $event)
     {
-        $ajax_enabled_steps = $this->getMainContext()->getAjaxEnabledSteps();
+        $ajax_enabled_steps = $this->getMainContext()->getAjaxSteps();
         $ajax_enabled_steps = implode('|', array_filter($ajax_enabled_steps));
 
         if (empty($ajax_enabled_steps) || !preg_match('/(' . $ajax_enabled_steps . ')/i', $event->getStep()->getText())) {
@@ -171,8 +171,10 @@ JS;
 
     public function handleAjaxTimeout()
     {
+        $timeoutMs = $this->getMainContext()->getAjaxTimeout();
+
         // Wait for an ajax request to complete, but only for a maximum of 5 seconds to avoid deadlocks
-        $this->getSession()->wait(5000,
+        $this->getSession()->wait($timeoutMs,
             "(typeof window.__ajaxStatus !== 'undefined' ? window.__ajaxStatus() : 'no ajax') !== 'waiting'"
         );
 
@@ -205,35 +207,33 @@ JS;
         $step = $event->getStep();
         $screenshot_path = null;
 
-        if (isset($this->context['screenshot_path'])) {
-            $screenshot_path = realpath($this->context['screenshot_path']);
-            if (!$screenshot_path) {
-                \Filesystem::makeFolder($this->context['screenshot_path']);
-                $screenshot_path = realpath($this->context['screenshot_path']);
-            }
-        }
-        if (!$screenshot_path) {
-            $screenshot_path = realpath(sys_get_temp_dir());
-        }
+        $path = $this->getMainContext()->getScreenshotPath();
+        if(!$path) return; // quit silently when path is not set
 
-        if (!file_exists($screenshot_path)) {
+        $path = realpath($path);
+        if (!$path) {
+            \Filesystem::makeFolder($this->context['screenshot_path']);
+            $path = realpath($this->context['screenshot_path']);
+        }
+        
+        if (!file_exists($path)) {
             file_put_contents('php://stderr', sprintf('"%s" is not valid directory and failed to create it' . PHP_EOL, $this->context['screenshot_path']));
             return;
         }
 
-        if (file_exists($screenshot_path) && !is_dir($screenshot_path)) {
+        if (file_exists($path) && !is_dir($path)) {
             file_put_contents('php://stderr', sprintf('"%s" is not valid directory' . PHP_EOL, $this->context['screenshot_path']));
             return;
         }
-        if (file_exists($screenshot_path) && !is_writable($screenshot_path)) {
-            file_put_contents('php://stderr', sprintf('"%s" directory is not writable' . PHP_EOL, $screenshot_path));
+        if (file_exists($path) && !is_writable($path)) {
+            file_put_contents('php://stderr', sprintf('"%s" directory is not writable' . PHP_EOL, $path));
             return;
         }
 
-        $screenshot_path = sprintf('%s/%s_%d.png', $screenshot_path, basename($feature->getFile()), $step->getLine());
+        $path = sprintf('%s/%s_%d.png', $path, basename($feature->getFile()), $step->getLine());
         $screenshot = $driver->wdSession->screenshot();
-        file_put_contents($screenshot_path, base64_decode($screenshot));
-        file_put_contents('php://stderr', sprintf('Saving screenshot into %s' . PHP_EOL, $screenshot_path));
+        file_put_contents($path, base64_decode($screenshot));
+        file_put_contents('php://stderr', sprintf('Saving screenshot into %s' . PHP_EOL, $path));
     }
 
     /**

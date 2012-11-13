@@ -4,9 +4,10 @@ namespace SilverStripe\BehatExtension;
 
 use Symfony\Component\Config\FileLocator,
     Symfony\Component\DependencyInjection\ContainerBuilder,
-    Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+    Symfony\Component\DependencyInjection\Loader\YamlFileLoader,
+    Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
-use Behat\Behat\Extension\Extension as BaseExtension;
+use Behat\Behat\Extension\ExtensionInterface;
 
 /*
  * This file is part of the SilverStripe\BehatExtension
@@ -22,7 +23,7 @@ use Behat\Behat\Extension\Extension as BaseExtension;
  *
  * @author Michał Ochman <ochman.d.michal@gmail.com>
  */
-class Extension extends BaseExtension
+class Extension implements ExtensionInterface
 {
     /**
      * Loads a specific configuration.
@@ -50,6 +51,10 @@ class Extension extends BaseExtension
         }
 
         $container->setParameter('behat.silverstripe_extension.framework_path', $config['framework_path']);
+        $container->setParameter('behat.silverstripe_extension.admin_url', $config['admin_url']);
+        $container->setParameter('behat.silverstripe_extension.login_url', $config['login_url']);
+        $container->setParameter('behat.silverstripe_extension.screenshot_path', $config['screenshot_path']);
+        $container->setParameter('behat.silverstripe_extension.ajax_timeout', $config['ajax_timeout']);
         if (isset($config['ajax_steps'])) {
             $container->setParameter('behat.silverstripe_extension.ajax_steps', $config['ajax_steps']);
         }
@@ -65,5 +70,43 @@ class Extension extends BaseExtension
         return array(
             new Compiler\MinkExtensionBaseUrlPass(),
         );
+    }
+
+    /**
+     * Setups configuration for current extension.
+     *
+     * @param ArrayNodeDefinition $builder
+     */
+    function getConfig(ArrayNodeDefinition $builder)
+    {
+        $builder->
+            children()->
+                scalarNode('framework_path')->
+                    defaultValue('../../../framework')->
+                end()->
+                scalarNode('screenshot_path')->
+                    defaultNull()->
+                end()->
+                scalarNode('admin_url')->
+                    defaultValue('/admin/')->
+                end()->
+                scalarNode('login_url')->
+                    defaultValue('/Security/login')->
+                end()->
+                scalarNode('ajax_timeout')->
+                    defaultValue(5000)->
+                end()->
+                arrayNode('ajax_steps')->
+                    defaultValue(array(
+                        'go to',
+                        'follow',
+                        'press',
+                        'click',
+                        'submit'
+                    ))->
+                    prototype('scalar')->
+                end()->
+            end()->
+        end();
     }
 }
