@@ -167,6 +167,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         \SapphireTest::empty_temp_db();
         global $databaseConfig;
         \DB::connect($databaseConfig);
+        \DB::getConn()->quiet();
         $dataClasses = \ClassInfo::subclassesFor('DataObject');
         array_shift($dataClasses);
         foreach ($dataClasses as $dataClass) {
