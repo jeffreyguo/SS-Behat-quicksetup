@@ -57,10 +57,7 @@ And get the latest Selenium2 server (requires Java):
 As a convention, SilverStripe Behat tests live in a `tests/behat` subfolder
 of your module. You can create it with the following command:
 
-	cd mymodule
-	mkdir -p tests/behat
-	cd tests/behat
-	../../../vendor/bin/behat --init
+	mkdir -p mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour
 
 ### FeatureContext
 
@@ -69,10 +66,10 @@ here as well. The only major difference is the base class from which
 to extend your own `FeatureContext`: It should be `SilverStripeContext`
 rather than `BehatContext`.
 
-Example: FeatureContext.php
+Example: mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour/FeatureContext.php
 
 	<?php
-	namespace SilverStripe\MyModule\Test\Behaviour;
+	namespace MyModule\Test\Behaviour;
 
 	use SilverStripe\BehatExtension\Context\SilverStripeContext,
 	    SilverStripe\BehatExtension\Context\BasicContext,
@@ -94,7 +91,7 @@ Example: FeatureContext.php
 
 ### behat.yml
 
-Create a `mymodule/tests/behat/behat.yml` file, and add the template below.
+Create a `behat.yml` file in the project root, and add the template below.
 
 TODO: Move to auto-loaded configuration
 
@@ -134,23 +131,6 @@ of a failed step. It defaults to whatever is returned by PHP's `sys_get_temp_dir
 Screenshot names within that directory consist of feature file filename and line
 number that failed.
 
-### Additional profiles
-
-By default, `MinkExtension` is using `FirefoxDriver`.
-Let's say you want to user `ChromeDriver` too.
-
-You can either override the `selenium2` setting in default profile or add another
-profile that can be run using `bin/behat --profile=PROFILE_NAME`, where `PROFILE_NAME`
-could be `chrome`.
-
-    chrome:
-      extensions:
-          Behat\MinkExtension\Extension:
-            selenium2:
-              capabilities:
-                browserName: chrome
-                version: ANY
-
 ## Usage
 
 ### Starting the selenium server
@@ -171,14 +151,11 @@ You will have Behat binary located in `bin` directory in your project root (or w
 By default, Behat will use Selenium2 driver.
 Selenium will also try to use chrome browser. Refer to `behat.yml` for details.
 
-    # This will run all feature tests located in `features` directory
-    vendor/bin/behat --config mymodule/tests/behat/behat.yml
+    # Run all "mymodule" tests
+    vendor/bin/behat @mymodule
 
-    # This will run all feature tests using chrome profile
-    vendor/behat --config mymodule/tests/behat/behat.yml --profile=chrome
-
-    # This will run a specific feature test
-    vendor/behat --config mymodule/tests/behat/behat.yml mymodule/tests/behat/features/my-steps.feature
+    # Run a specific feature test
+    vendor/behat @mymodule/my-steps.feature
 
 ### Available Step Definitions
 
@@ -186,7 +163,7 @@ The extension comes with several `BehatContext` subclasses come with some extra 
 Some of them are just helpful in general website testing, other's are specific to SilverStripe. 
 To find out all available steps (and the files they are defined in), run the following:
 
-	vendor/bin/behat --config mymodule/tests/behat/behat.yml --definitions=i
+	vendor/bin/behat @mymodule --definitions=i
 
 Note: There are more specific step definitions in the SilverStripe `framework` module
 for interacting with the CMS interfaces (see `framework/tests/behat/features/bootstrap`).
@@ -242,6 +219,25 @@ by tagging the feature or scenario with `@database-defaults` tag.
 The module runner empties the database before each scenario tagged with
 `@database-defaults` and populates it with default records (usually a set of
 default pages).
+
+## Howto
+
+### Additional profiles
+
+By default, `MinkExtension` is using `FirefoxDriver`.
+Let's say you want to use `ChromeDriver` too.
+
+You can either override the `selenium2` setting in default profile or add another
+profile that can be run using `bin/behat --profile=PROFILE_NAME`, where `PROFILE_NAME`
+could be `chrome`.
+
+    chrome:
+      extensions:
+          Behat\MinkExtension\Extension:
+            selenium2:
+              capabilities:
+                browserName: chrome
+                version: ANY
 
 ## FAQ
 
