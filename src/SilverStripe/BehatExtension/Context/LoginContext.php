@@ -54,14 +54,14 @@ class LoginContext extends BehatContext
     public function stepIAmLoggedIn()
     {
         $c = $this->getMainContext();
-        $admin_url = $c->joinUrlParts($c->getBaseUrl(), $c->getAdminUrl());
-        $login_url = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
+        $adminUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getAdminUrl());
+        $loginUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
 
-        $this->getSession()->visit($admin_url);
+        $this->getSession()->visit($adminUrl);
 
-        if (0 == strpos($this->getSession()->getCurrentUrl(), $login_url)) {
+        if (0 == strpos($this->getSession()->getCurrentUrl(), $loginUrl)) {
             $this->stepILogInWith('admin', 'password');
-            assertStringStartsWith($admin_url, $this->getSession()->getCurrentUrl());
+            assertStringStartsWith($adminUrl, $this->getSession()->getCurrentUrl());
         }
     }
 
@@ -113,17 +113,17 @@ class LoginContext extends BehatContext
     public function stepILogInWith($email, $password)
     {
         $c = $this->getMainContext();
-        $login_url = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
+        $loginUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
 
-        $this->getSession()->visit($login_url);
+        $this->getSession()->visit($loginUrl);
 
         $page = $this->getSession()->getPage();
 
-        $email_field = $page->find('css', '[name=Email]');
-        $password_field = $page->find('css', '[name=Password]');
+        $emailField = $page->find('css', '[name=Email]');
+        $passwordField = $page->find('css', '[name=Password]');
         $submit_button = $page->find('css', '[type=submit]');
-        $email_field->setValue($email);
-        $password_field->setValue($password);
+        $emailField->setValue($email);
+        $passwordField->setValue($password);
         $submit_button->press();
     }
 
@@ -134,8 +134,8 @@ class LoginContext extends BehatContext
     {
         $page = $this->getSession()->getPage();
 
-        $login_form = $page->find('css', '#MemberLoginForm_LoginForm');
-        assertNotNull($login_form, 'I should see a log-in form');
+        $loginForm = $page->find('css', '#MemberLoginForm_LoginForm');
+        assertNotNull($loginForm, 'I should see a log-in form');
     }
 
     /**
@@ -145,8 +145,8 @@ class LoginContext extends BehatContext
     {
         $page = $this->getSession()->getPage();
 
-        $bad_message = $page->find('css', '.message.bad');
+        $badMessage = $page->find('css', '.message.bad');
 
-        assertNotNull($bad_message, 'Bad message not found.');
+        assertNotNull($badMessage, 'Bad message not found.');
     }
 }

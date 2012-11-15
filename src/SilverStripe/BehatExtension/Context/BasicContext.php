@@ -107,10 +107,10 @@ JS;
      */
     public function handleAjaxBeforeStep(StepEvent $event)
     {
-        $ajax_enabled_steps = $this->getMainContext()->getAjaxSteps();
-        $ajax_enabled_steps = implode('|', array_filter($ajax_enabled_steps));
+        $ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
+        $ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
 
-        if (empty($ajax_enabled_steps) || !preg_match('/(' . $ajax_enabled_steps . ')/i', $event->getStep()->getText())) {
+        if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
             return;
         }
 
@@ -150,10 +150,10 @@ JS;
      */
     public function handleAjaxAfterStep(StepEvent $event)
     {
-        $ajax_enabled_steps = $this->getMainContext()->getAjaxSteps();
-        $ajax_enabled_steps = implode('|', array_filter($ajax_enabled_steps));
+        $ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
+        $ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
 
-        if (empty($ajax_enabled_steps) || !preg_match('/(' . $ajax_enabled_steps . ')/i', $event->getStep()->getText())) {
+        if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
             return;
         }
 
@@ -205,7 +205,7 @@ JS;
         $parent = $event->getLogicalParent();
         $feature = $parent->getFeature();
         $step = $event->getStep();
-        $screenshot_path = null;
+        $screenshotPath = null;
 
         $path = $this->getMainContext()->getScreenshotPath();
         if(!$path) return; // quit silently when path is not set
@@ -267,10 +267,10 @@ JS;
     {
         $page = $this->getSession()->getPage();
 
-        $button_element = $page->find('named', array('link_or_button', "'$button'"));
-        assertNotNull($button_element, sprintf('%s button not found', $button));
+        $buttonElement = $page->find('named', array('link_or_button', "'$button'"));
+        assertNotNull($buttonElement, sprintf('%s button not found', $button));
 
-        $button_element->click();
+        $buttonElement->click();
     }
 
     /**
@@ -280,10 +280,10 @@ JS;
     {
         $page = $this->getSession()->getPage();
 
-        $parent_element = $page->find('css', $selector);
-        assertNotNull($parent_element, sprintf('"%s" element not found', $selector));
+        $parentElement = $page->find('css', $selector);
+        assertNotNull($parentElement, sprintf('"%s" element not found', $selector));
 
-        $element = $parent_element->find('xpath', sprintf('//*[count(*)=0 and contains(.,"%s")]', $text));
+        $element = $parentElement->find('xpath', sprintf('//*[count(*)=0 and contains(.,"%s")]', $text));
         assertNotNull($element, sprintf('"%s" not found', $text));
 
         $element->click();

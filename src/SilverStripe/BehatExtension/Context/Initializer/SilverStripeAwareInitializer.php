@@ -25,7 +25,7 @@ use SilverStripe\BehatExtension\Context\SilverStripeAwareContextInterface;
 class SilverStripeAwareInitializer implements InitializerInterface
 {
     
-    private $database_name;
+    private $databaseName;
     
     /**
      * @var Array
@@ -55,10 +55,10 @@ class SilverStripeAwareInitializer implements InitializerInterface
     /**
      * Initializes initializer.
      */
-    public function __construct($framework_path, $framework_host)
+    public function __construct($frameworkPath, $frameworkHost)
     {
-        $this->bootstrap($framework_path, $framework_host);
-        $this->database_name = $this->initializeTempDb();
+        $this->bootstrap($frameworkPath, $frameworkHost);
+        $this->databaseName = $this->initializeTempDb();
     }
 
     public function __destruct()
@@ -85,7 +85,7 @@ class SilverStripeAwareInitializer implements InitializerInterface
      */
     public function initialize(ContextInterface $context)
     {
-        $context->setDatabase($this->database_name);
+        $context->setDatabase($this->databaseName);
         $context->setAjaxSteps($this->ajaxSteps);
         $context->setAjaxTimeout($this->ajaxTimeout);
         $context->setScreenshotPath($this->screenshotPath);
@@ -143,17 +143,17 @@ class SilverStripeAwareInitializer implements InitializerInterface
         return $this->screenshotPath;
     }
 
-    protected function bootstrap($framework_path, $framework_host)
+    protected function bootstrap($frameworkPath, $frameworkHost)
     {
         file_put_contents('php://stderr', 'Bootstrapping' . PHP_EOL);
 
         // Set file to URL mappings
         global $_FILE_TO_URL_MAPPING;
-        $_FILE_TO_URL_MAPPING[dirname($framework_path)] = $framework_host;
+        $_FILE_TO_URL_MAPPING[dirname($frameworkPath)] = $frameworkHost;
 
         // Connect to database and build manifest
         $_GET['flush'] = 1;
-        require_once $framework_path . '/core/Core.php';
+        require_once $frameworkPath . '/core/Core.php';
         unset($_GET['flush']);
 
         // Remove the error handler so that PHPUnit can add its own

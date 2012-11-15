@@ -26,7 +26,7 @@ require_once 'vendor/autoload.php';
  */
 class SilverStripeContext extends MinkContext implements SilverStripeAwareContextInterface
 {
-    protected $database_name;
+    protected $databaseName;
 
     /**
      * @var Array Partial string match for step names
@@ -60,9 +60,9 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 
     protected $context;
     protected $fixtures;
-    protected $fixtures_lazy;
-    protected $files_path;
-    protected $created_files_paths;
+    protected $fixturesLazy;
+    protected $filesPath;
+    protected $createdFilesPaths;
 
     /**
      * Initializes context.
@@ -76,9 +76,9 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         $this->context = $parameters;
     }
 
-    public function setDatabase($database_name)
+    public function setDatabase($databaseName)
     {
-        $this->database_name = $database_name;
+        $this->databaseName = $databaseName;
     }
 
     public function setAjaxSteps($ajaxSteps)
@@ -131,13 +131,13 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         return $this->screenshotPath;
     }
 
-    public function getFixture($data_object)
+    public function getFixture($dataObject)
     {
-        if (!array_key_exists($data_object, $this->fixtures)) {
-            throw new \OutOfBoundsException(sprintf('Data object `%s` does not exist!', $data_object));
+        if (!array_key_exists($dataObject, $this->fixtures)) {
+            throw new \OutOfBoundsException(sprintf('Data object `%s` does not exist!', $dataObject));
         }
 
-        return $this->fixtures[$data_object];
+        return $this->fixtures[$dataObject];
     }
 
     public function getFixtures()
@@ -150,13 +150,13 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
      */
     public function before(ScenarioEvent $event)
     {
-        if (!isset($this->database_name)) {
-            throw new \LogicException('Context\'s $database_name has to be set when implementing SilverStripeAwareContextInterface.');
+        if (!isset($this->databaseName)) {
+            throw new \LogicException('Context\'s $databaseName has to be set when implementing SilverStripeAwareContextInterface.');
         }
 
-        $setdb_url = $this->joinUrlParts($this->getBaseUrl(), '/dev/tests/setdb');
-        $setdb_url = sprintf('%s?database=%s', $setdb_url, $this->database_name);
-        $this->getSession()->visit($setdb_url);
+        $setdbUrl = $this->joinUrlParts($this->getBaseUrl(), '/dev/tests/setdb');
+        $setdbUrl = sprintf('%s?database=%s', $setdbUrl, $this->databaseName);
+        $this->getSession()->visit($setdbUrl);
     }
 
     /**
@@ -188,9 +188,9 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
      */
     public function afterResetAssets(ScenarioEvent $event)
     {
-        if (is_array($this->created_files_paths)) {
-            $created_files = array_reverse($this->created_files_paths);
-            foreach ($created_files as $path) {
+        if (is_array($this->createdFilesPaths)) {
+            $createdFiles = array_reverse($this->createdFilesPaths);
+            foreach ($createdFiles as $path) {
                 if (is_dir($path)) {
                     \Filesystem::removeFolder($path);
                 } else {
@@ -204,44 +204,44 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
     /**
      * @Given /^there are the following ([^\s]*) records$/
      */
-    public function thereAreTheFollowingRecords($data_object, PyStringNode $string)
+    public function thereAreTheFollowingRecords($dataObject, PyStringNode $string)
     {
         if (!is_array($this->fixtures)) {
             $this->fixtures = array();
         }
-        if (!is_array($this->fixtures_lazy)) {
-            $this->fixtures_lazy = array();
+        if (!is_array($this->fixturesLazy)) {
+            $this->fixturesLazy = array();
         }
-        if (!isset($this->files_path)) {
-            $this->files_path = realpath($this->getMinkParameter('files_path'));
+        if (!isset($this->filesPath)) {
+            $this->filesPath = realpath($this->getMinkParameter('files_path'));
         }
-        if (!is_array($this->created_files_paths)) {
-            $this->created_files_paths = array();
-        }
-
-        if (array_key_exists($data_object, $this->fixtures)) {
-            throw new \InvalidArgumentException(sprintf('Data object `%s` already exists!', $data_object));
+        if (!is_array($this->createdFilesPaths)) {
+            $this->createdFilesPaths = array();
         }
 
-        $fixture = array_merge(array($data_object . ':'), $string->getLines());
+        if (array_key_exists($dataObject, $this->fixtures)) {
+            throw new \InvalidArgumentException(sprintf('Data object `%s` already exists!', $dataObject));
+        }
+
+        $fixture = array_merge(array($dataObject . ':'), $string->getLines());
         $fixture = implode("\n  ", $fixture);
 
-        if ('Folder' === $data_object) {
+        if ('Folder' === $dataObject) {
             $this->prepareTestAssetsDirectories($fixture);
         }
 
-        if ('File' === $data_object) {
+        if ('File' === $dataObject) {
             $this->prepareTestAssetsFiles($fixture);
         }
 
-        $fixtures_lazy = array($data_object => array());
+        $fixturesLazy = array($dataObject => array());
         if (preg_match('/=>(\w+)/', $fixture)) {
             $fixture_content = Yaml::parse($fixture);
-            foreach ($fixture_content[$data_object] as $identifier => &$fields) {
+            foreach ($fixture_content[$dataObject] as $identifier => &$fields) {
                 foreach ($fields as $field_val) {
                     if (substr($field_val, 0, 2) == '=>') {
-                        $fixtures_lazy[$data_object][$identifier] = $fixture_content[$data_object][$identifier];
-                        unset($fixture_content[$data_object][$identifier]);
+                        $fixturesLazy[$dataObject][$identifier] = $fixture_content[$dataObject][$identifier];
+                        unset($fixture_content[$dataObject][$identifier]);
                     }
                 }
             }
@@ -250,27 +250,27 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 
         // As we're dealing with split fixtures and can't join them, replace references by hand
 //        if (preg_match('/=>(\w+)\.([\w.]+)/', $fixture, $matches)) {
-//            if ($matches[1] !== $data_object) {
+//            if ($matches[1] !== $dataObject) {
 //                $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
 //            }
 //        }
         $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
         // Save fixtures into database
-        $this->fixtures[$data_object] = new \YamlFixture($fixture);
+        $this->fixtures[$dataObject] = new \YamlFixture($fixture);
         $model = \DataModel::inst();
-        $this->fixtures[$data_object]->saveIntoDatabase($model);
+        $this->fixtures[$dataObject]->saveIntoDatabase($model);
         // Lazy load fixtures into database
         // Loop is required for nested lazy fixtures
-        foreach ($fixtures_lazy[$data_object] as $identifier => $fields) {
+        foreach ($fixturesLazy[$dataObject] as $identifier => $fields) {
             $fixture = array(
-                $data_object => array(
+                $dataObject => array(
                     $identifier => $fields,
                 ),
             );
             $fixture = Yaml::dump($fixture);
             $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
-            $this->fixtures_lazy[$data_object][$identifier] = new \YamlFixture($fixture);
-            $this->fixtures_lazy[$data_object][$identifier]->saveIntoDatabase($model);
+            $this->fixturesLazy[$dataObject][$identifier] = new \YamlFixture($fixture);
+            $this->fixturesLazy[$dataObject][$identifier]->saveIntoDatabase($model);
         }
     }
 
@@ -286,11 +286,11 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 
                     $folder_path = ASSETS_PATH . DIRECTORY_SEPARATOR . $value;
                     if (file_exists($folder_path) && !is_dir($folder_path)) {
-                        throw new \Exception(sprintf('`%s` already exists and is not a directory', $this->files_path));
+                        throw new \Exception(sprintf('`%s` already exists and is not a directory', $this->filesPath));
                     }
 
                     \Filesystem::makeFolder($folder_path);
-                    $this->created_files_paths[] = $folder_path;
+                    $this->createdFilesPaths[] = $folder_path;
                 }
             }
         }
@@ -306,18 +306,18 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
                         $value = substr($value, strlen('assets/'));
                     }
 
-                    $file_path = $this->files_path . DIRECTORY_SEPARATOR . basename($value);
-                    if (!file_exists($file_path) || !is_file($file_path)) {
-                        throw new \Exception(sprintf('`%s` does not exist or is not a file', $this->files_path));
+                    $filePath = $this->filesPath . DIRECTORY_SEPARATOR . basename($value);
+                    if (!file_exists($filePath) || !is_file($filePath)) {
+                        throw new \Exception(sprintf('`%s` does not exist or is not a file', $this->filesPath));
                     }
                     $asset_path = ASSETS_PATH . DIRECTORY_SEPARATOR . $value;
                     if (file_exists($asset_path) && !is_file($asset_path)) {
-                        throw new \Exception(sprintf('`%s` already exists and is not a file', $this->files_path));
+                        throw new \Exception(sprintf('`%s` already exists and is not a file', $this->filesPath));
                     }
 
                     if (!file_exists($asset_path)) {
-                        if (@copy($file_path, $asset_path)) {
-                            $this->created_files_paths[] = $asset_path;
+                        if (@copy($filePath, $asset_path)) {
+                            $this->createdFilesPaths[] = $asset_path;
                         }
                     }
                 }
@@ -333,17 +333,17 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         return $this->idFromFixture($references[1], $references[2]);
     }
 
-    protected function idFromFixture($class_name, $identifier)
+    protected function idFromFixture($className, $identifier)
     {
-        if (false !== ($id = $this->fixtures[$class_name]->idFromFixture($class_name, $identifier))) {
+        if (false !== ($id = $this->fixtures[$className]->idFromFixture($className, $identifier))) {
             return $id;
         }
-        if (isset($this->fixtures_lazy[$class_name], $this->fixtures_lazy[$class_name][$identifier]) &&
-                false !== ($id = $this->fixtures_lazy[$class_name][$identifier]->idFromFixture($class_name, $identifier))) {
+        if (isset($this->fixturesLazy[$className], $this->fixturesLazy[$className][$identifier]) &&
+                false !== ($id = $this->fixturesLazy[$className][$identifier]->idFromFixture($className, $identifier))) {
             return $id;
         }
 
-        throw new \OutOfBoundsException(sprintf('`%s` identifier in Data object `%s` does not exist!', $identifier, $class_name));
+        throw new \OutOfBoundsException(sprintf('`%s` identifier in Data object `%s` does not exist!', $identifier, $className));
     }
 
     /**
@@ -424,10 +424,10 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         }
 
         $parts = func_get_args();
-        $trim_slashes = function(&$part) {
+        $trimSlashes = function(&$part) {
             $part = trim($part, '/');
         };
-        array_walk($parts, $trim_slashes);
+        array_walk($parts, $trimSlashes);
 
         return implode('/', $parts);
     }
@@ -468,8 +468,8 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
             throw new \Exception('Fixture reference should be in following format: =>ClassName.identifier');
         }
 
-        list($class_name, $identifier) = explode('.', $reference);
-        $id = $this->idFromFixture($class_name, $identifier);
+        list($className, $identifier) = explode('.', $reference);
+        $id = $this->idFromFixture($className, $identifier);
         //$step = preg_replace('#=>(.+?) for "([^"]*)"#', '"'.$id.'" for "'.$field.'"', $step);
 
         // below is not working, because Selenium can't interact with hidden inputs
@@ -493,8 +493,8 @@ JAVASCRIPT;
             throw new \Exception('Fixture reference should be in following format: =>ClassName.identifier');
         }
 
-        list($class_name, $identifier) = explode('.', $reference);
-        $id = $this->idFromFixture($class_name, $identifier);
+        list($className, $identifier) = explode('.', $reference);
+        $id = $this->idFromFixture($className, $identifier);
         //$step = preg_replace('#"([^"]*)" with =>(.+)#', '"'.$field.'" with "'.$id.'"', $step);
 
         // below is not working, because Selenium can't interact with hidden inputs

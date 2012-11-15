@@ -40,9 +40,9 @@ class Extension implements ExtensionInterface
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/services'));
         $loader->load('silverstripe.yml');
 
-        $behat_base_path = $container->getParameter('behat.paths.base');
+        $behatBasePath = $container->getParameter('behat.paths.base');
         $config['framework_path'] = realpath(sprintf('%s%s%s',
-            rtrim($behat_base_path, DIRECTORY_SEPARATOR),
+            rtrim($behatBasePath, DIRECTORY_SEPARATOR),
             DIRECTORY_SEPARATOR,
             ltrim($config['framework_path'], DIRECTORY_SEPARATOR)
         ));

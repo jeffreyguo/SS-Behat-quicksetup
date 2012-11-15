@@ -35,10 +35,10 @@ class MinkExtensionBaseUrlPass implements CompilerPassInterface
         if (!$container->hasParameter('behat.mink.base_url')) {
             throw new \Exception('MinkExtension improperly configured. Missing base_url parameter.');
         }
-        $base_url = $container->getParameter('behat.mink.base_url');
-        if (empty($base_url)) {
+        $baseUrl = $container->getParameter('behat.mink.base_url');
+        if (empty($baseUrl)) {
             throw new \Exception('MinkExtension improperly configured. Missing or empty base_url parameter.');
         }
-        $container->setParameter('behat.silverstripe_extension.framework_host', $base_url);
+        $container->setParameter('behat.silverstripe_extension.framework_host', $baseUrl);
     }
 }
