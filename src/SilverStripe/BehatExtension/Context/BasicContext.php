@@ -231,7 +231,7 @@ JS;
         }
 
         $path = sprintf('%s/%s_%d.png', $path, basename($feature->getFile()), $step->getLine());
-        $screenshot = $driver->wdSession->screenshot();
+        $screenshot = $driver->getWebDriverSession()->screenshot();
         file_put_contents($path, base64_decode($screenshot));
         file_put_contents('php://stderr', sprintf('Saving screenshot into %s' . PHP_EOL, $path));
     }
@@ -297,7 +297,7 @@ JS;
         $data = array(
             'text' => $data,
         );
-        $this->getSession()->getDriver()->wdSession->postAlert_text($data);
+        $this->getSession()->getDriver()->getWebDriverSession()->postAlert_text($data);
     }
 
     /**
@@ -305,7 +305,7 @@ JS;
      */
     public function iConfirmTheDialog()
     {
-        $this->getSession()->getDriver()->wdSession->accept_alert();
+        $this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
         $this->handleAjaxTimeout();
     }
 
@@ -314,7 +314,7 @@ JS;
      */
     public function iDismissTheDialog()
     {
-        $this->getSession()->getDriver()->wdSession->dismiss_alert();
+        $this->getSession()->getDriver()->getWebDriverSession()->dismiss_alert();
         $this->handleAjaxTimeout();
     }
 
