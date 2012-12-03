@@ -52,6 +52,11 @@ And get the latest Selenium2 server (requires Java):
 
 ## Configuration
 
+### Session::start()
+
+Please add a `Session::start()` invocation to your own `_config.php`.
+This is a temporary measure until we hvae resolved the database vs. session initialization conflicts.
+
 ### Directory Structure
 
 As a convention, SilverStripe Behat tests live in a `tests/behat` subfolder
