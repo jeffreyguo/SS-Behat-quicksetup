@@ -253,7 +253,7 @@ JS;
     }
 
     /**
-     * @Given /^I wait for ([\d\.]+) seconds$/
+     * @Given /^I wait (?:for )?([\d\.]+) second(?:s?)$/
      */
     public function stepIWaitFor($secs)
     {
