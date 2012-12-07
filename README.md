@@ -35,20 +35,19 @@ Note: The extension has only been tested with the `selenium2` Mink driver.
 
 ## Installation
 
-As a first step, [install SilverStripe 3.x through Composer](http://doc.silverstripe.org/framework/en/installation/composer).
+Simply [install SilverStripe through Composer](http://doc.silverstripe.org/framework/en/installation/composer)
+with the `--dev` flag, which loads the required dependencies automatically.
 
-Then require this extension:
-
-	phar composer.phar require silverstripe/behat-extension:*
-
-Install PHPUnit through PEAR:
-
-	pear channel-discover pear.phpunit.de
-	pear install phpunit/PHPUnit
+	composer create-project --keep-vcs --dev silverstripe/installer test 3.0.x-dev
 
 And get the latest Selenium2 server (requires Java):
 
 	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar
+
+Alternatively, you can require this extension manually on an existing Composer project.
+Please note that we do require a Composer-based installation due to class autoloading concerns.
+
+	phar composer.phar require silverstripe/behat-extension:*
 
 ## Configuration
 
