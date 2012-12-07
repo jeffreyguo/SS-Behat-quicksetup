@@ -47,7 +47,7 @@ And get the latest Selenium2 server (requires Java):
 Alternatively, you can require this extension manually on an existing Composer project.
 Please note that we do require a Composer-based installation due to class autoloading concerns.
 
-	phar composer.phar require silverstripe/behat-extension:*
+	composer require silverstripe/behat-extension:*
 
 ## Configuration
 
@@ -95,15 +95,16 @@ Example: mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour/Feature
 
 ### behat.yml
 
-Create a `behat.yml` file in the project root, and add the template below.
-
-TODO: Move to auto-loaded configuration
+The SilverStripe installer already comes with a YML configuration
+which is ready to run tests on a locally hosted Selenium server.
+You'll need to customize at least the `base_url` setting to match the URL where
+the tested SilverStripe instance is hosted locally. 
 
 Example: behat.yml 
 
 	default:
 	  context:
-      class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
+	    class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
 	  extensions:
 	    SilverStripe\BehatExtension\Extension: ~
 	    Behat\MinkExtension\Extension:
@@ -115,8 +116,6 @@ Example: behat.yml
 	      selenium2:
 	        browser: firefox
 
-You'll need to customize at least the `base_url` setting to match the URL where
-the tested SilverStripe instance is hosted locally. 
 Overview of settings (all in the `extensions.SilverStripe\BehatExtension\Extension` path):
 
  * `framework_path`: Path to the SilverStripe Framework folder. It supports both absolute and relative (to `behat.yml` file) paths.
@@ -159,7 +158,7 @@ Selenium will also try to use chrome browser. Refer to `behat.yml` for details.
     vendor/bin/behat @mymodule
 
     # Run a specific feature test
-    vendor/behat @mymodule/my-steps.feature
+    vendor/bin/behat @mymodule/my-steps.feature
 
 ### Available Step Definitions
 
@@ -244,6 +243,12 @@ could be `chrome`.
                 version: ANY
 
 ## FAQ
+
+### FeatureContext not found
+
+This is most likely a problem with Composer's autoloading generator.
+Check that you have "SilverStripe" mentioned in the `vendor/composer/autoload_classmap.php` file,
+and call `composer dump-autoload` if not.
 
 ### Why does the module need to know about the framework path on the filesystem?
 
