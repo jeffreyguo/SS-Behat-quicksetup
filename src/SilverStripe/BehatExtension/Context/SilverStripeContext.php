@@ -151,12 +151,19 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
     public function before(ScenarioEvent $event)
     {
         if (!isset($this->databaseName)) {
-            throw new \LogicException('Context\'s $databaseName has to be set when implementing SilverStripeAwareContextInterface.');
+            throw new \LogicException(
+                'Context\'s $databaseName has to be set when implementing '
+                . 'SilverStripeAwareContextInterface.'
+            );
         }
 
-        $setdbUrl = $this->joinUrlParts($this->getBaseUrl(), '/dev/tests/setdb');
-        $setdbUrl = sprintf('%s?database=%s', $setdbUrl, $this->databaseName);
-        $this->getSession()->visit($setdbUrl);
+        $url = $this->joinUrlParts($this->getBaseUrl(), '/dev/testsession/start');
+        $params = array(
+            'database' => $this->databaseName,
+        );
+        $url .= '?' . http_build_query($params);
+
+        $this->getSession()->visit($url);
     }
 
     /**
