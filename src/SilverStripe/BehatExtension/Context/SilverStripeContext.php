@@ -160,6 +160,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         $url = $this->joinUrlParts($this->getBaseUrl(), '/dev/testsession/start');
         $params = array(
             'database' => $this->databaseName,
+            'mailer' => 'SilverStripe\BehatExtension\Utility\TestMailer',
         );
         $url .= '?' . http_build_query($params);
 
