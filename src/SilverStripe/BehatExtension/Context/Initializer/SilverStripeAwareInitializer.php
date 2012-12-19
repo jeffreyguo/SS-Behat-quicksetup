@@ -162,8 +162,8 @@ class SilverStripeAwareInitializer implements InitializerInterface
 
     protected function initializeTempDb()
     {
-        file_put_contents('php://stderr', 'Creating temp DB' . PHP_EOL);
         $dbname = \SapphireTest::create_temp_db();
+        file_put_contents('php://stderr', "Creating temp DB $dbname" . PHP_EOL);
         \DB::set_alternative_database_name($dbname);
 
         return $dbname;
@@ -171,7 +171,7 @@ class SilverStripeAwareInitializer implements InitializerInterface
 
     protected function deleteTempDb()
     {
-        file_put_contents('php://stderr', 'Killing temp DB' . PHP_EOL);
+        file_put_contents('php://stderr', "Killing temp DB" . PHP_EOL);
         \SapphireTest::kill_temp_db();
         \DB::set_alternative_database_name(null);
     }
