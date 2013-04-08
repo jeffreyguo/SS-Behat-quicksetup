@@ -58,6 +58,11 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
      */
     protected $screenshotPath;
 
+    /**
+     * @var FixtureFactory
+     */
+    protected $fixtureFactory;
+
     protected $context;
     protected $fixtures;
     protected $fixturesLazy;
@@ -264,7 +269,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         // Save fixtures into database
         $this->fixtures[$dataObject] = new \YamlFixture($fixture);
         $model = \DataModel::inst();
-        $this->fixtures[$dataObject]->saveIntoDatabase($model);
+        $this->fixtures[$dataObject]->writeInto($this->getFixtureFactory());
         // Lazy load fixtures into database
         // Loop is required for nested lazy fixtures
         foreach ($fixturesLazy[$dataObject] as $identifier => $fields) {
@@ -276,7 +281,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
             $fixture = Yaml::dump($fixture);
             $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
             $this->fixturesLazy[$dataObject][$identifier] = new \YamlFixture($fixture);
-            $this->fixturesLazy[$dataObject][$identifier]->saveIntoDatabase($model);
+            $this->fixturesLazy[$dataObject][$identifier]->writeInto($this->getFixtureFactory());
         }
     }
 
@@ -341,7 +346,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 
     protected function idFromFixture($className, $identifier)
     {
-        if (false !== ($id = $this->fixtures[$className]->idFromFixture($className, $identifier))) {
+        if (false !== ($id = $this->getFixtureFactory()->getId($className, $identifier))) {
             return $id;
         }
         if (isset($this->fixturesLazy[$className], $this->fixturesLazy[$className][$identifier]) &&
@@ -412,6 +417,15 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
     public function getBaseUrl()
     {
         return $this->getMinkParameter('base_url') ?: '';
+    }
+
+    /**
+     * @return FixtureFactory
+     */
+    public function getFixtureFactory() 
+    {
+        if(!$this->fixtureFactory) $this->fixtureFactory = \Injector::inst()->create('FixtureFactory');
+        return $this->fixtureFactory;
     }
 
     /**
