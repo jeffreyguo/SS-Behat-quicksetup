@@ -42,7 +42,7 @@ with the `--dev` flag, which loads the required dependencies automatically.
 
 And get the latest Selenium2 server (requires Java):
 
-	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.25.0.jar
+	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
 
 Alternatively, you can require this extension manually on an existing Composer project.
 Please note that we do require a Composer-based installation due to class autoloading concerns.
@@ -140,11 +140,11 @@ number that failed.
 
 You can either run the server in a separate Terminal tab:
 
-    java -jar selenium-server-standalone-2.25.0.jar
+    java -jar selenium-server-standalone-2.31.0.jar
 
 Or you can run it in the background:
 
-    java -jar selenium-server-standalone-2.25.0.jar > /dev/null &
+    java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
 
 
 ### Running the tests
