@@ -319,15 +319,20 @@ JS;
     }
 
     /**
-     * @Given /^(I attach the file .*) with HTML5$/
+     * @Given /^(?:|I )attach the file "(?P<path>[^"]*)" to "(?P<field>(?:[^"]|\\")*)" with HTML5$/
      */
-    public function iAttachTheFileTo($step)
+    public function iAttachTheFileTo($field, $path)
     {
-        $this->getSession()->evaluateScript("jQuery('.ss-uploadfield-editandorganize').show()");
-        $this->getSession()->evaluateScript("jQuery('[name=\"AssetUploadField\"]').css({opacity:1,visibility:'visible',height:'1px',width:'1px'})");
-        $this->getSession()->evaluateScript("jQuery('[name=\"files[]\"]').css({opacity:1,visibility:'visible',height:'1px',width:'1px'})");
+        // Remove wrapped button styling to make input field accessible to Selenium
+        $js = <<<JS
+var input = jQuery('[name="$field"]');
+if(input.closest('.ss-uploadfield-item-info').length) {
+    while(!input.parent().is('.ss-uploadfield-item-info')) input = input.unwrap();
+}
+JS;
+        $this->getSession()->evaluateScript($js);
         $this->getSession()->wait(1000);
 
-        return new Step\Given($step);
+        return new Step\Given(sprintf('I attach the file "%s" to "%s"', $path, $field));
     }
 }
