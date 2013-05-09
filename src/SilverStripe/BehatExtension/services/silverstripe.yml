@@ -16,7 +16,6 @@ services:
     class: %behat.silverstripe_extension.context.initializer.class%
     arguments:
       - %behat.silverstripe_extension.framework_path%
-      - %behat.silverstripe_extension.framework_host%
     calls:
       - [setAjaxSteps, [%behat.silverstripe_extension.ajax_steps%]]
       - [setAjaxTimeout, [%behat.silverstripe_extension.ajax_timeout%]]

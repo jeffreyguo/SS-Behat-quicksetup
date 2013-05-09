@@ -55,9 +55,9 @@ class SilverStripeAwareInitializer implements InitializerInterface
     /**
      * Initializes initializer.
      */
-    public function __construct($frameworkPath, $frameworkHost)
+    public function __construct($frameworkPath)
     {
-        $this->bootstrap($frameworkPath, $frameworkHost);
+        $this->bootstrap($frameworkPath);
         $this->databaseName = $this->initializeTempDb();
     }
 
@@ -143,13 +143,12 @@ class SilverStripeAwareInitializer implements InitializerInterface
         return $this->screenshotPath;
     }
 
-    protected function bootstrap($frameworkPath, $frameworkHost)
+    /**
+     * @param String Absolute path to 'framework' module
+     */
+    protected function bootstrap($frameworkPath)
     {
         file_put_contents('php://stderr', 'Bootstrapping' . PHP_EOL);
-
-        // Set file to URL mappings
-        global $_FILE_TO_URL_MAPPING;
-        $_FILE_TO_URL_MAPPING[dirname($frameworkPath)] = $frameworkHost;
 
         // Connect to database and build manifest
         $_GET['flush'] = 1;

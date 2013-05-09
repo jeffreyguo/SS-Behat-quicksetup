@@ -61,15 +61,11 @@ class Extension implements ExtensionInterface
     }
 
     /**
-     * Returns compiler passes used by SilverStripe extension.
-     *
      * @return array
      */
     public function getCompilerPasses()
     {
-        return array(
-            new Compiler\MinkExtensionBaseUrlPass(),
-        );
+        return array();
     }
 
     /**
@@ -82,7 +78,7 @@ class Extension implements ExtensionInterface
         $builder->
             children()->
                 scalarNode('framework_path')->
-                    defaultValue('../../../framework')->
+                    defaultValue('framework')->
                 end()->
                 scalarNode('screenshot_path')->
                     defaultNull()->

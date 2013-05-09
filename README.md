@@ -25,7 +25,7 @@ It provides the following helpers:
  * Captures JavaScript errors and logs them through Selenium
  * Saves screenshots to filesystem whenever an assertion error is detected
 
-In order to achieve this, the extension makes on basic assumption:
+In order to achieve this, the extension makes one basic assumption:
 Your Behat tests are run from the same application as the tested
 SilverStripe codebase, on a locally hosted website from the same codebase.
 This is important because we need access to the underlying SilverStripe
@@ -33,88 +33,84 @@ PHP classes. You can of course use a remote browser to do the actual testing.
 
 Note: The extension has only been tested with the `selenium2` Mink driver.
 
+## Quick Start
+
+The following commands install the SilverStripe CMS including all
+required dependencies, configure it, start a Selenium server in the background,
+and run the tests.
+
+	composer create-project silverstripe/installer my-test-project 3.1.x-dev
+	cd my-test-project
+	composer require silverstripe/behat-extension:*
+	php framework/cli-script.php dev/generatesecuretoken path=mysite/_config/behat.yml
+	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
+	java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
+	vendor/bin/behat @framework
+	vendor/bin/behat @cms
+
+This setup assumes you have [$_FILE_TO_URL_MAPPING](http://doc.silverstripe.org/framework/en/topics/commandline#configuration) configured to auto-detect
+the URL for your webroots.
+
 ## Installation
 
-Simply [install SilverStripe through Composer](http://doc.silverstripe.org/framework/en/installation/composer)
-with the `--dev` flag, which loads the required dependencies automatically.
+Simply [install SilverStripe through Composer](http://doc.silverstripe.org/framework/en/installation/composer).
 
-	composer create-project --keep-vcs --dev silverstripe/installer test 3.0.x-dev
+	composer create-project silverstripe/installer my-test-project 3.1.x-dev
 
-And get the latest Selenium2 server (requires Java):
+Switch to the newly created webroot, and add the SilverStripe Behat extension.
+
+	cd my-test-project
+	composer require silverstripe/behat-extension:*
+
+Now get the latest Selenium2 server (requires Java):
 
 	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
 
-Alternatively, you can require this extension manually on an existing Composer project.
-Please note that we do require a Composer-based installation due to class autoloading concerns.
+We need to generate a token so the browser and commandline calls can interact with a "shared secret":
 
-	composer require silverstripe/behat-extension:*
+	php framework/cli-script.php dev/generatesecuretoken path=mysite/_config/behat.yml
+
+Unless you have [$_FILE_TO_URL_MAPPING](http://doc.silverstripe.org/framework/en/topics/commandline#configuration)
+set up, you also need to specify the URL for your webroot. Either add it to the existing `behat.yml` configuration file
+in your project root, or set is as an environment variable in your terminal session: 
+
+	export BEHAT_PARAMS="extensions[SilverStripe\BehatExtension\MinkExtension][base_url]=http://localhost/"
+
+## Usage
+
+### Starting the Selenium Server
+
+You can either run the server in a separate Terminal tab:
+
+    java -jar selenium-server-standalone-2.31.0.jar
+
+Or you can run it in the background:
+
+    java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
+
+### Running the Tests
+
+Now you can run the tests (for example for the `framework` module):
+
+	vendor/bin/behat @framework
+
+In order to run specific tests only, use their feature file name:
+
+	vendor/bin/behat @framework/login.feature
+
+This will start a Firefox browser by default. Other browsers and profiles can be configured in `behat.yml`.
 
 ## Configuration
 
-### Session::start()
-
-Please add a `Session::start()` invocation to your own `_config.php`.
-This is a temporary measure until we hvae resolved the database vs. session initialization conflicts.
-
-### Directory Structure
-
-As a convention, SilverStripe Behat tests live in a `tests/behat` subfolder
-of your module. You can create it with the following command:
-
-	mkdir -p mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour
-
-### FeatureContext
-
-The generic [Behat usage instructions](http://docs.behat.org/) apply
-here as well. The only major difference is the base class from which
-to extend your own `FeatureContext`: It should be `SilverStripeContext`
-rather than `BehatContext`.
-
-Example: mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour/FeatureContext.php
-
-	<?php
-	namespace MyModule\Test\Behaviour;
-
-	use SilverStripe\BehatExtension\Context\SilverStripeContext,
-	    SilverStripe\BehatExtension\Context\BasicContext,
-	    SilverStripe\BehatExtension\Context\LoginContext;
-
-	require_once 'PHPUnit/Autoload.php';
-	require_once 'PHPUnit/Framework/Assert/Functions.php';
-
-	class FeatureContext extends SilverStripeContext
-	{
-	    public function __construct(array $parameters)
-	    {
-	        $this->useContext('BasicContext', new BasicContext($parameters));
-	        $this->useContext('LoginContext', new LoginContext($parameters));
-
-	        parent::__construct($parameters);
-	    }
-	}
-
-### behat.yml
-
 The SilverStripe installer already comes with a YML configuration
-which is ready to run tests on a locally hosted Selenium server.
+which is ready to run tests on a locally hosted Selenium server,
+located in the project root as `behat.yml`.
+
 You'll need to customize at least the `base_url` setting to match the URL where
-the tested SilverStripe instance is hosted locally. 
+the tested SilverStripe instance is hosted locally.  This 
 
-Example: behat.yml 
-
-	default:
-	  context:
-	    class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
-	  extensions:
-	    SilverStripe\BehatExtension\Extension: ~
-	    Behat\MinkExtension\Extension:
-	      # Adjust this to your local environment
-	      base_url:  http://localhost/
-	      default_session: selenium2
-	      javascript_session: selenium2
-	      goutte: ~
-	      selenium2:
-	        browser: firefox
+Generic Mink configuration settings are placed in `SilverStripe\BehatExtension\MinkExtension`,
+which is a subclass of `Behat\MinkExtension\Extension`.
 
 Overview of settings (all in the `extensions.SilverStripe\BehatExtension\Extension` path):
 
@@ -134,31 +130,21 @@ of a failed step. It defaults to whatever is returned by PHP's `sys_get_temp_dir
 Screenshot names within that directory consist of feature file filename and line
 number that failed.
 
-## Usage
+Example: behat.yml 
 
-### Starting the selenium server
-
-You can either run the server in a separate Terminal tab:
-
-    java -jar selenium-server-standalone-2.31.0.jar
-
-Or you can run it in the background:
-
-    java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
-
-
-### Running the tests
-
-You will have Behat binary located in `bin` directory in your project root (or where `composer.json` is located).
-
-By default, Behat will use Selenium2 driver.
-Selenium will also try to use chrome browser. Refer to `behat.yml` for details.
-
-    # Run all "mymodule" tests
-    vendor/bin/behat @mymodule
-
-    # Run a specific feature test
-    vendor/bin/behat @mymodule/my-steps.feature
+	default:
+	  context:
+	    class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
+	  extensions:
+	    SilverStripe\BehatExtension\Extension: ~
+	    SilverStripe\BehatExtension\MinkExtension:
+	      # Adjust this to your local environment
+	      base_url:  http://localhost/
+	      default_session: selenium2
+	      javascript_session: selenium2
+	      goutte: ~
+	      selenium2:
+	        browser: firefox
 
 ### Available Step Definitions
 
@@ -223,24 +209,44 @@ The module runner empties the database before each scenario tagged with
 `@database-defaults` and populates it with default records (usually a set of
 default pages).
 
-## Howto
+## Writing Behat Tests
 
-### Additional profiles
+### Directory Structure
 
-By default, `MinkExtension` is using `FirefoxDriver`.
-Let's say you want to use `ChromeDriver` too.
+As a convention, SilverStripe Behat tests live in a `tests/behat` subfolder
+of your module. You can create it with the following command:
 
-You can either override the `selenium2` setting in default profile or add another
-profile that can be run using `bin/behat --profile=PROFILE_NAME`, where `PROFILE_NAME`
-could be `chrome`.
+	mkdir -p mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour
 
-    chrome:
-      extensions:
-          Behat\MinkExtension\Extension:
-            selenium2:
-              capabilities:
-                browserName: chrome
-                version: ANY
+### FeatureContext
+
+The generic [Behat usage instructions](http://docs.behat.org/) apply
+here as well. The only major difference is the base class from which
+to extend your own `FeatureContext`: It should be `SilverStripeContext`
+rather than `BehatContext`.
+
+Example: mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour/FeatureContext.php
+
+	<?php
+	namespace MyModule\Test\Behaviour;
+
+	use SilverStripe\BehatExtension\Context\SilverStripeContext,
+	    SilverStripe\BehatExtension\Context\BasicContext,
+	    SilverStripe\BehatExtension\Context\LoginContext;
+
+	require_once 'PHPUnit/Autoload.php';
+	require_once 'PHPUnit/Framework/Assert/Functions.php';
+
+	class FeatureContext extends SilverStripeContext
+	{
+	    public function __construct(array $parameters)
+	    {
+	        $this->useContext('BasicContext', new BasicContext($parameters));
+	        $this->useContext('LoginContext', new LoginContext($parameters));
+
+	        parent::__construct($parameters);
+	    }
+	}
 
 ## FAQ
 
@@ -310,7 +316,7 @@ Here's a sample profile for your `behat.yml`:
 	# Saucelabs.com sample setup, use with "vendor/bin/behat --profile saucelabs"
 	saucelabs:
 	  extensions:
-	    Behat\MinkExtension\Extension:
+	    SilverStripe\BehatExtension\MinkExtension:
 	      selenium2:
 	        browser: firefox
 	        # Add your own username and API token here
