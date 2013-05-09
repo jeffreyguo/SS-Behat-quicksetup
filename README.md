@@ -33,24 +33,6 @@ PHP classes. You can of course use a remote browser to do the actual testing.
 
 Note: The extension has only been tested with the `selenium2` Mink driver.
 
-## Quick Start
-
-The following commands install the SilverStripe CMS including all
-required dependencies, configure it, start a Selenium server in the background,
-and run the tests.
-
-	composer create-project silverstripe/installer my-test-project 3.1.x-dev
-	cd my-test-project
-	composer require silverstripe/behat-extension:*
-	php framework/cli-script.php dev/generatesecuretoken path=mysite/_config/behat.yml
-	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
-	java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
-	vendor/bin/behat @framework
-	vendor/bin/behat @cms
-
-This setup assumes you have [$_FILE_TO_URL_MAPPING](http://doc.silverstripe.org/framework/en/topics/commandline#configuration) configured to auto-detect
-the URL for your webroots.
-
 ## Installation
 
 Simply [install SilverStripe through Composer](http://doc.silverstripe.org/framework/en/installation/composer).
@@ -80,13 +62,9 @@ in your project root, or set is as an environment variable in your terminal sess
 
 ### Starting the Selenium Server
 
-You can either run the server in a separate Terminal tab:
+You can run the server locally in a separate Terminal session:
 
     java -jar selenium-server-standalone-2.31.0.jar
-
-Or you can run it in the background:
-
-    java -jar selenium-server-standalone-2.31.0.jar > /dev/null &
 
 ### Running the Tests
 
