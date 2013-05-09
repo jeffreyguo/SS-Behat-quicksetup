@@ -36,6 +36,7 @@ Note: The extension has only been tested with the `selenium2` Mink driver.
 ## Installation
 
 Simply [install SilverStripe through Composer](http://doc.silverstripe.org/framework/en/installation/composer).
+Skip this step if adding the module to an existing project.
 
 	composer create-project silverstripe/installer my-test-project 3.1.x-dev
 
@@ -51,6 +52,11 @@ Now get the latest Selenium2 server (requires Java):
 We need to generate a token so the browser and commandline calls can interact with a "shared secret":
 
 	php framework/cli-script.php dev/generatesecuretoken path=mysite/_config/behat.yml
+
+Now install the SilverStripe project as usual by opening it in a browser and following the instructions.
+Protip: You can skip this step by using `[SS_DATABASE_CHOOSE_NAME]` in a global 
+[_ss_environment.php](http://doc.silverstripe.org/framework/en/topics/environment-management) 
+file one level above the webroot.
 
 Unless you have [$_FILE_TO_URL_MAPPING](http://doc.silverstripe.org/framework/en/topics/commandline#configuration)
 set up, you also need to specify the URL for your webroot. Either add it to the existing `behat.yml` configuration file
