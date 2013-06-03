@@ -141,53 +141,67 @@ To find out all available steps (and the files they are defined in), run the fol
 Note: There are more specific step definitions in the SilverStripe `framework` module
 for interacting with the CMS interfaces (see `framework/tests/behat/features/bootstrap`).
 
-### Fixtures
+## Fixtures
 
-Fixtures should be provided in YAML format (standard SilverStripe fixture format)
-as [PyStrings](http://docs.behat.org/guides/1.gherkin.html#pystrings)
+Since each test run creates a new database, you can't rely on existing state unless
+you explicitly define it. 
 
-Take a look at the sample fixture logic first:
+### Database Defaults
 
-    Given there are the following Permission records
-      """
-      admin:
-        Code: ADMIN
-      """
-    And there are the following Group records
-      """
-      admingroup:
-        Title: Admin Group
-        Code: admin
-        Permissions: =>Permission.admin
-      """
-    And there are the following Member records
-      """
-      admin:
-        FirstName: Admin
-        Email: admin@test.com
-        Groups: =>Group.admingroup
-      """
+The easiest way to get default data is through `DataObject->requireDefaultRecords()`.
+Many modules already have this method defined, e.g. the `blog` module automatically
+creates a default `BlogHolder` entry in the page tree. Sometimes these defaults can
+be counterproductive though, so you need to "opt-in" to them, via the `@database-defaults`
+tag placed at the top of your feature definition. The defaults are reset after each
+scenario automatically.
 
-In this example, the fixture is used to create Admin member with admin permissions.
+### Inline Definition
 
-As you can see, there are special Gherkin steps that take care of loading
-fixtures into database. They use the following format:
+If you need more flexibility and transparency about which records are being created,
+use the inline definition syntax. The following example shows some syntax variations:
 
-    Given there are the following TableName records
-      """
-      RowIdentifier:
-        ColumnName: Value
-      """
+	Feature: Do something with pages
+		As an site owner
+		I want to manage pages
 
-Fixtures may also use a `=>` symbol to indicate relationships between records.
-In the example above `=>Permission.admin` will be replaced with row `ID` of a
-`Permission` record that has `RowIdentifier` set as `admin`.
+		Background:
+			# Creates a new page without data. Can be accessed later under this identifier
+			Given a page "Page 1" 
+			# Uses a custom RegistrationPage type
+			And a registration page "Register" 
+			# Creates a page with inline properties 
+			And a page "Page 2" with "URLSegment"="page-1" and "Content"="my page 1" 
+			# Field names can be tabular, and based on DataObject::$field_labels 
+			And the page "Page 3" has the following data
+			 | Content | <blink> |
+			 | My Property | foo |
+			 | My Boolean | bar |
+			# Pages are published by default, can be explicitly unpublished
+			And the page "Page 1" is not published 
+			# Create a hierarchy, and reference a record created earlier
+			And the page "Page 1.1" is a child of a page "Page 1" 
+			# Specific page type step 
+			And a page "My Redirect" which redirects to a page "Page 1" 
+			And a member "Website User" with "FavouritePage"="=>Page.Page 1"
 
-Fixtures are created where you defined them. If you want the fixtures to be created
-before every scenario, define them in [Background](http://docs.behat.org/guides/1.gherkin.html#backgrounds). If you want them to be created only when a particular scenario runs, define them there.
+		@javascript
+		Scenario: View a page in the tree
+			Given I am logged in with "ADMIN" permissions
+			And I go to "/admin/pages"
+			Then I should see "Page 1" in CMS Tree
 
-Fixtures are usually not cleared between scenarios. You can alter this behaviour
-by tagging the feature or scenario with `@database-defaults` tag.
+ * Fixtures are created where you defined them. If you want the fixtures to be created
+   before every scenario, define them in [Background](http://docs.behat.org/guides/1.gherkin.html#backgrounds). 
+   If you want them to be created only when a particular scenario runs, define them there.
+ * The basic syntax works for all `DataObject` subclasses, but some specific
+   notations like "is not published" requires extensions like `Hierarchy` to be applied to the class
+ * Record identifiers, property names and property values need to be quoted
+ * Record types shouldn't be quoted, and can use more natural notation ("registration page" instead of "Registration Page") 
+ * Fixtures are usually not cleared between scenarios. You can alter this behaviour
+   by tagging the feature or scenario with `@database-defaults` tag.
+ * Property values may also use a `=>` symbol to indicate relationships between records.
+   The notation is `=><classname>.<identifier>`. For `has_many` or `many_many` relationships,
+   multiple relationships can be separated by a comma.
 
 The module runner empties the database before each scenario tagged with
 `@database-defaults` and populates it with default records (usually a set of
