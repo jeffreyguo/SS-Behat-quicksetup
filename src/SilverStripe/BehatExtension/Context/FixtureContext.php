@@ -7,9 +7,11 @@ use Behat\Behat\Context\ClosuredContextInterface,
     Behat\Behat\Context\BehatContext,
     Behat\Behat\Context\Step,
     Behat\Behat\Event\StepEvent,
-    Behat\Behat\Exception\PendingException;
-use Behat\Mink\Driver\Selenium2Driver;
-use Behat\Gherkin\Node\PyStringNode,
+    Behat\Behat\Event\FeatureEvent,
+    Behat\Behat\Event\ScenarioEvent,
+    Behat\Behat\Exception\PendingException,
+    Behat\Mink\Driver\Selenium2Driver,
+    Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode;
 
 // PHPUnit
@@ -28,9 +30,17 @@ class FixtureContext extends BehatContext
      */
     protected $fixtureFactory;
 
+    /**
+     * @var String Absolute path where file fixtures are located.
+     * These will automatically get copied to their location
+     * declare through the 'Given a file "..."' step defition.
+     */
     protected $filesPath;
 
-    protected $createdFilesPaths;
+    /**
+     * @var String Tracks all files and folders created from fixtures, for later cleanup.
+     */
+    protected $createdFilesPaths = array();
 
     public function __construct(array $parameters)
     {
@@ -47,7 +57,7 @@ class FixtureContext extends BehatContext
      */
     public function getFixtureFactory() {
         if(!$this->fixtureFactory) {
-            $this->fixtureFactory = \Injector::inst()->create('FixtureFactory', 'FixtureContextFactory');    
+            $this->fixtureFactory = \Injector::inst()->create('FixtureFactory', 'FixtureContextFactory');
         }
         return $this->fixtureFactory;
     }
@@ -60,6 +70,59 @@ class FixtureContext extends BehatContext
     }
 
     /**
+     * @param String
+     */
+    public function setFilesPath($path) {
+        $this->filesPath = $path;
+    }
+
+    /**
+     * @return String
+     */
+    public function getFilesPath() {
+        return $this->filesPath;
+    }
+
+    /**
+     * @BeforeScenario @database-defaults
+     */
+    public function beforeDatabaseDefaults(ScenarioEvent $event)
+    {
+        \SapphireTest::empty_temp_db();
+        \DB::getConn()->quiet();
+        $dataClasses = \ClassInfo::subclassesFor('DataObject');
+        array_shift($dataClasses);
+        foreach ($dataClasses as $dataClass) {
+            \singleton($dataClass)->requireDefaultRecords();
+        }
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function afterResetDatabase(ScenarioEvent $event)
+    {
+        \SapphireTest::empty_temp_db();
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function afterResetAssets(ScenarioEvent $event)
+    {
+        if (is_array($this->createdFilesPaths)) {
+            $createdFiles = array_reverse($this->createdFilesPaths);
+            foreach ($createdFiles as $path) {
+                if (is_dir($path)) {
+                    \Filesystem::removeFolder($path);
+                } else {
+                    @unlink($path);
+                }
+            }
+        }
+    }
+
+    /**
      * Example: Given a page "Page 1"
      * 
      * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)"$/
@@ -67,7 +130,13 @@ class FixtureContext extends BehatContext
     public function stepCreateRecord($type, $id)
     {
         $class = $this->convertTypeToClass($type);
-        $this->fixtureFactory->createObject($class, $id);
+        if(is_a($class, 'File', true)) {
+            $fields = $this->prepareAsset($class, $id);
+            var_dump($fields);
+        } else {
+            $fields = array();
+        }
+        $this->fixtureFactory->createObject($class, $id, $fields);
     }
    
     /**
@@ -87,6 +156,9 @@ class FixtureContext extends BehatContext
             $class,
             array_combine($matches['key'], $matches['value'])
         );
+        if(is_a($class, 'File', true)) {
+            $fields = $this->prepareAsset($class, $id, $fields);
+        }
         $this->fixtureFactory->createObject($class, $id, $fields);
     }
 
@@ -103,6 +175,9 @@ class FixtureContext extends BehatContext
         $class = $this->convertTypeToClass($type);
         // TODO Support more than one record
         $fields = $this->convertFields($class, $fieldsTable->getRowsHash());
+        if(is_a($class, 'File', true)) {
+            $fields = $this->prepareAsset($class, $id, $fields);
+        }
         $this->fixtureFactory->createObject($class, $id, $fields);
     }
 
@@ -175,6 +250,50 @@ class FixtureContext extends BehatContext
     }
 
     /**
+     * @Given /^there are the following ([^\s]*) records$/
+     */
+    public function stepThereAreTheFollowingRecords($dataObject, PyStringNode $string)
+    {
+        $yaml = array_merge(array($dataObject . ':'), $string->getLines());
+        $yaml = implode("\n  ", $yaml);
+
+        // Save fixtures into database
+        // TODO Run prepareAsset() for each File and Folder record
+        $yamlFixture = new \YamlFixture($yaml);
+        $yamlFixture->writeInto($this->getFixtureFactory());
+    }
+
+    protected function prepareAsset($class, $identifier, $data = null) {
+        if(!$data) $data = array();
+        $relativeTargetPath = (isset($data['Filename'])) ? $data['Filename'] : $identifier;
+        $relativeTargetPath = preg_replace('/^' . ASSETS_DIR . '/', '', $relativeTargetPath);
+        $targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
+        $sourcePath = $this->joinPaths($this->getFilesPath(), basename($relativeTargetPath));
+        
+        // Create file or folder on filesystem
+        if(is_a($class, 'Folder', true)) {
+            $parent = \Folder::find_or_make($relativeTargetPath);
+        } else {
+            if(!file_exists($sourcePath)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Source file for "%s" cannot be found in "%s"',
+                    $targetPath,
+                    $sourcePath
+                ));
+            }
+            $parent = \Folder::find_or_make(dirname($relativeTargetPath));
+            copy($sourcePath, $targetPath);
+        }
+        $data['Filename'] = $this->joinPaths(ASSETS_DIR, $relativeTargetPath);
+        if(!isset($data['Name'])) $data['Name'] = basename($relativeTargetPath);
+        $data['ParentID'] = $parent->ID;
+
+        $this->createdFilesPaths[] = $targetPath;
+
+        return $data;
+    }
+
+    /**
      * Converts a natural language class description to an actual class name.
      * Respects {@link DataObject::$singular_name} variations.
      * Example: "redirector page" -> "RedirectorPage"
@@ -188,7 +307,7 @@ class FixtureContext extends BehatContext
 
         // Try direct mapping
         $class = str_replace(' ', '', ucfirst($type));
-        if(class_exists($class) || !is_subclass_of($class, 'DataObject')) {
+        if(class_exists($class) || !is_a($class, 'DataObject', true)) {
             return $class;
         }
 
@@ -221,6 +340,15 @@ class FixtureContext extends BehatContext
             }
         }
         return $fields;
+    }
+
+    protected function joinPaths() {
+        $args = func_get_args();
+        $paths = array();
+        foreach($args as $arg) $paths = array_merge($paths, (array)$arg);
+        foreach($paths as &$path) $path = trim($path, '/');
+        if (substr($args[0], 0, 1) == '/') $paths[0] = '/' . $paths[0];
+        return join('/', $paths);
     }
    
 }

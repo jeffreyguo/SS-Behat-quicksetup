@@ -58,16 +58,8 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
      */
     protected $screenshotPath;
 
-    /**
-     * @var FixtureFactory
-     */
-    protected $fixtureFactory;
-
     protected $context;
-    protected $fixtures;
-    protected $fixturesLazy;
-    protected $filesPath;
-    protected $createdFilesPaths;
+    
 
     /**
      * Initializes context.
@@ -136,20 +128,6 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         return $this->screenshotPath;
     }
 
-    public function getFixture($dataObject)
-    {
-        if (!array_key_exists($dataObject, $this->fixtures)) {
-            throw new \OutOfBoundsException(sprintf('Data object `%s` does not exist!', $dataObject));
-        }
-
-        return $this->fixtures[$dataObject];
-    }
-
-    public function getFixtures()
-    {
-        return $this->fixtures;
-    }
-
     /**
      * @BeforeScenario
      */
@@ -170,191 +148,6 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         $url .= '?' . http_build_query($params);
 
         $this->getSession()->visit($url);
-    }
-
-    /**
-     * @BeforeScenario @database-defaults
-     */
-    public function beforeDatabaseDefaults(ScenarioEvent $event)
-    {
-        \SapphireTest::empty_temp_db();
-        \DB::getConn()->quiet();
-        $dataClasses = \ClassInfo::subclassesFor('DataObject');
-        array_shift($dataClasses);
-        foreach ($dataClasses as $dataClass) {
-            \singleton($dataClass)->requireDefaultRecords();
-        }
-    }
-
-    /**
-     * @AfterScenario @database-defaults
-     */
-    public function afterDatabaseDefaults(ScenarioEvent $event)
-    {
-        \SapphireTest::empty_temp_db();
-    }
-
-    /**
-     * @AfterScenario @assets
-     */
-    public function afterResetAssets(ScenarioEvent $event)
-    {
-        if (is_array($this->createdFilesPaths)) {
-            $createdFiles = array_reverse($this->createdFilesPaths);
-            foreach ($createdFiles as $path) {
-                if (is_dir($path)) {
-                    \Filesystem::removeFolder($path);
-                } else {
-                    @unlink($path);
-                }
-            }
-        }
-        \SapphireTest::empty_temp_db();
-    }
-
-    /**
-     * @Given /^there are the following ([^\s]*) records$/
-     */
-    public function thereAreTheFollowingRecords($dataObject, PyStringNode $string)
-    {
-        if (!is_array($this->fixtures)) {
-            $this->fixtures = array();
-        }
-        if (!is_array($this->fixturesLazy)) {
-            $this->fixturesLazy = array();
-        }
-        if (!isset($this->filesPath)) {
-            $this->filesPath = realpath($this->getMinkParameter('files_path'));
-        }
-        if (!is_array($this->createdFilesPaths)) {
-            $this->createdFilesPaths = array();
-        }
-
-        if (array_key_exists($dataObject, $this->fixtures)) {
-            throw new \InvalidArgumentException(sprintf('Data object `%s` already exists!', $dataObject));
-        }
-
-        $fixture = array_merge(array($dataObject . ':'), $string->getLines());
-        $fixture = implode("\n  ", $fixture);
-
-        if ('Folder' === $dataObject) {
-            $this->prepareTestAssetsDirectories($fixture);
-        }
-
-        if ('File' === $dataObject) {
-            $this->prepareTestAssetsFiles($fixture);
-        }
-
-        $fixturesLazy = array($dataObject => array());
-        if (preg_match('/=>(\w+)/', $fixture)) {
-            $fixture_content = Yaml::parse($fixture);
-            foreach ($fixture_content[$dataObject] as $identifier => &$fields) {
-                foreach ($fields as $field_val) {
-                    if (substr($field_val, 0, 2) == '=>') {
-                        $fixturesLazy[$dataObject][$identifier] = $fixture_content[$dataObject][$identifier];
-                        unset($fixture_content[$dataObject][$identifier]);
-                    }
-                }
-            }
-            $fixture = Yaml::dump($fixture_content);
-        }
-
-        // As we're dealing with split fixtures and can't join them, replace references by hand
-//        if (preg_match('/=>(\w+)\.([\w.]+)/', $fixture, $matches)) {
-//            if ($matches[1] !== $dataObject) {
-//                $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
-//            }
-//        }
-        $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
-        // Save fixtures into database
-        $this->fixtures[$dataObject] = new \YamlFixture($fixture);
-        $model = \DataModel::inst();
-        $this->fixtures[$dataObject]->writeInto($this->getFixtureFactory());
-        // Lazy load fixtures into database
-        // Loop is required for nested lazy fixtures
-        foreach ($fixturesLazy[$dataObject] as $identifier => $fields) {
-            $fixture = array(
-                $dataObject => array(
-                    $identifier => $fields,
-                ),
-            );
-            $fixture = Yaml::dump($fixture);
-            $fixture = preg_replace_callback('/=>(\w+)\.([\w.]+)/', array($this, 'replaceFixtureReferences'), $fixture);
-            $this->fixturesLazy[$dataObject][$identifier] = new \YamlFixture($fixture);
-            $this->fixturesLazy[$dataObject][$identifier]->writeInto($this->getFixtureFactory());
-        }
-    }
-
-    protected function prepareTestAssetsDirectories($fixture)
-    {
-        $folders = Yaml::parse($fixture);
-        foreach ($folders['Folder'] as $fields) {
-            foreach ($fields as $field => $value) {
-                if ('Filename' === $field) {
-                    if (0 === strpos($value, 'assets/')) {
-                        $value = substr($value, strlen('assets/'));
-                    }
-
-                    $folder_path = ASSETS_PATH . DIRECTORY_SEPARATOR . $value;
-                    if (file_exists($folder_path) && !is_dir($folder_path)) {
-                        throw new \Exception(sprintf('`%s` already exists and is not a directory', $this->filesPath));
-                    }
-
-                    \Filesystem::makeFolder($folder_path);
-                    $this->createdFilesPaths[] = $folder_path;
-                }
-            }
-        }
-    }
-
-    protected function prepareTestAssetsFiles($fixture)
-    {
-        $files = Yaml::parse($fixture);
-        foreach ($files['File'] as $fields) {
-            foreach ($fields as $field => $value) {
-                if ('Filename' === $field) {
-                    if (0 === strpos($value, 'assets/')) {
-                        $value = substr($value, strlen('assets/'));
-                    }
-
-                    $filePath = $this->filesPath . DIRECTORY_SEPARATOR . basename($value);
-                    if (!file_exists($filePath) || !is_file($filePath)) {
-                        throw new \Exception(sprintf('`%s` does not exist or is not a file', $this->filesPath));
-                    }
-                    $asset_path = ASSETS_PATH . DIRECTORY_SEPARATOR . $value;
-                    if (file_exists($asset_path) && !is_file($asset_path)) {
-                        throw new \Exception(sprintf('`%s` already exists and is not a file', $this->filesPath));
-                    }
-
-                    if (!file_exists($asset_path)) {
-                        if (@copy($filePath, $asset_path)) {
-                            $this->createdFilesPaths[] = $asset_path;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected function replaceFixtureReferences($references)
-    {
-        if (!array_key_exists($references[1], $this->fixtures)) {
-            throw new \OutOfBoundsException(sprintf('Data object `%s` does not exist!', $references[1]));
-        }
-        return $this->idFromFixture($references[1], $references[2]);
-    }
-
-    protected function idFromFixture($className, $identifier)
-    {
-        if (false !== ($id = $this->getFixtureFactory()->getId($className, $identifier))) {
-            return $id;
-        }
-        if (isset($this->fixturesLazy[$className], $this->fixturesLazy[$className][$identifier]) &&
-                false !== ($id = $this->fixturesLazy[$className][$identifier]->idFromFixture($className, $identifier))) {
-            return $id;
-        }
-
-        throw new \OutOfBoundsException(sprintf('`%s` identifier in Data object `%s` does not exist!', $identifier, $className));
     }
 
     /**
@@ -417,15 +210,6 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
     public function getBaseUrl()
     {
         return $this->getMinkParameter('base_url') ?: '';
-    }
-
-    /**
-     * @return FixtureFactory
-     */
-    public function getFixtureFactory() 
-    {
-        if(!$this->fixtureFactory) $this->fixtureFactory = \Injector::inst()->create('FixtureFactory');
-        return $this->fixtureFactory;
     }
 
     /**
