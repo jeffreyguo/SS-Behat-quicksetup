@@ -132,7 +132,6 @@ class FixtureContext extends BehatContext
         $class = $this->convertTypeToClass($type);
         if(is_a($class, 'File', true)) {
             $fields = $this->prepareAsset($class, $id);
-            var_dump($fields);
         } else {
             $fields = array();
         }
@@ -261,6 +260,29 @@ class FixtureContext extends BehatContext
         // TODO Run prepareAsset() for each File and Folder record
         $yamlFixture = new \YamlFixture($yaml);
         $yamlFixture->writeInto($this->getFixtureFactory());
+    }
+
+    /**
+     * Replaces fixture references in values with their respective database IDs, 
+     * with the notation "=><class>.<identifier>". Example: "=>Page.My Page".
+     * 
+     * @Transform /^([^"]+)$/
+     */
+    public function lookupFixtureReference($string)
+    {
+        if(preg_match('/^=>/', $string)) {
+            list($className, $identifier) = explode('.', preg_replace('/^=>/', '', $string), 2);
+            $id = $this->fixtureFactory->getId($className, $identifier);
+            if(!$id) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Cannot resolve reference "%s", no matching fixture found',
+                    $string
+                ));
+            }
+            return $id;
+        } else {
+            return $string;
+        }
     }
 
     protected function prepareAsset($class, $identifier, $data = null) {
