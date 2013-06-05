@@ -137,6 +137,7 @@ if ('undefined' !== typeof window.jQuery) {
     });
 }
 JS;
+        $this->getSession()->wait(500); // give browser a chance to process and render response
         $this->getSession()->executeScript($javascript);
     }
 
@@ -269,7 +270,6 @@ JS;
 
         $buttonElement = $page->find('named', array('link_or_button', "'$button'"));
         assertNotNull($buttonElement, sprintf('%s button not found', $button));
-
         $buttonElement->click();
     }
 
