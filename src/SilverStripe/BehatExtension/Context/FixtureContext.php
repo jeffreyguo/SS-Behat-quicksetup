@@ -123,9 +123,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given a page "Page 1"
+     * Example: Given a "page" "Page 1"
      * 
-     * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)"$/
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)"$/
      */
     public function stepCreateRecord($type, $id)
     {
@@ -139,9 +139,9 @@ class FixtureContext extends BehatContext
     }
    
     /**
-     * Example: Given a page "Page 1" with "URL"="page-1" and "Content"="my page 1" 
+     * Example: Given a "page" "Page 1" with "URL"="page-1" and "Content"="my page 1" 
      * 
-     * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)" with (?<data>.*)$/
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" with (?<data>.*)$/
      */
     public function stepCreateRecordWithData($type, $id, $data)
     {
@@ -162,12 +162,12 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: And the page "Page 2" has the following data 
+     * Example: And the "page" "Page 2" has the following data 
      * | Content | <blink> |
      * | My Property | foo |
      * | My Boolean | bar |
      * 
-     * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)" has the following data$/
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" has the following data$/
      */
     public function stepCreateRecordWithTable($type, $id, $null, TableNode $fieldsTable)
     {
@@ -181,9 +181,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given the page "Page 1.1" is a child of the page "Page1" 
+     * Example: Given the "page" "Page 1.1" is a child of the "page" "Page1" 
      * 
-     * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)" is a (?<relation>[^\s]*) of (?:(an|a|the) )(?<relationType>[^"]+)"(?<relationId>[^"]+)"/
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is a (?<relation>[^\s]*) of (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"/
      */
     public function stepUpdateRecordRelation($type, $id, $relation, $relationType, $relationId)
     {
@@ -213,9 +213,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given the page "Page 1" is not published 
+     * Example: Given the "page" "Page 1" is not published 
      * 
-     * @Given /^(?:(an|a|the) )(?<type>[^"]+)"(?<id>[^"]+)" is (?<state>[^"]*)$/
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is (?<state>[^"]*)$/
      */
     public function stepUpdateRecordState($type, $id, $state)
     {
@@ -271,9 +271,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given a member "Admin" belonging to "Admin Group"
+     * Example: Given a "member" "Admin" belonging to "Admin Group"
      * 
-     * @Given /^(?:(an|a|the) )member "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)"$/
+     * @Given /^(?:(an|a|the) )"member" "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)"$/
      */
     public function stepCreateMemberWithGroup($id, $groupId)
     {
@@ -285,9 +285,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given a member "Admin" belonging to "Admin Group" with "Email"="test@test.com"
+     * Example: Given a "member" "Admin" belonging to "Admin Group" with "Email"="test@test.com"
      * 
-     * @Given /^(?:(an|a|the) )member "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)" with (?<data>.*)$/
+     * @Given /^(?:(an|a|the) )"member" "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)" with (?<data>.*)$/
      */
     public function stepCreateMemberWithGroupAndData($id, $groupId, $data)
     {
@@ -310,9 +310,9 @@ class FixtureContext extends BehatContext
     }
 
     /**
-     * Example: Given a group "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
+     * Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
      * 
-     * @Given /^(?:(an|a|the) )group "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
+     * @Given /^(?:(an|a|the) )"group" "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
      */
     public function stepCreateGroupWithPermissions($id, $permissionStr)
     {

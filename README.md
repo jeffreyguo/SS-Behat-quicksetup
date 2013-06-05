@@ -166,23 +166,23 @@ use the inline definition syntax. The following example shows some syntax variat
 
 		Background:
 			# Creates a new page without data. Can be accessed later under this identifier
-			Given a page "Page 1" 
+			Given a "page" "Page 1" 
 			# Uses a custom RegistrationPage type
-			And a registration page "Register" 
+			And an "error page" "Register" 
 			# Creates a page with inline properties 
-			And a page "Page 2" with "URLSegment"="page-1" and "Content"="my page 1" 
+			And a "page" "Page 2" with "URLSegment"="page-1" and "Content"="my page 1" 
 			# Field names can be tabular, and based on DataObject::$field_labels 
-			And the page "Page 3" has the following data
+			And the "page" "Page 3" has the following data
 			 | Content | <blink> |
 			 | My Property | foo |
 			 | My Boolean | bar |
 			# Pages are published by default, can be explicitly unpublished
-			And the page "Page 1" is not published 
+			And the "page" "Page 1" is not published 
 			# Create a hierarchy, and reference a record created earlier
-			And the page "Page 1.1" is a child of a page "Page 1" 
+			And the "page" "Page 1.1" is a child of a "page" "Page 1" 
 			# Specific page type step 
-			And a page "My Redirect" which redirects to a page "Page 1" 
-			And a member "Website User" with "FavouritePage"="=>Page.Page 1"
+			And a "page" "My Redirect" which redirects to a "page" "Page 1" 
+			And a "member" "Website User" with "FavouritePage"="=>Page.Page 1"
 
 		@javascript
 		Scenario: View a page in the tree
