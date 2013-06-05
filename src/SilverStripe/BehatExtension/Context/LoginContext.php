@@ -66,6 +66,9 @@ class LoginContext extends BehatContext
     }
 
     /**
+     * Creates a member in a group with the correct permissions.
+     * Example: Given I am logged in with "ADMIN" permissions
+     * 
      * @Given /^I am logged in with "([^"]*)" permissions$/
      */
     function iAmLoggedInWithPermissions($permCode)
@@ -108,7 +111,7 @@ class LoginContext extends BehatContext
     }
 
     /**
-     * @When /^I log in with "([^"]*)" and "([^"]*)"$/
+     * @When /^I log in with "(?<username>[^"]*)" and "(?<password>[^"]*)"$/
      */
     public function stepILogInWith($email, $password)
     {
