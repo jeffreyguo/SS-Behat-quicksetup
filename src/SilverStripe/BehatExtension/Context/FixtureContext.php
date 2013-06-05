@@ -249,6 +249,14 @@ class FixtureContext extends BehatContext
     }
 
     /**
+     * Accepts YAML fixture definitions similar to the ones used in SilverStripe unit testing.
+     * 
+     * Example: Given there are the following member records:
+     *  member1:
+     *    Email: member1@test.com
+     *  member2:
+     *    Email: member2@test.com
+     * 
      * @Given /^there are the following ([^\s]*) records$/
      */
     public function stepThereAreTheFollowingRecords($dataObject, PyStringNode $string)
@@ -260,6 +268,79 @@ class FixtureContext extends BehatContext
         // TODO Run prepareAsset() for each File and Folder record
         $yamlFixture = new \YamlFixture($yaml);
         $yamlFixture->writeInto($this->getFixtureFactory());
+    }
+
+    /**
+     * Example: Given a member "Admin" belonging to "Admin Group"
+     * 
+     * @Given /^(?:(an|a|the) )member "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)"$/
+     */
+    public function stepCreateMemberWithGroup($id, $groupId)
+    {
+        $group = $this->fixtureFactory->get('Group', $groupId);
+        if(!$group) $group = $this->fixtureFactory->createObject('Group', $groupId);
+        
+        $member = $this->fixtureFactory->createObject('Member', $id);
+        $member->Groups()->add($group);
+    }
+
+    /**
+     * Example: Given a member "Admin" belonging to "Admin Group" with "Email"="test@test.com"
+     * 
+     * @Given /^(?:(an|a|the) )member "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)" with (?<data>.*)$/
+     */
+    public function stepCreateMemberWithGroupAndData($id, $groupId, $data)
+    {
+        $class = 'Member';
+        preg_match_all(
+            '/"(?<key>[^"]+)"\s*=\s*"(?<value>[^"]+)"/', 
+            $data,
+            $matches
+        );
+        $fields = $this->convertFields(
+            $class,
+            array_combine($matches['key'], $matches['value'])
+        );
+        
+        $group = $this->fixtureFactory->get('Group', $groupId);
+        if(!$group) $group = $this->fixtureFactory->createObject('Group', $groupId);
+
+        $member = $this->fixtureFactory->createObject($class, $id, $fields);
+        $member->Groups()->add($group);
+    }
+
+    /**
+     * Example: Given a group "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
+     * 
+     * @Given /^(?:(an|a|the) )group "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
+     */
+    public function stepCreateGroupWithPermissions($id, $permissionStr)
+    {
+        // Convert natural language permissions to codes
+        preg_match_all('/"([^"]+)"/', $permissionStr, $matches);
+        $permissions = $matches[1];
+        $codes = \Permission::get_codes(false);
+
+        $group = $this->fixtureFactory->get('Group', $id);
+        if(!$group) $group = $this->fixtureFactory->createObject('Group', $id);
+        
+        foreach($permissions as $permission) {
+            $found = false;
+            foreach($codes as $code => $details) {
+                if(
+                    $permission == $code
+                    || $permission == $details['name']
+                ) {
+                    \Permission::grant($group->ID, $code);
+                    $found = true;
+                }
+            }
+            if(!$found) {
+                throw new \InvalidArgumentException(sprintf(
+                    'No permission found for "%s"', $permission
+                ));    
+            }
+        }
     }
 
     /**
