@@ -194,19 +194,16 @@ use the inline definition syntax. The following example shows some syntax variat
  * Fixtures are created where you defined them. If you want the fixtures to be created
    before every scenario, define them in [Background](http://docs.behat.org/guides/1.gherkin.html#backgrounds). 
    If you want them to be created only when a particular scenario runs, define them there.
+ * Fixtures are cleared between scenarios. 
  * The basic syntax works for all `DataObject` subclasses, but some specific
    notations like "is not published" requires extensions like `Hierarchy` to be applied to the class
- * Record identifiers, property names and property values need to be quoted
- * Record types shouldn't be quoted, and can use more natural notation ("registration page" instead of "Registration Page") 
- * Fixtures are usually not cleared between scenarios. You can alter this behaviour
-   by tagging the feature or scenario with `@database-defaults` tag.
+ * Record types, identifiers, property names and property values need to be quoted
+ * Record types (class names) can use more natural notation ("registration page" instead of "Registration Page")
+ * Record types support the `$singular_name` notation which is also used to reference the types throughout the CMS.
+   Record property names support the `$field_labels` notation in the same fashion.
  * Property values may also use a `=>` symbol to indicate relationships between records.
    The notation is `=><classname>.<identifier>`. For `has_many` or `many_many` relationships,
    multiple relationships can be separated by a comma.
-
-The module runner empties the database before each scenario tagged with
-`@database-defaults` and populates it with default records (usually a set of
-default pages).
 
 ## Writing Behat Tests
 
