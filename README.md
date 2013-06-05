@@ -140,6 +140,7 @@ To find out all available steps (and the files they are defined in), run the fol
 
 Note: There are more specific step definitions in the SilverStripe `framework` module
 for interacting with the CMS interfaces (see `framework/tests/behat/features/bootstrap`).
+In addition to the dynamic list, a cheatsheet of available steps can be found at the end of this guide.
 
 ## Fixtures
 
@@ -323,6 +324,243 @@ Here's a sample profile for your `behat.yml`:
 	          platform: "Windows 2008"
 	          browser: "firefox"
 	          version: "15"
+
+## Cheatsheet
+
+### Basics
+
+	 Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)"$/
+	    - Checks, that page contains specified text.
+
+	 Then /^(?:|I )should not see "(?P<text>(?:[^"]|\\")*)"$/
+	    - Checks, that page doesn't contain specified text.
+
+	 Then /^(?:|I )should see text matching (?P<pattern>"(?:[^"]|\\")*")$/
+	    - Checks, that page contains text matching specified pattern.
+
+	 Then /^(?:|I )should not see text matching (?P<pattern>"(?:[^"]|\\")*")$/
+	    - Checks, that page doesn't contain text matching specified pattern.
+
+	 Then /^the response should contain "(?P<text>(?:[^"]|\\")*)"$/
+	    - Checks, that HTML response contains specified string.
+
+	 Then /^the response should not contain "(?P<text>(?:[^"]|\\")*)"$/
+	    - Checks, that HTML response doesn't contain specified string.
+
+	 Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)" in the "(?P<element>[^"]*)" element$/
+	    - Checks, that element with specified CSS contains specified text.
+
+	 Then /^(?:|I )should not see "(?P<text>(?:[^"]|\\")*)" in the "(?P<element>[^"]*)" element$/
+	    - Checks, that element with specified CSS doesn't contain specified text.
+
+	 Then /^the "(?P<element>[^"]*)" element should contain "(?P<value>(?:[^"]|\\")*)"$/
+	    - Checks, that element with specified CSS contains specified HTML.
+
+	 Then /^(?:|I )should see an? "(?P<element>[^"]*)" element$/
+	    - Checks, that element with specified CSS exists on page.
+
+	 Then /^(?:|I )should not see an? "(?P<element>[^"]*)" element$/
+	    - Checks, that element with specified CSS doesn't exist on page.
+
+	 Then /^(?:|I )should be on "(?P<page>[^"]+)"$/
+	    - Checks, that current page PATH is equal to specified.
+
+	 Then /^the (?i)url(?-i) should match (?P<pattern>"([^"]|\\")*")$/
+	    - Checks, that current page PATH matches regular expression.
+
+	 Then /^the response status code should be (?P<code>\d+)$/
+	    - Checks, that current page response status is equal to specified.
+
+	 Then /^the response status code should not be (?P<code>\d+)$/
+	    - Checks, that current page response status is not equal to specified.
+
+	 Then /^(?:|I )should see (?P<num>\d+) "(?P<element>[^"]*)" elements?$/
+	    - Checks, that (?P<num>\d+) CSS elements exist on the page
+
+	 Then /^print last response$/
+	    - Prints last response to console.
+
+	 Then /^show last response$/
+	    - Opens last response content in browser.
+
+	 Then /^I should be redirected to "([^"]+)"/
+
+	Given /^I wait (?:for )?([\d\.]+) second(?:s?)$/
+
+### Navigation
+
+	Given /^(?:|I )am on homepage$/
+	    - Opens homepage.
+
+	 When /^(?:|I )go to homepage$/
+	    - Opens homepage.
+
+	Given /^(?:|I )am on "(?P<page>[^"]+)"$/
+	    - Opens specified page.
+
+	 When /^(?:|I )go to "(?P<page>[^"]+)"$/
+	    - Opens specified page.
+
+	 When /^(?:|I )reload the page$/
+	    - Reloads current page.
+
+	 When /^(?:|I )move backward one page$/
+	    - Moves backward one page in history.
+
+	 When /^(?:|I )move forward one page$/
+	    - Moves forward one page in history
+
+### Forms
+
+	When /^(?:|I )press "(?P<button>(?:[^"]|\\")*)"$/
+	    - Presses button with specified id|name|title|alt|value.
+
+	 When /^(?:|I )follow "(?P<link>(?:[^"]|\\")*)"$/
+	    - Clicks link with specified id|title|alt|text.
+
+	 When /^(?:|I )fill in "(?P<field>(?:[^"]|\\")*)" with "(?P<value>(?:[^"]|\\")*)"$/
+	    - Fills in form field with specified id|name|label|value.
+
+	 When /^(?:|I )fill in "(?P<value>(?:[^"]|\\")*)" for "(?P<field>(?:[^"]|\\")*)"$/
+	    - Fills in form field with specified id|name|label|value.
+
+	 When /^(?:|I )fill in the following:$/
+	    - Fills in form fields with provided table.
+
+	 When /^(?:|I )select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)"$/
+	    - Selects option in select field with specified id|name|label|value.
+
+	 When /^(?:|I )additionally select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)"$/
+	    - Selects additional option in select field with specified id|name|label|value.
+
+	 When /^(?:|I )check "(?P<option>(?:[^"]|\\")*)"$/
+	    - Checks checkbox with specified id|name|label|value.
+
+	 When /^(?:|I )uncheck "(?P<option>(?:[^"]|\\")*)"$/
+	    - Unchecks checkbox with specified id|name|label|value.
+
+	 When /^(?:|I )attach the file "(?P[^"]*)" to "(?P<field>(?:[^"]|\\")*)"$/
+	    - Attaches file to field with specified id|name|label|value.
+
+	 Then /^the "(?P<field>(?:[^"]|\\")*)" field should contain "(?P<value>(?:[^"]|\\")*)"$/
+	    - Checks, that form field with specified id|name|label|value has specified value.
+
+	 Then /^the "(?P<field>(?:[^"]|\\")*)" field should not contain "(?P<value>(?:[^"]|\\")*)"$/
+	    - Checks, that form field with specified id|name|label|value doesn't have specified value.
+
+	 Then /^the "(?P<checkbox>(?:[^"]|\\")*)" checkbox should be checked$/
+	    - Checks, that checkbox with specified in|name|label|value is checked.
+
+	 Then /^the "(?P<checkbox>(?:[^"]|\\")*)" checkbox should not be checked$/
+	    - Checks, that checkbox with specified in|name|label|value is unchecked.
+
+	Given /^(?:|I )attach the file "(?P[^"]*)" to "(?P<field>(?:[^"]|\\")*)" with HTML5$/
+
+	When /^I fill in the "(?P<field>([^"]*))" HTML field with "(?P<value>([^"]*))"$/
+
+	 When /^I fill in "(?P<value>([^"]*))" for the "(?P<field>([^"]*))" HTML field$/
+
+	 When /^I append "(?P<value>([^"]*))" to the "(?P<field>([^"]*))" HTML field$/
+
+	 Then /^the "(?P<field>([^"]*))" HTML field should contain "(?P<value>([^"]*))"$/
+
+	When /^(?:|I )fill in "(?P<field>(?:[^"]|\\")*)" dropdown with "(?P<value>(?:[^"]|\\")*)"$/
+	  - Workaround for chosen.js dropdowns or tree dropdowns which hide the original dropdown field.
+
+	When /^(?:|I )fill in "(?P<value>(?:[^"]|\\")*)" for "(?P<field>(?:[^"]|\\")*)" dropdown$/
+	  - Workaround for chosen.js dropdowns or tree dropdowns which hide the original dropdown field.
+
+
+
+### Interactions
+
+	Given /^I press the "([^"]*)" button$/
+
+	Given /^I click "([^"]*)" in the "([^"]*)" element$/
+
+	Given /^I type "([^"]*)" into the dialog$/
+
+	Given /^I confirm the dialog$/
+
+	Given /^I dismiss the dialog$/
+
+### Login
+
+	Given /^I am logged in with "([^"]*)" permissions$/
+	    - Creates a member in a group with the correct permissions.
+
+	Given /^I am not logged in$/
+
+	 When /^I log in with "(?<username>[^"]*)" and "(?<password>[^"]*)"$/
+
+	Given /^I should see a log-in form$/
+
+	 Then /^I will see a bad log-in message$/
+
+### CMS UI
+
+	 Then /^I should see an edit page form$/
+	 
+	 Then /^I should see the CMS$/
+
+	 Then /^I should see a "([^"]*)" notice$/
+
+	 Then /^I should see a "([^"]*)" message$/
+
+	Given /^I should see a "([^"]*)" button in CMS Content Toolbar$/
+
+	 When /^I should see "([^"]*)" in CMS Tree$/
+
+	 When /^I should not see "([^"]*)" in CMS Tree$/
+
+	 When /^I expand the "([^"]*)" CMS Panel$/
+
+	 When /^I click the "([^"]*)" CMS tab$/
+
+	 Then /^the "([^"]*)" table should contain "([^"]*)"$/
+
+	 Then /^the "([^"]*)" table should not contain "([^"]*)"$/
+
+	Given /^I click on "([^"]*)" in the "([^"]*)" table$/
+
+	 Then /^I can see the preview panel$/
+
+	Given /^the preview contains "([^"]*)"$/
+
+	Given /^the preview does not contain "([^"]*)"$/
+
+
+### Fixtures
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" (:?which )?redirects to (?:(an|a|the) )"(?<targetType>[^"]+)" "(?<targetId>[^"]+)"$/
+	    - Find or create a redirector page and link to another existing page.
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)"$/
+	    - Example: Given a "page" "Page 1"
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" with (?<data>.*)$/
+	    - Example: Given a "page" "Page 1" with "URL"="page-1" and "Content"="my page 1"
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" has the following data$/
+	    - Example: And the "page" "Page 2" has the following data
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is a (?<relation>[^\s]*) of (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"/
+	    - Example: Given the "page" "Page 1.1" is a child of the "page" "Page1"
+
+	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is (?<state>[^"]*)$/
+	    - Example: Given the "page" "Page 1" is not published
+
+	Given /^there are the following ([^\s]*) records$/
+	    - Accepts YAML fixture definitions similar to the ones used in SilverStripe unit testing.
+
+	Given /^(?:(an|a|the) )"member" "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)"$/
+	    - Example: Given a "member" "Admin" belonging to "Admin Group"
+
+	Given /^(?:(an|a|the) )"member" "(?<id>[^"]+)" belonging to "(?<groupId>[^"]+)" with (?<data>.*)$/
+
+	Given /^(?:(an|a|the) )"group" "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
+	    - Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
+	    # SilverStripe\Cms\Test\Behaviour\FixtureContext::stepCreateGroupWithPermissions()
 
 ## Useful resources
 
