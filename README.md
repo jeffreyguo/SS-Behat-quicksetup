@@ -324,6 +324,10 @@ Here's a sample profile for your `behat.yml`:
 
 ## Cheatsheet
 
+This is a manually categorized list of available commands
+when both the `cms` and `framework` modules are installed.
+It's based on the `vendor/bin/behat -di @cms` output.
+
 ### Basics
 
 	 Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)"$/
@@ -459,7 +463,7 @@ Here's a sample profile for your `behat.yml`:
 
 	 When /^I append "(?P<value>([^"]*))" to the "(?P<field>([^"]*))" HTML field$/
 
-	 Then /^the "(?P<field>([^"]*))" HTML field should contain "(?P<value>([^"]*))"$/
+	 Then /^the "(?P<locator>([^"]*))" HTML field should contain "(?P<html>([^"]*))"$/
 
 	When /^(?:|I )fill in "(?P<field>(?:[^"]|\\")*)" dropdown with "(?P<value>(?:[^"]|\\")*)"$/
 	  - Workaround for chosen.js dropdowns or tree dropdowns which hide the original dropdown field.
