@@ -267,10 +267,13 @@ JS;
     public function stepIPressTheButton($button)
     {
         $page = $this->getSession()->getPage();
-
-        $buttonElement = $page->find('named', array('link_or_button', "'$button'"));
-        assertNotNull($buttonElement, sprintf('%s button not found', $button));
-        $buttonElement->click();
+        $els = $page->findAll('named', array('link_or_button', "'$button'"));
+        $matchedEl = null;
+        foreach($els as $el) {
+            if($el->isVisible()) $matchedEl = $el;
+        }
+        assertNotNull($matchedEl, sprintf('%s button not found', $button));
+        $matchedEl->click();
     }
 
     /**
