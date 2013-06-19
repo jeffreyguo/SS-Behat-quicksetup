@@ -47,7 +47,7 @@ Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 Now get the latest Selenium2 server (requires Java):
 
-	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.31.0.jar
+	wget http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar
 
 We need to generate a token so the browser and commandline calls can interact with a "shared secret":
 
