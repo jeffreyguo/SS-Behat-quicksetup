@@ -24,7 +24,8 @@
         "behat/mink-extension": "1.0@stable",
         "behat/mink-selenium2-driver": "*",
         "behat/mink-goutte-driver": "*",
-        "silverstripe/testsession": "*"
+        "silverstripe/testsession": "*",
+        "silverstripe/framework": "3.0.*"
     },
 
     "autoload": {
