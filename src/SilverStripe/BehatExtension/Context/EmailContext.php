@@ -55,7 +55,7 @@ class EmailContext extends BehatContext
         // to ensure its available both in CLI execution and the tested browser session
         $this->mailer = new \SilverStripe\BehatExtension\Utility\TestMailer();
         \Email::set_mailer($this->mailer);
-        \Email::send_all_emails_to(null);
+        \Config::inst()->update("Email","send_all_emails_to", null);
     }
 
     /**
