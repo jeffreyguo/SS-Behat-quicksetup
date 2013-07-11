@@ -130,7 +130,7 @@ class FixtureContext extends BehatContext
     public function stepCreateRecord($type, $id)
     {
         $class = $this->convertTypeToClass($type);
-        if(is_a($class, 'File', true)) {
+        if($class == 'File' || is_subclass_of($class, 'File')) {
             $fields = $this->prepareAsset($class, $id);
         } else {
             $fields = array();
@@ -155,7 +155,7 @@ class FixtureContext extends BehatContext
             $class,
             array_combine($matches['key'], $matches['value'])
         );
-        if(is_a($class, 'File', true)) {
+        if($class == 'File' || is_subclass_of($class, 'File')) {
             $fields = $this->prepareAsset($class, $id, $fields);
         }
         $this->fixtureFactory->createObject($class, $id, $fields);
@@ -174,7 +174,7 @@ class FixtureContext extends BehatContext
         $class = $this->convertTypeToClass($type);
         // TODO Support more than one record
         $fields = $this->convertFields($class, $fieldsTable->getRowsHash());
-        if(is_a($class, 'File', true)) {
+        if($class == 'File' || is_subclass_of($class, 'File')) {
             $fields = $this->prepareAsset($class, $id, $fields);
         }
         $this->fixtureFactory->createObject($class, $id, $fields);
@@ -374,7 +374,7 @@ class FixtureContext extends BehatContext
         $sourcePath = $this->joinPaths($this->getFilesPath(), basename($relativeTargetPath));
         
         // Create file or folder on filesystem
-        if(is_a($class, 'Folder', true)) {
+        if($class == 'Folder' || is_subclass_of($class, 'Folder')) {
             $parent = \Folder::find_or_make($relativeTargetPath);
         } else {
             if(!file_exists($sourcePath)) {
@@ -410,7 +410,7 @@ class FixtureContext extends BehatContext
 
         // Try direct mapping
         $class = str_replace(' ', '', ucfirst($type));
-        if(class_exists($class) || !is_a($class, 'DataObject', true)) {
+        if(class_exists($class) || !($class == 'DataObject' || is_subclass_of($class, 'DataObject'))) {
             return $class;
         }
 
