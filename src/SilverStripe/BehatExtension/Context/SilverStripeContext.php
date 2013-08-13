@@ -147,6 +147,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         );
         $url .= '?' . http_build_query($params);
 
+        file_put_contents('php://stdout', 'Starting session: ' . $url . PHP_EOL);
         $this->getSession()->visit($url);
 
         $page = $this->getSession()->getPage();
