@@ -277,6 +277,17 @@ JS;
     }
 
     /**
+     * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
+     * 
+     * @Given /^I press the "([^"]*)" button, confirming the dialog$/
+     */
+    public function stepIPressTheButtonConfirmingTheDialog($button)
+    {
+        $this->stepIPressTheButton($button);
+        $this->iConfirmTheDialog();
+    }
+
+    /**
      * @Given /^I click "([^"]*)" in the "([^"]*)" element$/
      */
     public function iClickInTheElement($text, $selector)
