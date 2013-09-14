@@ -23,6 +23,7 @@
         "behat/mink": "*@stable",
         "behat/mink-extension": "*@stable",
         "behat/mink-selenium2-driver": "*",
+        "symfony/dom-crawler": "*@stable",
         "behat/mink-goutte-driver": "*",
         "silverstripe/testsession": "*",
         "silverstripe/framework": "~3.1"
