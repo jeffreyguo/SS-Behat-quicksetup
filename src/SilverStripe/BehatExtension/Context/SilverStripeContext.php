@@ -10,7 +10,8 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Driver\GoutteDriver,
     Behat\Mink\Driver\Selenium2Driver,
-    Behat\Mink\Exception\UnsupportedDriverActionException;
+    Behat\Mink\Exception\UnsupportedDriverActionException,
+    Behat\Mink\Exception\ElementNotFoundException;
 
 use SilverStripe\BehatExtension\Context\SilverStripeAwareContextInterface;
 
@@ -276,6 +277,28 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         }
 
         return new Step\Given($step);
+    }
+
+    /**
+     * Fills in form field with specified id|name|label|value.
+     * Overwritten to select the first *visible* element, see https://github.com/Behat/Mink/issues/311
+     */
+    public function fillField($field, $value)
+    {
+        $value = $this->fixStepArgument($value);
+        $fields = $this->getSession()->getPage()->findAll('named', array(
+            'field', $this->getSession()->getSelectorsHandler()->xpathLiteral($field)
+        ));
+        if($fields) foreach($fields as $field) {
+            if($field->isVisible()) {
+                $field->setValue($value);
+                return;        
+            }
+        }
+        
+        throw new ElementNotFoundException(
+            $this->getSession(), 'form field', 'id|name|label|value', $field
+        );
     }
 
 }
