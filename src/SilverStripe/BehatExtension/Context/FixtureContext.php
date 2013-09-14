@@ -137,6 +137,21 @@ class FixtureContext extends BehatContext
         }
         $this->fixtureFactory->createObject($class, $id, $fields);
     }
+
+    /**
+     * Example: Given a "page" "Page 1" has the "content" "My content" 
+     * 
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" has (?:(an|a|the) )"(?<field>.*)" "(?<value>.*)"$/
+     */
+    public function stepCreateRecordHasField($type, $id, $field, $value)
+    {
+        $class = $this->convertTypeToClass($type);
+        $fields = $this->convertFields(
+            $class,
+            array($field => $value)
+        );
+        $this->fixtureFactory->createObject($class, $id, $fields);
+    }
    
     /**
      * Example: Given a "page" "Page 1" with "URL"="page-1" and "Content"="my page 1" 
