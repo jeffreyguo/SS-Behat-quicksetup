@@ -70,7 +70,7 @@ in your project root, or set is as an environment variable in your terminal sess
 
 You can run the server locally in a separate Terminal session:
 
-    java -jar selenium-server-standalone-2.31.0.jar
+    java -jar selenium-server-standalone-2.33.0.jar
 
 ### Running the Tests
 
