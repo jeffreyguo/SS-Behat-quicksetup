@@ -254,6 +254,20 @@ JS;
     }
 
     /**
+     * @Given /^the page can't be found/
+     */
+    public function stepPageCantBeFound() 
+    {
+        $page = $this->getSession()->getPage();
+        assertTrue(
+            // Content from ErrorPage default record
+            $page->hasContent('Page not found')
+            // Generic ModelAsController message
+            || $page->hasContent('The requested page could not be found')
+        );
+    }
+
+    /**
      * @Given /^I wait (?:for )?([\d\.]+) second(?:s?)$/
      */
     public function stepIWaitFor($secs)
