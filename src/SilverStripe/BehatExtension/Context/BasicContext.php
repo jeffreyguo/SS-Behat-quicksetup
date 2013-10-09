@@ -211,19 +211,16 @@ JS;
         $path = $this->getMainContext()->getScreenshotPath();
         if(!$path) return; // quit silently when path is not set
 
+        \Filesystem::makeFolder($path);
         $path = realpath($path);
-        if (!$path) {
-            \Filesystem::makeFolder($this->context['screenshot_path']);
-            $path = realpath($this->context['screenshot_path']);
-        }
         
         if (!file_exists($path)) {
-            file_put_contents('php://stderr', sprintf('"%s" is not valid directory and failed to create it' . PHP_EOL, $this->context['screenshot_path']));
+            file_put_contents('php://stderr', sprintf('"%s" is not valid directory and failed to create it' . PHP_EOL, $path));
             return;
         }
 
         if (file_exists($path) && !is_dir($path)) {
-            file_put_contents('php://stderr', sprintf('"%s" is not valid directory' . PHP_EOL, $this->context['screenshot_path']));
+            file_put_contents('php://stderr', sprintf('"%s" is not valid directory' . PHP_EOL, $path));
             return;
         }
         if (file_exists($path) && !is_writable($path)) {

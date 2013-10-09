@@ -109,8 +109,8 @@ Optional `ajax_steps` is used to match steps defined there so they can be "caugh
 [special AJAX handlers](http://blog.scur.pl/2012/06/ajax-callback-support-behat-mink/) that tweak the delays. You can either use a pipe delimited string or a list of substrings that match step definition.
  * `ajax_timeout`: Milliseconds after which an Ajax request is regarded as timed out, 
  and the script continues with its assertions to avoid a deadlock (Default: 5000).
- * `screenshot_path`: Used to store screenshot of a last known state
-of a failed step. It defaults to whatever is returned by PHP's `sys_get_temp_dir()`.
+ * `screenshot_path`: Absolute path used to store screenshot of a last known state
+of a failed step. 
 Screenshot names within that directory consist of feature file filename and line
 number that failed.
 
@@ -120,7 +120,8 @@ Example: behat.yml
 	  context:
 	    class: SilverStripe\MyModule\Test\Behaviour\FeatureContext
 	  extensions:
-	    SilverStripe\BehatExtension\Extension: ~
+	    SilverStripe\BehatExtension\Extension:
+	      screenshot_path: %behat.paths.base%/artifacts/screenshots
 	    SilverStripe\BehatExtension\MinkExtension:
 	      # Adjust this to your local environment
 	      base_url:  http://localhost/
