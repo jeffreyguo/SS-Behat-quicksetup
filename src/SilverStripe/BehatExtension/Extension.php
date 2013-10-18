@@ -65,7 +65,9 @@ class Extension implements ExtensionInterface
      */
     public function getCompilerPasses()
     {
-        return array();
+        return array(
+            new Compiler\CoreInitializationPass()
+        );
     }
 
     /**

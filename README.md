@@ -131,7 +131,34 @@ Example: behat.yml
 	      selenium2:
 	        browser: firefox
 
-### Available Step Definitions
+## Module Initialization
+
+You're all set to start writing features now! Simply create `*.feature` files
+anywhere in your codebase, and run them as shown above. We recommend the folder
+structure of `tests/behat/features`, since its consistent with the common location 
+of SilverStripe's PHPUnit tests.
+
+Behat tests rely on a `FeatureContext` class which contains step definitions,
+and can be composed of other subcontexts, e.g. for SilverStripe-specific CMS steps 
+(details on [behat.org](http://docs.behat.org/quick_intro.html#the-context-class-featurecontext)).
+Since step definitions are quite domain specific, its likely that you'll need your own context.
+The SilverStripe Behat extension provides an initializer script which generates a template
+in the recommended folder structure:
+
+	vendor/bin/behat --init @mymodule
+
+You'll now have a class located in `mymodule/tests/behat/features/bootstrap/Context/FeatureContext.php`,
+as well as a folder for your features with `mymodule/tests/behat/features`.
+The class is namespaced, and defaults to the module name. You can customize this:
+
+	vendor/bin/behat --namespace='MyVendor\MyModule' --init @mymodule
+
+In this case, you'll need to pass in the namespace when running the features as well
+(at least until SilverStripe modules allow declaring a namespace).
+
+	vendor/bin/behat --namespace='MyVendor\MyModule' @mymodule
+
+## Available Step Definitions
 
 The extension comes with several `BehatContext` subclasses come with some extra step defintions.
 Some of them are just helpful in general website testing, other's are specific to SilverStripe. 

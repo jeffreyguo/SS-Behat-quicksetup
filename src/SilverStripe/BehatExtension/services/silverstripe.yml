@@ -2,7 +2,8 @@ parameters:
   behat.silverstripe_extension.context.initializer.class: SilverStripe\BehatExtension\Context\Initializer\SilverStripeAwareInitializer
   behat.silverstripe_extension.context.class_guesser.class: SilverStripe\BehatExtension\Context\ClassGuesser\ModuleContextClassGuesser
   behat.console.processor.locator.class: SilverStripe\BehatExtension\Console\Processor\LocatorProcessor
-  behat.silverstripe_extension.context.class_suffix: Test\Behaviour\FeatureContext
+  behat.console.processor.init.class: SilverStripe\BehatExtension\Console\Processor\InitProcessor
+  behat.silverstripe_extension.context.namespace_suffix: Test\Behaviour
   behat.silverstripe_extension.framework_path: framework
   behat.silverstripe_extension.ajax_steps: ~
   behat.silverstripe_extension.ajax_timeout: ~
@@ -27,6 +28,7 @@ services:
   behat.silverstripe_extension.context.class_guesser:
     class: %behat.silverstripe_extension.context.class_guesser.class%
     arguments:
-      - %behat.silverstripe_extension.context.class_suffix%
+      - %behat.silverstripe_extension.context.namespace_suffix%
+      - %behat.context.class%
     tags:
       - { name: behat.context.class_guesser, priority: 10 }

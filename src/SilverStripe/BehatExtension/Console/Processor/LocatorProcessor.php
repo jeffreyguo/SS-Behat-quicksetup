@@ -53,13 +53,9 @@ class LocatorProcessor extends BaseProcessor
      */
     public function process(InputInterface $input, OutputInterface $output)
     {
-        // Bootstrap SS so we can use module listing
-        $frameworkPath = $this->container->getParameter('behat.silverstripe_extension.framework_path');
-        $_GET['flush'] = 1;
-        require_once $frameworkPath . '/core/Core.php';
-        unset($_GET['flush']);
-
         $featuresPath = $input->getArgument('features');
+        
+        // Can't use 'behat.paths.base' since that's locked at this point to base folder (not module)
         $pathSuffix   = $this->container->getParameter('behat.silverstripe_extension.context.path_suffix');
 
         $currentModuleName = null;
@@ -84,23 +80,28 @@ class LocatorProcessor extends BaseProcessor
             foreach ($modules as $moduleName => $modulePath) {
                 if (false !== strpos($path, realpath($modulePath))) {
                     $currentModuleName = $moduleName;
+                    $currentModulePath = realpath($modulePath);
                     break;
                 }
             }
+            $featuresPath = $currentModulePath.DIRECTORY_SEPARATOR.$pathSuffix.DIRECTORY_SEPARATOR.$featuresPath;
         // if module is configured for profile and feature provided
         } elseif ($currentModuleName && $featuresPath) {
             $currentModulePath = $modules[$currentModuleName];
             $featuresPath = $currentModulePath.DIRECTORY_SEPARATOR.$pathSuffix.DIRECTORY_SEPARATOR.$featuresPath;
         }
 
+        if($input->getOption('namespace')) {
+            $namespace = $input->getOption('namespace');
+        } else {
+            $namespace = ucfirst($currentModuleName);
+        }
+
         if ($currentModuleName) {
             $this->container
                 ->get('behat.silverstripe_extension.context.class_guesser')
-                ->setModuleNamespace(ucfirst($currentModuleName));
-        }
-
-        if (!$featuresPath) {
-            $featuresPath = $this->container->getParameter('behat.paths.features');
+                // TODO Improve once modules can declare their own namespaces consistently
+                ->setNamespaceBase($namespace);
         }
 
         $this->container

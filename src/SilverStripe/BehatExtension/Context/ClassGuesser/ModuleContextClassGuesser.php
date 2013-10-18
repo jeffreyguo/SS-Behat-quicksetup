@@ -10,17 +10,19 @@ use Behat\Behat\Context\ClassGuesser\ClassGuesserInterface;
  */
 class ModuleContextClassGuesser implements ClassGuesserInterface
 {
-    private $classSuffix;
-    private $namespace;
+    private $namespaceSuffix;
+    private $namespaceBase;
+    private $contextClass;
 
     /**
      * Initializes guesser.
      *
-     * @param string $classSuffix
+     * @param string $namespaceSuffix
      */
-    public function __construct($classSuffix = 'Test\\Behaviour\\FeatureContext')
+    public function __construct($namespaceSuffix, $contextClass)
     {
-        $this->classSuffix = $classSuffix;
+        $this->namespaceSuffix = $namespaceSuffix;
+        $this->contextClass = $contextClass;
     }
 
     /**
@@ -28,9 +30,10 @@ class ModuleContextClassGuesser implements ClassGuesserInterface
      *
      * @param string $namespace
      */
-    public function setModuleNamespace($namespace)
+    public function setNamespaceBase($namespaceBase)
     {
-        $this->namespace = $namespace;
+        $this->namespaceBase = $namespaceBase;
+        return $this;
     }
 
     /**
@@ -41,12 +44,12 @@ class ModuleContextClassGuesser implements ClassGuesserInterface
     public function guess()
     {
         // Try fully qualified namespace
-        if (class_exists($class = $this->namespace.'\\'.$this->classSuffix)) {
+        if (class_exists($class = $this->namespaceBase.'\\'.$this->namespaceSuffix.'\\'.$this->contextClass)) {
             return $class;
-        }
+        } 
         // Fall back to namespace with SilverStripe prefix
         // TODO Remove once core has namespace capabilities for modules
-        if (class_exists($class = 'SilverStripe\\'.$this->namespace.'\\'.$this->classSuffix)) {
+        if (class_exists($class = 'SilverStripe\\'.$this->namespaceBase.'\\'.$this->namespaceSuffix.'\\'.$this->contextClass)) {
             return $class;
         }
     }
