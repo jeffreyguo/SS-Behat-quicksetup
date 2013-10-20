@@ -43,7 +43,7 @@ Skip this step if adding the module to an existing project.
 Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 	cd my-test-project
-	composer require silverstripe/behat-extension:*
+	composer require "silverstripe/behat-extension:*"
 
 Now get the latest Selenium2 server (requires Java):
 
