@@ -43,18 +43,20 @@ In this spirit, we'll start "from the outside in", and
 write our features before implementing them. A first draft might look
 something like the following:
 
-	Feature: Report Abuse
+```cucumber
+Feature: Report Abuse
 
-		As a website user
-		I want to report inappropriate content
-		In order to maintain high quality content
+	As a website user
+	I want to report inappropriate content
+	In order to maintain high quality content
 
-		Scenario: Report abuse through preselected options
-			Given I go to a page
-			Then I should see "Report this page"
-			When I select "Outdated"
-			And I press the button
-			Then I should see "Thanks for your submission"
+	Scenario: Report abuse through preselected options
+		Given I go to a page
+		Then I should see "Report this page"
+		When I select "Outdated"
+		And I press the button
+		Then I should see "Thanks for your submission"
+```
 
 The "syntax" conventions used here are called the 
 ["Gherkin" language](https://github.com/cucumber/cucumber/wiki/Gherkin).
@@ -76,12 +78,14 @@ so our next move is to review what's already available:
 The step definitions include form interactions, so we only
 need to adjust our steps a bit to make them executable.
 
-	Scenario: Report abuse through preselected options
-		Given I go to a page
-		Then I should see "Report this page"
-		When I select "Outdated" from "Reason"
-		And I press "Submit Report"
-		Then I should see "Thanks for your submission"
+```cucumber
+Scenario: Report abuse through preselected options
+	Given I go to a page
+	Then I should see "Report this page"
+	When I select "Outdated" from "Reason"
+	And I press "Submit Report"
+	Then I should see "Thanks for your submission"
+```
 
 This type of refactoring is quite common, since step definitions
 are ideally abstracted and shared between features. In this case,
@@ -97,10 +101,12 @@ Each test run starts with a clean database, meaning there's no pages
 to open in a browser either. Let's fix this by defining one,
 and asking Behat to open it:
 
-	Scenario: Report abuse through preselected options
-		Given a "page" "My Page"
-		Given I go to the "page" "My Page"
-		...
+```cucumber
+Scenario: Report abuse through preselected options
+	Given a "page" "My Page"
+	Given I go to the "page" "My Page"
+	...
+```
 
 ## SilverStripe Code
 
@@ -110,69 +116,69 @@ but overall we're creating a new `PageAbuseReport` class with
 a `has_one` relationship to `Page`. This new object gets written
 by a form generated through `Page_Controller->ReportForm()`.
 
-	```php
-	// mysite/code/Page.php
-	class Page extends SiteTree {
-		private static $has_many = array('PageAbuseReports' => 'PageAbuseReport');
+```php
+// mysite/code/Page.php
+class Page extends SiteTree {
+	private static $has_many = array('PageAbuseReports' => 'PageAbuseReport');
+}
+class Page_Controller extends ContentController {
+
+	// ...
+
+	private static $allowed_actions = array('ReportForm');
+
+	public function ReportForm() {
+		return new Form(
+			$this,
+			'ReportForm',
+			new FieldList(
+				new HeaderField('ReportTitle', 'Report this page', 3),
+				(new DropdownField('Reason', 'Reason'))
+					->setSource(array(
+						'Inappropriate' => 'Inappropriate',
+						'Outdated' => 'Outdated',
+						'Misleading' => 'Misleading',
+					))
+			),
+			new FieldList(
+				new FormAction('doReport', 'Submit Report')
+			)
+		);
 	}
-	class Page_Controller extends ContentController {
 
-		// ...
+	public function doReport($data, $form) {
+		(new PageAbuseReport(array(
+			'Reason' => $data['Reason'],
+			'PageID' => $this->ID,
+		)))->write();
+		$form->sessionMessage('Thanks for your submission!', 'good');
 
-		private static $allowed_actions = array('ReportForm');
-
-		public function ReportForm() {
-			return new Form(
-				$this,
-				'ReportForm',
-				new FieldList(
-					new HeaderField('ReportTitle', 'Report this page', 3),
-					(new DropdownField('Reason', 'Reason'))
-						->setSource(array(
-							'Inappropriate' => 'Inappropriate',
-							'Outdated' => 'Outdated',
-							'Misleading' => 'Misleading',
-						))
-				),
-				new FieldList(
-					new FormAction('doReport', 'Submit Report')
-				)
-			);
-		}
-
-		public function doReport($data, $form) {
-			(new PageAbuseReport(array(
-				'Reason' => $data['Reason'],
-				'PageID' => $this->ID,
-			)))->write();
-			$form->sessionMessage('Thanks for your submission!', 'good');
-
-			return $this->redirectBack();
-		}
-
+		return $this->redirectBack();
 	}
-	```
 
-	```php
-	// mysite/code/PageAbuseReport.php
-	class PageAbuseReport extends DataObject {
-		private static $db = array('Reason' => 'Text');
-		private static $has_one = array('Page' => 'Page');
-	}
-	```
+}
+```
+
+```php
+// mysite/code/PageAbuseReport.php
+class PageAbuseReport extends DataObject {
+	private static $db = array('Reason' => 'Text');
+	private static $has_one = array('Page' => 'Page');
+}
+```
 
 Now we just need to render the form on every page,
 by placing it at the bottom of `themes/simple/templates/Layout/Page.ss`:
 
-	```html
-	<div class="content-container unit size3of4 lastUnit">
-		<article>
-			<h1>$Title</h1>
-			<div class="content">$Content</div>
-		</article>
-		$ReportForm
-	</div>
-	```
+```html
+<div class="content-container unit size3of4 lastUnit">
+	<article>
+		<h1>$Title</h1>
+		<div class="content">$Content</div>
+	</article>
+	$ReportForm
+</div>
+```
 
 You can try out this feature in your browser without Behat.
 Don't forget to rebuild the database (`dev/build`) and flush the
@@ -193,23 +199,25 @@ and a clean slate on each run.
 
 At the end of our `report-abuse.feature` file, add the following:
 
-	Scenario: Report abuse through preselected options
-		...
-		Then I should see "Thanks for your submission"
-		And there should be an abuse report for "My Page" with reason "Outdated"
+```cucumber
+Scenario: Report abuse through preselected options
+	...
+	Then I should see "Thanks for your submission"
+	And there should be an abuse report for "My Page" with reason "Outdated"
+```
 
 Running behat again will produce an undefined step, with a helpful PHP boilerplate
 to get us started:
 
-	```php
-	/**
-     * @Given /^there should be an abuse report for "([^"]*)" with reason "([^"]*)"$/
-     */
-    public function thereShouldBeAnAbuseReportForWithReason($arg1, $arg2)
-    {
-        throw new PendingException();
-    }
-	```
+```php
+/**
+ * @Given /^there should be an abuse report for "([^"]*)" with reason "([^"]*)"$/
+ */
+public function thereShouldBeAnAbuseReportForWithReason($arg1, $arg2)
+{
+    throw new PendingException();
+}
+```
 
 This code can be placed in a "context" class which was created during our
 module initialization. Its located in 
@@ -231,16 +239,16 @@ so if you have done unit testing before the `assertEquals()` call might
 look familiar. Either way, it will throw an exception if there's
 not exactly one record found in the relation, and hence fail that step for Behat.
 
-	```php
-	/**
-     * @Given /^there should be an abuse report for "([^"]*)" with reason "([^"]*)"$/
-     */
-    public function thereShouldBeAnAbuseReportForWithReason($id, $reason)
-    {
-        $page = $this->fixtureFactory->get('Page', $id);
-        assertEquals(1, $page->PageAbuseReports()->filter('Reason', $reason)->Count());
-    }
-	```
+```php
+/**
+ * @Given /^there should be an abuse report for "([^"]*)" with reason "([^"]*)"$/
+ */
+public function thereShouldBeAnAbuseReportForWithReason($id, $reason)
+{
+    $page = $this->fixtureFactory->get('Page', $id);
+    assertEquals(1, $page->PageAbuseReports()->filter('Reason', $reason)->Count());
+}
+```
 
 Re-run the Behat test one last time, and you should see it pass with
 a more solid feature definition. Success! If you want to get your hands dirty,
