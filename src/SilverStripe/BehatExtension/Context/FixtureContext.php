@@ -359,6 +359,29 @@ class FixtureContext extends BehatContext
     }
 
     /**
+     * Navigates to a record based on its identifier set during fixture creation,
+     * using its RelativeLink() method to map the record to a URL.
+     * Example: Given I go to the "page" "My Page"
+     * 
+     * @Given /^I go to (?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)"/
+     */
+    public function stepGoToNamedRecord($type, $id) {
+        $class = $this->convertTypeToClass($type);
+        $record = $this->fixtureFactory->get($class, $id);
+        if(!$record) {
+            throw new \InvalidArgumentException(sprintf(
+                'Cannot resolve reference "%s", no matching fixture found',
+                $id
+            ));
+        }
+        if(!$record->hasMethod('RelativeLink')) {
+            throw new \InvalidArgumentException('URL for record cannot be determined, missing RelativeLink() method');
+        }
+
+        $this->getSession()->visit($this->getMainContext()->locatePath($record->RelativeLink()));
+    }
+
+    /**
      * Replaces fixture references in values with their respective database IDs, 
      * with the notation "=><class>.<identifier>". Example: "=>Page.My Page".
      * 
