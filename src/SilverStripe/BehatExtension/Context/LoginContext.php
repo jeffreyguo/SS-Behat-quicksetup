@@ -168,6 +168,6 @@ class LoginContext extends BehatContext
     {
         $member = \Member::get()->filter('Email', $id)->First();
         assertNotNull($member);
-        assertTrue($member->checkPassword($password));
+        assertTrue($member->checkPassword($password)->valid());
     }
 }
