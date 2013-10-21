@@ -81,7 +81,7 @@ class EmailContext extends BehatContext
     }
 
     /**
-     * @When /^I click on the \'([^\']*)\' link in the email (to|from) "([^"]*)"$/
+     * @When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)"$/
      */
     public function iGoToInTheEmailTo($linkSelector, $direction, $email)
     {
@@ -91,7 +91,7 @@ class EmailContext extends BehatContext
         assertNotNull($match);
 
         $crawler = new Crawler($match['Content']);
-        $linkEl = $crawler->filter($linkSelector);
+        $linkEl = $crawler->selectLink($linkSelector);
         assertNotNull($linkEl);
         $link = $linkEl->attr('href');
         assertNotNull($link);
