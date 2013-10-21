@@ -160,4 +160,14 @@ class LoginContext extends BehatContext
 
         assertNotNull($badMessage, 'Bad message not found.');
     }
+
+    /**
+     * @Then /^the password for "([^"]*)" should be "([^"]*)"$/
+     */
+    public function stepPasswordForEmailShouldBe($id, $password)
+    {
+        $member = \Member::get()->filter('Email', $id)->First();
+        assertNotNull($member);
+        assertTrue($member->checkPassword($password));
+    }
 }
