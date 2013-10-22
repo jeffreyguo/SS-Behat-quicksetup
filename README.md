@@ -84,6 +84,10 @@ In order to run specific tests only, use their feature file name:
 
 This will start a Firefox browser by default. Other browsers and profiles can be configured in `behat.yml`.
 
+## Tutorial
+
+See [docs/tutorial.md](docs/tutorial.md)
+
 ## Configuration
 
 The SilverStripe installer already comes with a YML configuration
