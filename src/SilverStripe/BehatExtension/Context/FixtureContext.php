@@ -381,6 +381,18 @@ class FixtureContext extends BehatContext
         $this->getSession()->visit($this->getMainContext()->locatePath($record->RelativeLink()));
     }
 
+
+    /**
+     * Checks that a file or folder exists in the webroot.
+     * Example: There should be a file "assets/Uploads/test.jpg"
+     * 
+     * @Then /^there should be a (?<type>(file|folder) )"(?<path>[^"]*)"/
+     */
+    public function stepThereShouldBeAFileOrFolder($type, $path)
+    {
+        assertFileExists($this->joinPaths(BASE_PATH, $path));
+    }
+
     /**
      * Replaces fixture references in values with their respective database IDs, 
      * with the notation "=><class>.<identifier>". Example: "=>Page.My Page".
