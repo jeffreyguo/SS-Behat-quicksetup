@@ -7,6 +7,7 @@ use Behat\Behat\Context\ClosuredContextInterface,
     Behat\Behat\Context\BehatContext,
     Behat\Behat\Context\Step,
     Behat\Behat\Event\StepEvent,
+    Behat\Behat\Event\ScenarioEvent,
     Behat\Behat\Exception\PendingException;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Gherkin\Node\PyStringNode,
@@ -193,6 +194,18 @@ JS;
     {
         if (4 === $event->getResult()) {
             $this->takeScreenshot($event);
+        }
+    }
+
+    /**
+     * Delete any created files and folders from assets directory
+     * 
+     * @AfterScenario @assets
+     */
+    public function cleanAssetsAfterScenario(ScenarioEvent $event)
+    {
+        foreach(\File::get() as $file) {
+            $file->delete();
         }
     }
 
