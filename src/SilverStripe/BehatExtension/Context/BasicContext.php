@@ -205,7 +205,7 @@ JS;
     public function cleanAssetsAfterScenario(ScenarioEvent $event)
     {
         foreach(\File::get() as $file) {
-            $file->delete();
+            if(file_exists($file->getFullPath())) $file->delete();
         }
     }
 
