@@ -595,6 +595,16 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	    - Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
 	    # SilverStripe\Cms\Test\Behaviour\FixtureContext::stepCreateGroupWithPermissions()
 
+### Transformations
+
+Behat [transformations](http://docs.behat.org/guides/2.definitions.html#step-argument-transformations)
+have the ability to change step arguments based on their original value,
+for example to cast any argument matching the `\d` regex into an actual PHP integer.
+
+ * `/^(?:(the|a)) time of (?<val>.*)$/`: Transforms relative time statements compatible with [strtotime()](http://www.php.net/manual/en/datetime.formats.relative.php). Example: "the time of 1 hour ago" might return "22:00:00" if its currently "23:00:00".
+ * `/^(?:(the|a)) date of (?<val>.*)$/`: Transforms relative date statements compatible with [strtotime()](http://www.php.net/manual/en/datetime.formats.relative.php). Example: "the date of 2 days ago" might return "2013-10-10" if its currently the 12th of October 2013. 
+ * `/^(?:(the|a)) datetime of (?<val>.*)$/`: Transforms relative date and time statements compatible with [strtotime()](http://www.php.net/manual/en/datetime.formats.relative.php). Example: "the datetime of 2 days ago" might return "2013-10-10 23:00:00" if its currently the 12th of October 2013. 
+
 ## Useful resources
 
 * [SilverStripe CMS architecture](http://doc.silverstripe.org/sapphire/en/trunk/reference/cms-architecture)

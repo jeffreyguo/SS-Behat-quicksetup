@@ -30,6 +30,24 @@ class BasicContext extends BehatContext
     protected $context;
 
     /**
+	 * Date format in date() syntax
+	 * @var String
+	 */
+	protected $dateFormat = 'Y-m-d';
+
+	/**
+	 * Time format in date() syntax
+	 * @var String
+	 */
+	protected $timeFormat = 'H:i:s';
+
+	/**
+	 * Date/time format in date() syntax
+	 * @var String
+	 */
+	protected $datetimeFormat = 'Y-m-d H:i:s';
+
+    /**
      * Initializes context.
      * Every scenario gets it's own context object.
      *
@@ -373,4 +391,82 @@ JS;
 
         return new Step\Given(sprintf('I attach the file "%s" to "%s"', $path, $field));
     }
+
+    /**
+	 * Transforms relative time statements compatible with strtotime().
+	 * Example: "time of 1 hour ago" might return "22:00:00" if its currently "23:00:00".
+	 * Customize through {@link setTimeFormat()}.
+	 * 
+	 * @Transform /^(?:(the|a)) time of (?<val>.*)$/
+	 */
+	public function castRelativeToAbsoluteTime($prefix, $val) {
+		$timestamp = strtotime($val);
+		if(!$timestamp) {
+			throw new \InvalidArgumentException(sprintf(
+				"Can't resolve '%s' into a valid datetime value",
+				$val
+			));
+		}
+		return date($this->timeFormat, $timestamp);
+	}
+
+	/**
+	 * Transforms relative date and time statements compatible with strtotime().
+	 * Example: "datetime of 2 days ago" might return "2013-10-10 22:00:00" if its currently 
+	 * the 12th of October 2013. Customize through {@link setDatetimeFormat()}.
+	 * 
+	 * @Transform /^(?:(the|a)) datetime of (?<val>.*)$/
+	 */
+	public function castRelativeToAbsoluteDatetime($prefix, $val) {
+		$timestamp = strtotime($val);
+		if(!$timestamp) {
+			throw new \InvalidArgumentException(sprintf(
+				"Can't resolve '%s' into a valid datetime value",
+				$val
+			));
+		}
+		return date($this->datetimeFormat, $timestamp);
+	}
+
+	/**
+	 * Transforms relative date statements compatible with strtotime().
+	 * Example: "date 2 days ago" might return "2013-10-10" if its currently 
+	 * the 12th of October 2013. Customize through {@link setDateFormat()}.
+	 * 
+	 * @Transform /^(?:(the|a)) date of (?<val>.*)$/
+	 */
+	public function castRelativeToAbsoluteDate($prefix, $val) {
+		$timestamp = strtotime($val);
+		if(!$timestamp) {
+			throw new \InvalidArgumentException(sprintf(
+				"Can't resolve '%s' into a valid datetime value",
+				$val
+			));
+		}
+		return date($this->dateFormat, $timestamp);
+	}
+
+	public function getDateFormat() {
+		return $this->dateFormat;
+	}
+
+	public function setDateFormat($format) {
+		$this->dateFormat = $format;
+	}
+
+	public function getTimeFormat() {
+		return $this->timeFormat;
+	}
+
+	public function setTimeFormat($format) {
+		$this->timeFormat = $format;
+	}
+
+	public function getDatetimeFormat() {
+		return $this->datetimeFormat;
+	}
+
+	public function setDatetimeFormat($format) {
+		$this->datetimeFormat = $format;
+	}
 }
