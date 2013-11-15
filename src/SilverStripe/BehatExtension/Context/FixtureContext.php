@@ -420,6 +420,35 @@ class FixtureContext extends BehatContext
         }
     }
 
+    /**
+     * @Given /^(?:(an|a|the) )"(?<type>[^"]*)" "(?<id>[^"]*)" was (?<mod>(created|last edited)) "(?<time>[^"]*)"$/
+     */
+    public function aRecordWasLastEditedRelative($type, $id, $mod, $time) {
+        $class = $this->convertTypeToClass($type);
+        $fields = array();
+        $record = $this->fixtureFactory->createObject($class, $id, $fields);
+        $date = date("Y-m-d H:i:s",strtotime($time));
+        $table = \ClassInfo::baseDataClass(get_class($record));
+        $field = ($mod == 'created') ? 'Created' : 'LastEdited';
+        \DB::query(sprintf(
+            'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = \'%d\'',
+            $table,
+            $field,
+            $date,
+            $record->ID
+        )); 
+        // Support for Versioned extension, by checking for a "Live" stage
+        if(\DB::getConn()->hasTable($table . '_Live')) {
+            \DB::query(sprintf(
+                'UPDATE "%s_Live" SET "%s" = \'%s\' WHERE "ID" = \'%d\'',
+                $table,
+                $field,
+                $date,
+                $record->ID
+            )); 
+        }
+    }
+
     protected function prepareAsset($class, $identifier, $data = null) {
         if(!$data) $data = array();
         $relativeTargetPath = (isset($data['Filename'])) ? $data['Filename'] : $identifier;
