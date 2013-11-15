@@ -258,7 +258,7 @@ class FixtureContext extends BehatContext
                 \Versioned::reading_stage($oldMode);
                 break;
             case 'deleted':
-                $obj -> delete();
+                $obj->delete();
                 break;
             default:
                 throw new \InvalidArgumentException(sprintf(
