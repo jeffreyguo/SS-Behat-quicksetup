@@ -459,7 +459,7 @@ class FixtureContext extends BehatContext
         $type = trim($type);
 
         // Try direct mapping
-        $class = str_replace(' ', '', ucfirst($type));
+        $class = str_replace(' ', '', ucwords($type));
         if(class_exists($class) || !($class == 'DataObject' || is_subclass_of($class, 'DataObject'))) {
             return $class;
         }
