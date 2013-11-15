@@ -227,7 +227,8 @@ class FixtureContext extends BehatContext
         }
     }
 
-    /**
+  
+     /**
      * Example: Given the "page" "Page 1" is not published 
      * 
      * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is (?<state>[^"]*)$/
@@ -255,6 +256,9 @@ class FixtureContext extends BehatContext
                 $clone = clone $obj;
                 $clone->delete();
                 \Versioned::reading_stage($oldMode);
+                break;
+            case 'deleted':
+                $obj -> delete();
                 break;
             default:
                 throw new \InvalidArgumentException(sprintf(
