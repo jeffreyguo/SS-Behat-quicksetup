@@ -84,9 +84,10 @@ In order to run specific tests only, use their feature file name:
 
 This will start a Firefox browser by default. Other browsers and profiles can be configured in `behat.yml`.
 
-## Tutorial
+## Tutorials
 
-See [docs/tutorial.md](docs/tutorial.md)
+ * [Tutorial: Testing Form Submissions](docs/tutorial.md)
+ * [Tutorial: Webservice Mocking with Phockito and TestSession](docs/webservice-mocking.md)
 
 ## Configuration
 
