@@ -142,12 +142,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         }
 
         $url = $this->joinUrlParts($this->getBaseUrl(), '/dev/testsession/start');
-        $params = array(
-            'database' => $this->databaseName,
-            'mailer' => 'SilverStripe\BehatExtension\Utility\TestMailer',
-        );
-        $url .= '?' . http_build_query($params);
-
+        $url .= '?' . http_build_query($this->getTestSessionState());
         $this->getSession()->visit($url);
 
         $page = $this->getSession()->getPage();
@@ -162,7 +157,18 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         }
 
         $loginForm = $page->find('css', '#MemberLoginForm_LoginForm');
+    }
 
+    /**
+     * Returns a parameter map of state to set within the test session.
+     * 
+     * @return array
+     */
+    public function getTestSessionState() {
+        return array(
+            'database' => $this->databaseName,
+            'mailer' => 'SilverStripe\BehatExtension\Utility\TestMailer',
+        );
     }
 
     /**
