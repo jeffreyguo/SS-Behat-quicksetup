@@ -74,7 +74,11 @@ class LoginContext extends BehatContext
     function iAmLoggedInWithPermissions($permCode)
     {
         if (!isset($this->cache_generatedMembers[$permCode])) {
-            $group = \Injector::inst()->create('Group');
+            $group = \Group::get()->filter('Title', "$permCode group")->first();
+            if (!$group) {
+                $group = \Injector::inst()->create('Group');
+            }
+ 
             $group->Title = "$permCode group";
             $group->write();
 
@@ -98,7 +102,6 @@ class LoginContext extends BehatContext
             $this->cache_generatedMembers[$permCode] = $member;
         }
 
-//        $this->cache_generatedMembers[$permCode]->logIn();
         return new Step\Given(sprintf('I log in with "%s" and "%s"', "$permCode@example.org", 'secret'));
     }
 
