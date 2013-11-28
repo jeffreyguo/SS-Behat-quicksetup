@@ -392,7 +392,36 @@ JS;
         return new Step\Given(sprintf('I attach the file "%s" to "%s"', $path, $field));
     }
 
-    /**
+	/**
+	 * Select an individual input from within a group, matched by the top-most label.
+	 *
+	 * @Given /^I select "([^"]*)" from "([^"]*)" input group$/
+	 */
+	public function iSelectFromInputGroup($value, $labelText) {
+		$page = $this->getSession()->getPage();
+		$parent = null;
+
+		foreach($page->findAll('css', 'label') as $label) {
+			if($label->getText() == $labelText) {
+				$parent = $label->getParent();
+			}
+		}
+
+		if(!$parent) throw new \InvalidArgumentException(sprintf('Input group with label "%s" cannot be found', $labelText));
+
+		foreach($parent->findAll('css', 'label') as $option) {
+			if($option->getText() == $value) {
+				$for = $option->getAttribute('for');
+				$input = $parent->findById($for);
+
+				if(!$input) throw new \InvalidArgumentException(sprintf('Input "%s" cannot be found', $value));
+
+				$this->getSession()->getDriver()->click($input->getXPath());
+			}
+		}
+	}
+
+	/**
 	 * Transforms relative time statements compatible with strtotime().
 	 * Example: "time of 1 hour ago" might return "22:00:00" if its currently "23:00:00".
 	 * Customize through {@link setTimeFormat()}.
