@@ -528,7 +528,7 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^I should see a log-in form$/
 
-	 Then /^I will see a bad log-in message$/
+	 Then /^I will see a "bad" log-in message$/
 
 ### CMS UI
 
