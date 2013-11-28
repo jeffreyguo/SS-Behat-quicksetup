@@ -110,7 +110,8 @@ class LoginContext extends BehatContext
      */
     public function stepIAmNotLoggedIn()
     {
-        $this->getSession()->reset();
+        $c = $this->getMainContext();
+        $this->getSession()->visit($c->joinUrlParts($c->getBaseUrl(), 'Security/logout'));
     }
 
     /**
