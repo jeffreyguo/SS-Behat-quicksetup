@@ -147,21 +147,18 @@ class LoginContext extends BehatContext
     public function stepIShouldSeeALogInForm()
     {
         $page = $this->getSession()->getPage();
-
         $loginForm = $page->find('css', '#MemberLoginForm_LoginForm');
         assertNotNull($loginForm, 'I should see a log-in form');
     }
 
     /**
-     * @Then /^I will see a bad log-in message$/
+     * @Then /^I will see a "([^"]*)" log-in message$/
      */
-    public function stepIWillSeeABadLogInMessage()
+    public function stepIWillSeeALogInMessage($type)
     {
         $page = $this->getSession()->getPage();
-
-        $badMessage = $page->find('css', '.message.bad');
-
-        assertNotNull($badMessage, 'Bad message not found.');
+        $message = $page->find('css', sprintf('.message.%s', $type));
+        assertNotNull($message, sprintf('%s message not found.', $type));
     }
 
     /**
