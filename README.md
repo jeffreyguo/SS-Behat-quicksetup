@@ -503,7 +503,10 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	When /^(?:|I )fill in "(?P<value>(?:[^"]|\\")*)" for "(?P<field>(?:[^"]|\\")*)" dropdown$/
 	  - Workaround for chosen.js dropdowns or tree dropdowns which hide the original dropdown field.
 
-
+	Given /^I select "([^"]*)" from "([^"]*)" input group$/
+	  - Check an individual input button from a group of inputs
+	  - Example: I select "Admins" from "Groups" input group
+	   (where "Groups" is the title of the CheckboxSetField or OptionsetField form field)
 
 ### Interactions
 
