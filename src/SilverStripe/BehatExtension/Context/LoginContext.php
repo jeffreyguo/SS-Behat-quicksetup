@@ -129,9 +129,9 @@ class LoginContext extends BehatContext
         $form = $page->find('css', 'form[action="Security/LoginForm"]');
         assertNotNull($form, 'Login form not found');
 
-        $emailField = $page->find('css', '[name=Email]');
-        $passwordField = $page->find('css', '[name=Password]');
-        $submitButton = $page->find('css', '[type=submit]');
+        $emailField = $form->find('css', '[name=Email]');
+        $passwordField = $form->find('css', '[name=Password]');
+        $submitButton = $form->find('css', '[type=submit]');
 
         assertNotNull($emailField, 'Email field on login form not found');
         assertNotNull($passwordField, 'Password field on login form not found');
