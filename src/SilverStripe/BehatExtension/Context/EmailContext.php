@@ -27,6 +27,11 @@ class EmailContext extends BehatContext
     protected $mailer;
 
     /**
+     * Stored to simplify later assertions
+     */
+    protected $lastMatchedEmail;
+
+    /**
      * Initializes context.
      * Every scenario gets it's own context object.
      *
@@ -67,6 +72,7 @@ class EmailContext extends BehatContext
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from);
         assertNotNull($match);
+        $this->lastMatchedEmail = $match;
     }
 
     /**
@@ -78,6 +84,28 @@ class EmailContext extends BehatContext
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from, $subject);
         assertNotNull($match);
+        $this->lastMatchedEmail = $match;
+    }
+
+    /**
+     * Example: Given the email contains "Thank you for registering!".
+     * Assumes an email has been identified by a previous step,
+     * e.g. through 'Given there should be an email to "test@test.com"'.
+     * 
+     * @Given /^the email should contain "([^"]*)"$/
+     */
+    public function thereTheEmailContains($content)
+    {
+        if(!$this->lastMatchedEmail) {
+            throw new \LogicException('No matched email found from previous step');
+        }
+
+        $email = $this->lastMatchedEmail;
+        if($email['Content']) {
+            assertContains($content, $email['Content']);
+        } else {
+            assertContains($content, $email['PlainContent']);
+        }
     }
 
     /**
@@ -100,10 +128,33 @@ class EmailContext extends BehatContext
     }
 
     /**
+     * Assumes an email has been identified by a previous step,
+     * e.g. through 'Given there should be an email to "test@test.com"'.
+     * 
+     * @When /^I click on the "([^"]*)" link in the email"$/
+     */
+    public function iGoToInTheEmail($linkSelector)
+    {
+        if(!$this->lastMatchedEmail) {
+            throw new \LogicException('No matched email found from previous step');
+        }
+
+        $match = $this->lastMatchedEmail;
+        $crawler = new Crawler($match['Content']);
+        $linkEl = $crawler->selectLink($linkSelector);
+        assertNotNull($linkEl);
+        $link = $linkEl->attr('href');
+        assertNotNull($link);
+
+        return new Step\When(sprintf('I go to "%s"', $link));
+    }
+
+    /**
      * @Given /^I clear all emails$/
      */
     public function iClearAllEmails()
     {
+        $this->lastMatchedEmail = null;
         return $this->mailer->clearEmails();
     }
 }
