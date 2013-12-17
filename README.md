@@ -84,6 +84,8 @@ In order to run specific tests only, use their feature file name:
 
 This will start a Firefox browser by default. Other browsers and profiles can be configured in `behat.yml`.
 
+For example, if you want to start a Chrome Browser you can following the instructions provided [here](docs/chrome-behat.md).
+
 ## Tutorial
 
 See [docs/tutorial.md](docs/tutorial.md)
