@@ -161,13 +161,19 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 
     /**
      * Returns a parameter map of state to set within the test session.
+     * Takes TESTSESSION_PARAMS environment variable into account for run-specific configurations.
      * 
      * @return array
      */
     public function getTestSessionState() {
-        return array(
-            'database' => $this->databaseName,
-            'mailer' => 'SilverStripe\BehatExtension\Utility\TestMailer',
+        $extraParams = array();
+        parse_str(getenv('TESTSESSION_PARAMS'), $extraParams);
+        return array_merge(
+            array(
+                'database' => $this->databaseName,
+                'mailer' => 'SilverStripe\BehatExtension\Utility\TestMailer',
+            ),
+            $extraParams
         );
     }
 

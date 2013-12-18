@@ -338,6 +338,26 @@ where `10000` is the number of millisecods you wish the session to wait.
 It is very useful when you want to look at the error or developer console
 inside the browser or if you want to interact with the session page manually.
 
+### Can I set breakpoints through XDebug?
+
+If you have [XDebug](http://xdebug.org) set up, breakpoints are your friend.
+The problem is that you can only connect the debugger to the PHP execution
+in the CLI, or in the browser, not both at the same time.
+
+First of all, ensure that `xdebug.remote_autostart` is set to `Off`,
+otherwise you'll always have an active debugging session in CLI, never in the browser.
+
+Then you can choose to enable XDebug for the current CLI run:
+
+	XDEBUG_CONFIG="idekey=macgdbp" vendor/bin/behat
+
+Or you can use the `TESTSESSION_PARAMS` environment variable to pass additional
+parameters to `dev/testsession/start`, and debug in the browser instead.
+
+	TESTSESSION_PARAMS="XDEBUG_SESSION_START=macgdbp" vendor/bin/behat @app
+
+The `macgdbp` IDE key needs to match your `xdebug.idekey` php.ini setting.
+
 ### How do I use SauceLabs.com for remote Selenium2 testing?
 
 Here's a sample profile for your `behat.yml`:
