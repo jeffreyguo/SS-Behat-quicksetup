@@ -518,7 +518,7 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	 Then /^the "(?P<locator>([^"]*))" HTML field should contain "(?P<html>([^"]*))"$/
 
-	When /^(?:|I )fill in "(?P<field>(?:[^"]|\\")*)" dropdown with "(?P<value>(?:[^"]|\\")*)"$/
+	When /^(?:|I )fill in the "(?P<field>(?:[^"]|\\")*)" dropdown with "(?P<value>(?:[^"]|\\")*)"$/
 	  - Workaround for chosen.js dropdowns or tree dropdowns which hide the original dropdown field.
 
 	When /^(?:|I )fill in "(?P<value>(?:[^"]|\\")*)" for "(?P<field>(?:[^"]|\\")*)" dropdown$/
