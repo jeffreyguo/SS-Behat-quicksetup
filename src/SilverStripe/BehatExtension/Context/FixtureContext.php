@@ -455,7 +455,7 @@ class FixtureContext extends BehatContext
 		}
 		$data['Filename'] = $this->joinPaths(ASSETS_DIR, $relativeTargetPath);
 		if(!isset($data['Name'])) $data['Name'] = basename($relativeTargetPath);
-		$data['ParentID'] = $parent->ID;
+		if($parent) $data['ParentID'] = $parent->ID;
 
 		$this->createdFilesPaths[] = $targetPath;
 
