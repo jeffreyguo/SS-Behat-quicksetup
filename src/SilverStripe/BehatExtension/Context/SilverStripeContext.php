@@ -312,4 +312,24 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
         );
     }
 
+    /**
+     * Overwritten to click the first *visable* link the DOM.
+     */
+    public function clickLink($link)
+    {
+        $link = $this->fixStepArgument($link);
+        $links = $this->getSession()->getPage()->findAll('named', array(
+            'link', $this->getSession()->getSelectorsHandler()->xpathLiteral($link)
+        ));
+        if($links) foreach($links as $l) {
+            if($l->isVisible()) {
+                $l->click();
+                return;        
+            }
+        }
+        throw new ElementNotFoundException(
+            $this->getSession(), 'link', 'id|name|label|value', $link
+        );
+    }
+
 }
