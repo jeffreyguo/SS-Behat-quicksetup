@@ -47,7 +47,9 @@ Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 Now get the latest Selenium2 server (requires Java):
 
-	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar
+	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.39.0.jar
+
+If you're on OSX, you can also use [Homebrew](http://brew.sh/): `brew install selenium-server`
 
 We need to generate a token so the browser and commandline calls can interact with a "shared secret":
 
@@ -70,7 +72,7 @@ in your project root, or set is as an environment variable in your terminal sess
 
 You can run the server locally in a separate Terminal session:
 
-    java -jar selenium-server-standalone-2.35.0.jar
+    java -jar selenium-server-standalone-2.39.0.jar
 
 ### Running the Tests
 
