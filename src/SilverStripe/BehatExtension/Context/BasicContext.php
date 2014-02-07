@@ -498,4 +498,41 @@ JS;
 	public function setDatetimeFormat($format) {
 		$this->datetimeFormat = $format;
 	}
+
+	/**
+	 * Checks that field with specified in|name|label|value is disabled.
+	 * Example: Then the field "Email" should be disabled
+	 * Example: Then the "Email" field should be disabled
+	 *
+	 * @Then /^the "(?P<field>(?:[^"]|\\")*)" field should be disabled/
+	 * @Then /^the field "(?P<field>(?:[^"]|\\")*)" should be disabled/
+	 */
+	public function stepFieldShouldBeDisabled($field) {
+		$page = $this->getSession()->getPage();
+		$fieldElement = $page->findField($field);
+		assertNotNull($fieldElement, sprintf("Field '%s' not found", $field));
+
+		$disabledAttribute = $fieldElement->getAttribute('disabled');
+
+		assertNotNull($disabledAttribute, sprintf("Failed asserting field '%s' is disabled", $field));
+	}
+
+	/**
+	 * Checks that checkbox with specified in|name|label|value is enabled.
+	 * Example: Then the field "Email" should be enabled
+	 * Example: Then the "Email" field should be enabled
+	 *
+	 * @Then /^the "(?P<field>(?:[^"]|\\")*)" field should be enabled/
+	 * @Then /^the field "(?P<field>(?:[^"]|\\")*)" should be enabled/
+	 */
+	public function stepFieldShouldBeEnabled($field) {
+		$page = $this->getSession()->getPage();
+		$fieldElement = $page->findField($field);
+		assertNotNull($fieldElement, sprintf("Field '%s' not found", $field));
+
+		$disabledAttribute = $fieldElement->getAttribute('disabled');
+
+		assertNull($disabledAttribute, sprintf("Failed asserting field '%s' is enabled", $field));
+	}
+
 }
