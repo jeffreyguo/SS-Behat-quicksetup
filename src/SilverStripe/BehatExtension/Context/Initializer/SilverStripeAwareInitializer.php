@@ -78,6 +78,8 @@ class SilverStripeAwareInitializer implements InitializerInterface
 		$this->testSessionEnvironment = $testEnv;
 
 		file_put_contents('php://stdout', "Temp Database: $this->databaseName" . PHP_EOL . PHP_EOL);
+
+        register_shutdown_function(array($this, '__destruct'));
     }
 
     public function __destruct()
