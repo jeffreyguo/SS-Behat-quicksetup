@@ -386,7 +386,8 @@ if(input.closest('.ss-uploadfield-item-info').length) {
     while(!input.parent().is('.ss-uploadfield-item-info')) input = input.unwrap();
 }
 JS;
-        $this->getSession()->evaluateScript($js);
+
+        $this->getSession()->executeScript($js);
         $this->getSession()->wait(1000);
 
         return new Step\Given(sprintf('I attach the file "%s" to "%s"', $path, $field));
