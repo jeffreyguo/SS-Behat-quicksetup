@@ -18,7 +18,7 @@
 
     "require": {
         "php": ">=5.3.2",
-        "phpunit/phpunit": "3.7.x-dev",
+        "phpunit/phpunit": "3.7.*",
         "behat/behat": "2.5.*@stable",
         "behat/mink": "*@stable",
         "behat/mink-extension": "*@stable",
