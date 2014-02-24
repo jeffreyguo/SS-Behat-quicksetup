@@ -60,6 +60,8 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 	protected $screenshotPath;
 
 	protected $context;
+
+	protected $testSessionEnvironment;
 	
 
 	/**
@@ -71,6 +73,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 	public function __construct(array $parameters) {
 		// Initialize your context here
 		$this->context = $parameters;
+		$this->testSessionEnvironment = new \TestSessionEnvironment();
 	}
 
 	public function setDatabase($databaseName) {
@@ -127,22 +130,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 			);
 		}
 
-		$url = $this->joinUrlParts($this->getBaseUrl(), '/dev/testsession/start');
-		$url .= '?' . http_build_query($this->getTestSessionState());
-		$this->getSession()->visit($url);
-
-		$page = $this->getSession()->getPage();
-		$content = $page->getContent();
-
-		if(!preg_match('/<!-- +SUCCESS: +DBNAME=([^ ]+)/i', $content, $matches)) {
-			throw new \LogicException("Could not create a test session.  Details below:\n" . $content);
-
-		} elseif($matches[1] != $this->databaseName) {
-			throw new \LogicException("Test session is using the database $matches[1]; it should be using $this->databaseName.");
-
-		}
-
-		$loginForm = $page->find('css', '#MemberLoginForm_LoginForm');
+		$this->testSessionEnvironment->startTestSession($this->getTestSessionState());
 	}
 
 	/**
