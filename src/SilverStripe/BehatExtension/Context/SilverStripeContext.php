@@ -131,6 +131,11 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		}
 
 		$this->testSessionEnvironment->startTestSession($this->getTestSessionState());
+
+		if($screenSize = getenv('BEHAT_SCREEN_SIZE')) {
+			list($screenWidth, $screenHeight) = explode('x', $screenSize);
+			$this->getSession()->resizeWindow((int)$screenWidth, (int)$screenHeight);
+		}
 	}
 
 	/**

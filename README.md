@@ -280,6 +280,15 @@ Example: mymodule/tests/behat/features/bootstrap/MyModule/Test/Behaviour/Feature
 	    }
 	}
 
+### Screen Size
+
+In some Selenium drivers like [SauceLabs](http://www.saucelabs.com) you can 
+define the desired browser window size through a `capabilities` definition.
+By default, Selenium doesn't support this though, so we've added a workaround
+through an environment variable:
+
+	BEHAT_SCREEN_SIZE=320x600 vendor/bin/behat
+
 ## FAQ
 
 ### FeatureContext not found
