@@ -64,26 +64,34 @@ class EmailContext extends BehatContext
     }
 
     /**
-     * @Given /^there should be an email (to|from) "([^"]*)"$/
+     * @Given /^there should (not |)be an email (to|from) "([^"]*)"$/
      */
-    public function thereIsAnEmailFromTo($direction, $email)
+    public function thereIsAnEmailFromTo($negate, $direction, $email)
     {
         $to = ($direction == 'to') ? $email : null;
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from);
-        assertNotNull($match);
+        if(trim($negate)) {
+            assertNull($match);
+        } else {
+            assertNotNull($match);
+        }
         $this->lastMatchedEmail = $match;
     }
 
     /**
-     * @Given /^there should be an email (to|from) "([^"]*)" titled "([^"]*)"$/
+     * @Given /^there should (not |)be an email (to|from) "([^"]*)" titled "([^"]*)"$/
      */
-    public function thereIsAnEmailFromToTitled($direction, $email, $subject)
+    public function thereIsAnEmailFromToTitled($negate, $direction, $email, $subject)
     {
         $to = ($direction == 'to') ? $email : null;
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from, $subject);
-        assertNotNull($match);
+        if(trim($negate)) {
+            assertNull($match);
+        } else {
+            assertNotNull($match);
+        }
         $this->lastMatchedEmail = $match;
     }
 
