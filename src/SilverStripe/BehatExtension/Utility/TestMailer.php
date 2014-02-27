@@ -68,6 +68,7 @@ class TestMailer extends \Mailer {
 	/**
 	 * Search for an email that was sent.
 	 * All of the parameters can either be a string, or, if they start with "/", a PREG-compatible regular expression.
+	 * 
 	 * @param $to
 	 * @param $from
 	 * @param $subject
@@ -76,8 +77,25 @@ class TestMailer extends \Mailer {
 	 *               'customHeaders', 'htmlContent', 'inlineImages'
 	 */
 	public function findEmail($to = null, $from = null, $subject = null, $content = null) {
-		$this->initTable();
+		$matches = $this->findEmails($to, $from, $subject, $content);
+		return $matches ? $matches[0] : null;
+	}
 
+	/**
+	 * Search for all emails.
+	 * All of the parameters can either be a string, or, if they start with "/", a PREG-compatible regular expression.
+	 * 
+	 * @param $to
+	 * @param $from
+	 * @param $subject
+	 * @param $content
+	 * @return array Contains the keys: 'type', 'to', 'from', 'subject', 'content', 'plainContent', 'attachedFiles',
+	 *               'customHeaders', 'htmlContent', 'inlineImages'
+	 */
+	public function findEmails($to = null, $from = null, $subject = null, $content = null) {
+		$matches = array();
+
+		$this->initTable();
 		$args = func_get_args();
 		$db = $this->getDb();
 		$emails = $db->query(sprintf('SELECT * FROM "%s"', $this->table));
@@ -92,8 +110,10 @@ class TestMailer extends \Mailer {
 					if(!$matched) break;
 				}
 			}
-			if($matched) return $email;
+			if($matched) $matches[] = $email;
 		}
+
+		return $matches;
 	}
 
 	protected function initTable() {

@@ -87,10 +87,21 @@ class EmailContext extends BehatContext
         $to = ($direction == 'to') ? $email : null;
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from, $subject);
+        $allMails = $this->mailer->findEmails($to, $from);
+        $allTitles = $allMails ? '"' . implode('","', array_map(function($email) {return $email['Subject'];}, $allMails)) . '"' : null;
         if(trim($negate)) {
             assertNull($match);
         } else {
-            assertNotNull($match);
+            $msg = sprintf(
+                'Could not find email %s "%s" titled "%s".',
+                $direction,
+                $email,
+                $subject
+            );
+            if($allTitles) {
+                $msg .= ' Existing emails: ' . $allTitles;
+            }
+            assertNotNull($match,$msg);
         }
         $this->lastMatchedEmail = $match;
     }
