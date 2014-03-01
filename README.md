@@ -289,6 +289,23 @@ through an environment variable:
 
 	BEHAT_SCREEN_SIZE=320x600 vendor/bin/behat
 
+### Inspecting PHP sessions
+
+Behat is executed from CLI, which in turn triggers web requests in a browser.
+This browser session is associated PHP session information such as the logged-in user. 
+After every request, the session information is persisted on disk as part
+of the `TestSessionEnvironment`, in order to share it with Behat CLI.
+
+Example: Retrieve the currently logged-in member
+
+	$env = Injector::inst()->get('TestSessionEnvironment');
+	$state = $env->getState();
+	if(isset($state->session['loggedInAs'])) {
+		$member = \Member::get()->byID($state->session['loggedInAs']);
+	} else {
+		$member = null;
+	}
+
 ## FAQ
 
 ### FeatureContext not found
