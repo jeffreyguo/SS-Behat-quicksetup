@@ -67,7 +67,6 @@ class SilverStripeAwareInitializer implements InitializerInterface
 		file_put_contents('php://stdout', "Creating test session environment" . PHP_EOL);
 
 		$testEnv = \Injector::inst()->get('TestSessionEnvironment');
-
 		$testEnv->startTestSession(array(
 			'createDatabase' => true
 		));

@@ -88,7 +88,7 @@ class EmailContext extends BehatContext
         $from = ($direction == 'from') ? $email : null;
         $match = $this->mailer->findEmail($to, $from, $subject);
         $allMails = $this->mailer->findEmails($to, $from);
-        $allTitles = $allMails ? '"' . implode('","', array_map(function($email) {return $email['Subject'];}, $allMails)) . '"' : null;
+        $allTitles = $allMails ? '"' . implode('","', array_map(function($email) {return $email->Subject;}, $allMails)) . '"' : null;
         if(trim($negate)) {
             assertNull($match);
         } else {
@@ -120,10 +120,10 @@ class EmailContext extends BehatContext
         }
 
         $email = $this->lastMatchedEmail;
-        if($email['Content']) {
-            assertContains($content, $email['Content']);
+        if($email->Content) {
+            assertContains($content, $email->Content);
         } else {
-            assertContains($content, $email['PlainContent']);
+            assertContains($content, $email->PlainContent);
         }
     }
 
@@ -137,7 +137,7 @@ class EmailContext extends BehatContext
         $match = $this->mailer->findEmail($to, $from);
         assertNotNull($match);
 
-        $crawler = new Crawler($match['Content']);
+        $crawler = new Crawler($match->Content);
         $linkEl = $crawler->selectLink($linkSelector);
         assertNotNull($linkEl);
         $link = $linkEl->attr('href');
@@ -159,7 +159,7 @@ class EmailContext extends BehatContext
         }
 
         $match = $this->lastMatchedEmail;
-        $crawler = new Crawler($match['Content']);
+        $crawler = new Crawler($match->Content);
         $linkEl = $crawler->selectLink($linkSelector);
         assertNotNull($linkEl);
         $link = $linkEl->attr('href');

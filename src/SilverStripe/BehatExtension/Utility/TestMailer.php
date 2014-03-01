@@ -64,7 +64,7 @@ class TestMailer extends \Mailer {
 	public function clearEmails() {
 		$state = $this->testSessionEnvironment->getState();
 		if(isset($state->emails)) unset($state->emails);
-		$this->testSessionEnvironment->persistState();
+		$this->testSessionEnvironment->applyState($state);
 	}
 
 	/**
@@ -103,10 +103,11 @@ class TestMailer extends \Mailer {
 			$matched = true;
 
 			foreach(array('To','From','Subject','Content') as $i => $field) {
+				if(!isset($email->$field)) continue;
 				$value = (isset($args[$i])) ? $args[$i] : null;
 				if($value) {
-					if($value[0] == '/') $matched = preg_match($value, $email[$field]);
-					else $matched = ($value == $email[$field]);
+					if($value[0] == '/') $matched = preg_match($value, $email->$field);
+					else $matched = ($value == $email->$field);
 					if(!$matched) break;
 				}
 			}
@@ -120,7 +121,7 @@ class TestMailer extends \Mailer {
 		$state = $this->testSessionEnvironment->getState();
 		if(!isset($state->emails)) $state->emails = array();
 		$state->emails[] = array_filter($data);
-		$this->testSessionEnvironment->persistState();
+		$this->testSessionEnvironment->applyState($state);
 	}
 
 }
