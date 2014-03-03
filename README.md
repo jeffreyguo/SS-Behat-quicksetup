@@ -49,7 +49,7 @@ Now get the latest Selenium2 server (requires Java):
 
 	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.39.0.jar
 
-On OSX, you can also use [Homebrew](http://brew.sh/): `brew install selenium-server`.
+On OSX, you can also use [Homebrew](http://brew.sh/): `brew install selenium-server-standalone`.
 If you are having issues running Selenium with your browser please check 
 that you're on the [latest driver](https://code.google.com/p/selenium/downloads/list),
 since the download link above might be out of date.
