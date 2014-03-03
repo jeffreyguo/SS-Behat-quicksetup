@@ -72,8 +72,8 @@ class SilverStripeAwareInitializer implements InitializerInterface
 		));
 
 		$state = $testEnv->getState();
-		$this->databaseName = $state->database;
 
+		$this->databaseName = $state->database;
 		$this->testSessionEnvironment = $testEnv;
 
 		file_put_contents('php://stdout', "Temp Database: $this->databaseName" . PHP_EOL . PHP_EOL);
@@ -83,11 +83,13 @@ class SilverStripeAwareInitializer implements InitializerInterface
 
     public function __destruct()
     {
-		file_put_contents('php://stdout', "Killing test session environment...");
+        file_put_contents('php://stdout', "Killing test session environment...");
 
-		$this->testSessionEnvironment->endTestSession();
+        if($this->testSessionEnvironment) {
+            $this->testSessionEnvironment->endTestSession();
+        }
 
-		file_put_contents('php://stdout', " done!" . PHP_EOL);
+        file_put_contents('php://stdout', " done!" . PHP_EOL);
     }
 
     /**
