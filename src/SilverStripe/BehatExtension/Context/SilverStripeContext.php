@@ -130,7 +130,25 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 			);
 		}
 
-		$this->testSessionEnvironment->startTestSession($this->getTestSessionState());
+		$state = $this->getTestSessionState();
+		$this->testSessionEnvironment->startTestSession($state);
+
+		// Optionally import database
+		if(!empty($state['importDatabasePath'])) {
+			$this->testSessionEnvironment->importDatabase(
+				$state['importDatabasePath'],
+				!empty($state['requireDefaultRecords']) ? $state['requireDefaultRecords'] : false
+			);
+		} else if(!empty($state['requireDefaultRecords']) && $state['requireDefaultRecords']) {
+			$this->testSessionEnvironment->requireDefaultRecords();
+		}
+
+		// Fixtures
+		$fixtureFile = (!empty($params['fixture'])) ? $params['fixture'] : null;
+		if($fixtureFile) {
+			$this->testSessionEnvironment->loadFixtureIntoDb($fixtureFile);
+		}
+
 
 		if($screenSize = getenv('BEHAT_SCREEN_SIZE')) {
 			list($screenWidth, $screenHeight) = explode('x', $screenSize);
