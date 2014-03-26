@@ -514,23 +514,33 @@ JS;
 		$this->datetimeFormat = $format;
 	}
 
-	/**
-	 * Checks that field with specified in|name|label|value is disabled.
-	 * Example: Then the field "Email" should be disabled
-	 * Example: Then the "Email" field should be disabled
-	 *
-	 * @Then /^the "(?P<field>(?:[^"]|\\")*)" field should be disabled/
-	 * @Then /^the field "(?P<field>(?:[^"]|\\")*)" should be disabled/
-	 */
-	public function stepFieldShouldBeDisabled($field) {
-		$page = $this->getSession()->getPage();
-		$fieldElement = $page->findField($field);
-		assertNotNull($fieldElement, sprintf("Field '%s' not found", $field));
+    /**
+     * Checks that field with specified in|name|label|value is disabled.
+     * Example: Then the field "Email" should be disabled
+     * Example: Then the "Email" field should be disabled
+     *
+     * @Then /^the "(?P<name>(?:[^"]|\\")*)" (?P<type>(?:(field|button))) should (?P<negate>(?:(not |)))be disabled/
+     * @Then /^the (?P<type>(?:(field|button))) "(?P<name>(?:[^"]|\\")*)" should (?P<negate>(?:(not |)))be disabled/
+     */
+    public function stepFieldShouldBeDisabled($name, $type, $negate) {
+        $page = $this->getSession()->getPage();
+        if($type == 'field') {
+            $element = $page->findField($name);    
+        } else {
+            $element = $page->find('named', array(
+                'button', $this->getSession()->getSelectorsHandler()->xpathLiteral($name)
+            ));
+        }
+        
+        assertNotNull($element, sprintf("Element '%s' not found", $name));
 
-		$disabledAttribute = $fieldElement->getAttribute('disabled');
-
-		assertNotNull($disabledAttribute, sprintf("Failed asserting field '%s' is disabled", $field));
-	}
+        $disabledAttribute = $element->getAttribute('disabled');
+        if(trim($negate)) {
+            assertNull($disabledAttribute, sprintf("Failed asserting element '%s' is not disabled", $name));
+        } else {
+            assertNotNull($disabledAttribute, sprintf("Failed asserting element '%s' is disabled", $name));
+        }
+    }
 
 	/**
 	 * Checks that checkbox with specified in|name|label|value is enabled.
