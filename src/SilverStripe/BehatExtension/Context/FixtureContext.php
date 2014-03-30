@@ -511,9 +511,9 @@ class FixtureContext extends BehatContext
 	protected function convertFields($class, $fields) {
 		$labels = singleton($class)->fieldLabels();
 		foreach($fields as $fieldName => $fieldVal) {
-			if(array_key_exists($fieldName, $labels)) {
+			if($fieldLabelKey = array_search($fieldName, $labels)) {
 				unset($fields[$fieldName]);
-				$fields[$labels[$fieldName]] = $fieldVal;
+				$fields[$labels[$fieldLabelKey]] = $fieldVal;
 				
 			}
 		}
