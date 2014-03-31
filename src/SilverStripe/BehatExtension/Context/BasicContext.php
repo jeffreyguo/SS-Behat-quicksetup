@@ -320,8 +320,10 @@ JS;
 
     /**
      * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
+     * Example1: I press the "Remove current combo" button, confirming the dialog 
+     * Example2: I follow the "Remove current combo" link, confirming the dialog
      * 
-     * @Given /^I press the "([^"]*)" button, confirming the dialog$/
+     * @Given /^I (?:press|follow) the "([^"]*)" (?:button|link), confirming the dialog$/
      */
     public function stepIPressTheButtonConfirmingTheDialog($button)
     {
