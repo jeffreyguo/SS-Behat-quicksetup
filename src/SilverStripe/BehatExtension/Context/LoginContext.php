@@ -92,12 +92,16 @@ class LoginContext extends BehatContext
                 $member = \Injector::inst()->create('Member');
             }
 
+            // make sure any validation for password is skipped, since we're not testing complexity here
+            $validator = \Member::password_validator();
+            \Member::set_password_validator(null);
             $member->FirstName = $permCode;
             $member->Surname = "User";
             $member->Email = "$permCode@example.org";
             $member->changePassword('secret');
             $member->write();
             $group->Members()->add($member);
+            \Member::set_password_validator($validator);
 
             $this->cache_generatedMembers[$permCode] = $member;
         }
