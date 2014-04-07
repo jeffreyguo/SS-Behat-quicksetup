@@ -118,32 +118,45 @@ class LoginContext extends BehatContext
         $this->getSession()->visit($c->joinUrlParts($c->getBaseUrl(), 'Security/logout'));
     }
 
-    /**
+     /**
      * @When /^I log in with "(?<username>[^"]*)" and "(?<password>[^"]*)"$/
      */
     public function stepILogInWith($email, $password)
-    {
-        $c = $this->getMainContext();
-        $loginUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
-
-        $this->getSession()->visit($loginUrl);
-
+    {        
         $page = $this->getSession()->getPage();
+        $forms = $page->findAll('css', 'form[action="Security/LoginForm"]');
+        assertNotNull($forms, 'Login form not found');
+        
+        // If no login form, go to /security/login page
+        if(count($forms) <= 0 ) {
+            $c = $this->getMainContext();
+            $loginUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
+            $this->getSession()->visit($loginUrl);
+            $page = $this->getSession()->getPage();
+            $forms = $page->findAll('css', 'form[action="Security/LoginForm"]');
+        }
+        
+        $foundForm = false;
+        foreach($forms as $form) {
+           if(!$form->isVisible()) continue;
+            
+           $emailField = $form->find('css', '[name=Email]');
+           $passwordField = $form->find('css', '[name=Password]');
+           $submitButton = $form->find('css', '[type=submit]');
 
-        $form = $page->find('css', 'form[action="Security/LoginForm"]');
-        assertNotNull($form, 'Login form not found');
+           assertNotNull($emailField, 'Email field on login form not found');
+           assertNotNull($passwordField, 'Password field on login form not found');
+           assertNotNull($submitButton, 'Submit button on login form not found');
 
-        $emailField = $form->find('css', '[name=Email]');
-        $passwordField = $form->find('css', '[name=Password]');
-        $submitButton = $form->find('css', '[type=submit]');
-
-        assertNotNull($emailField, 'Email field on login form not found');
-        assertNotNull($passwordField, 'Password field on login form not found');
-        assertNotNull($submitButton, 'Submit button on login form not found');
-
-        $emailField->setValue($email);
-        $passwordField->setValue($password);
-        $submitButton->press();
+           $emailField->setValue($email);
+           $passwordField->setValue($password);
+           $submitButton->press(); 
+        
+           $foundForm = true;
+           break;
+        }
+        
+        assertTrue($foundForm, 'Found login form');        
     }
 
     /**
