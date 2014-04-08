@@ -129,22 +129,34 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 	}
 
 	/**
-	 * Returns MinkElement based off region defined in .yml file
+	 * Returns MinkElement based off region defined in .yml file.
+	 * Also supports direct CSS selectors and regions identified by a "data-title" attribute.
+	 * 
+	 * @param String $region Region name or CSS selector
 	 * @return MinkElement|null
 	 */
 	public function getRegionObj($region) {
-		$key = $this->regionMap[$region];
+		// Try to find regions directly by CSS selector
+		$regionObj = $this->getSession()->getPage()->find('css', $region);
+		if($regionObj) {
+			return $regionObj;
+		}
 
-		if(!$this->regionMap){
+		// Fall back to region identified by data-tilte
+		$regionObj = $this->getSession()->getPage()->find('css', '[data-title="' . $region . '"]');
+		if($regionObj) {
+			return $regionObj;
+		}
+
+		// Look for named region
+		if(!isset($this->regionMap[$region])) {
 			throw new \LogicException("Cannot find 'region_map' in the behat.yml");
 		}
-		
+		$key = $this->regionMap[$region];
 		if(!$key) {
 			throw new \LogicException("Cannot find the specified region in the behat.yml");
 		}
-
 		$regionObj = $this->getSession()->getPage()->find('css', $key);
-
 		if(!$regionObj) {
 			throw new ElementNotFoundException("Cannot find the specified region on the page");
 		}

@@ -563,20 +563,58 @@ JS;
 	}
 
     /**
-     * Clicks a link via a configuarable css selector in the behat.yml configuration
-     * Example: Given I follow "Select" in the "" region 
+     * Clicks a link in a specific region (an element identified by a CSS selector, a "data-title" attribute,
+     * or a named region mapped to a CSS selector via Behat configuration).
      * 
-     * @Given /^I (?:follow|click) "(?P<link>[^"]*)" in the "(?P<region>[^"]*)"(?:| region)$/
+     * Example: Given I follow "Select" in the "header .login-form" region 
+     * Example: Given I follow "Select" in the "My Login Form" region 
+     * 
+     * @Given /^I (?:follow|click) "(?P<link>[^"]*)" in the "(?P<region>[^"]*)" region$/
      */
     public function iFollowInTheRegion($link, $region) {
         $context = $this->getMainContext();
         $regionObj = $context->getRegionObj($region);
+        assertNotNull($regionObj);
+        
         $linkObj = $regionObj->findLink($link);
         if (empty($linkObj)) {
             throw new \Exception(sprintf('The link "%s" was not found in the region "%s" on the page %s', $link, $region, $this->getSession()->getCurrentUrl()));
         }
 
         $linkObj->click();        
+    }
+
+    /**
+     * Asserts text in a specific region (an element identified by a CSS selector, a "data-title" attribute,
+     * or a named region mapped to a CSS selector via Behat configuration).
+     * Supports regular expressions in text value.
+     * 
+     * Example: Given I should see "My Text" in the "header .login-form" region 
+     * Example: Given I should not see "My Text" in the "My Login Form" region 
+     * 
+     * @Given /^I should (?P<negate>(?:(not |)))see "(?P<text>[^"]*)" in the "(?P<region>[^"]*)" region$/
+     */
+    public function iSeeTextInRegion($negate, $text, $region) {
+        $context = $this->getMainContext();
+        $regionObj = $context->getRegionObj($region);
+        assertNotNull($regionObj);
+
+        $actual = $regionObj->getText();
+        $actual = preg_replace('/\s+/u', ' ', $actual);
+        $regex  = '/'.preg_quote($text, '/').'/ui';
+
+        if(trim($negate)) {
+            if (preg_match($regex, $actual)) {
+                $message = sprintf('The text "%s" was found in the text of the "%s" region.', $text, $region);
+                throw new \Exception($message, $this->session);
+            }
+        } else {
+            if (!preg_match($regex, $actual)) {
+                $message = sprintf('The text "%s" was not found anywhere in the text of the "%s" region.', $text, $region);
+                throw new \Exception($message, $this->session);
+            }
+        }
+        
     }
 
 }
