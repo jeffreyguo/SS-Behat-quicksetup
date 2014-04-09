@@ -606,12 +606,12 @@ JS;
         if(trim($negate)) {
             if (preg_match($regex, $actual)) {
                 $message = sprintf('The text "%s" was found in the text of the "%s" region.', $text, $region);
-                throw new \Exception($message, $this->session);
+                throw new \Exception($message, $this->getSession());
             }
         } else {
             if (!preg_match($regex, $actual)) {
                 $message = sprintf('The text "%s" was not found anywhere in the text of the "%s" region.', $text, $region);
-                throw new \Exception($message, $this->session);
+                throw new \Exception($message, $this->getSession());
             }
         }
         
