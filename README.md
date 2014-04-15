@@ -648,6 +648,11 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	    - Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
 	    # SilverStripe\Cms\Test\Behaviour\FixtureContext::stepCreateGroupWithPermissions()
 
+### Environment
+
+   Given /^the current date is "([^"]*)"$/
+   Given /^the current time is "([^"]*)"$/
+
 ### Transformations
 
 Behat [transformations](http://docs.behat.org/guides/2.definitions.html#step-argument-transformations)
