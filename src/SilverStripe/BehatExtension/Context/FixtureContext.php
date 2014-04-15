@@ -124,11 +124,7 @@ class FixtureContext extends BehatContext
 	 */
 	public function stepCreateRecord($type, $id) {
 		$class = $this->convertTypeToClass($type);
-		if($class == 'File' || is_subclass_of($class, 'File')) {
-			$fields = $this->prepareAsset($class, $id);
-		} else {
-			$fields = array();
-		}
+		$fields = $this->prepareFixture($class, $id);
 		$this->fixtureFactory->createObject($class, $id, $fields);
 	}
 
@@ -162,9 +158,7 @@ class FixtureContext extends BehatContext
 			$class,
 			array_combine($matches['key'], $matches['value'])
 		);
-		if($class == 'File' || is_subclass_of($class, 'File')) {
-			$fields = $this->prepareAsset($class, $id, $fields);
-		}
+		$fields = $this->prepareFixture($class, $id, $fields);
 		$this->fixtureFactory->createObject($class, $id, $fields);
 	}
 
@@ -180,9 +174,7 @@ class FixtureContext extends BehatContext
 		$class = $this->convertTypeToClass($type);
 		// TODO Support more than one record
 		$fields = $this->convertFields($class, $fieldsTable->getRowsHash());
-		if($class == 'File' || is_subclass_of($class, 'File')) {
-			$fields = $this->prepareAsset($class, $id, $fields);
-		}
+		$fields = $this->prepareFixture($class, $id, $fields);
 
 		// We should check if this fixture object already exists - if it does, we update it. If not, we create it
 		if($existingFixture = $this->fixtureFactory->get($class, $id)) {
@@ -418,7 +410,7 @@ class FixtureContext extends BehatContext
 	 */
 	public function aRecordWasLastEditedRelative($type, $id, $mod, $time) {
 		$class = $this->convertTypeToClass($type);
-		$fields = array();
+		$fields = $this->prepareFixture($class, $id);
 		$record = $this->fixtureFactory->createObject($class, $id, $fields);
 		$date = date("Y-m-d H:i:s",strtotime($time));
 		$table = \ClassInfo::baseDataClass(get_class($record));
@@ -440,6 +432,21 @@ class FixtureContext extends BehatContext
 				$record->ID
 			)); 
 		}
+	}
+	
+	/**
+	 * Prepares a fixture for use
+	 * 
+	 * @param string $class
+	 * @param string $identifier
+	 * @param array $data
+	 * @return array Prepared $data with additional injected fields
+	 */
+	protected function prepareFixture($class, $identifier, $data = array()) {
+		if($class == 'File' || is_subclass_of($class, 'File')) {
+			$data =  $this->prepareAsset($class, $identifier, $data);
+		}
+		return $data;
 	}
 
 	protected function prepareAsset($class, $identifier, $data = null) {
