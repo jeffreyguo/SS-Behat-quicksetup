@@ -366,4 +366,50 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		);
 	}
 
+	 /**
+	 * Sets the current date. Relies on the underlying functionality using
+	 * {@link SS_Datetime::now()} rather than PHP's system time methods like date().
+	 * Supports ISO fomat: Y-m-d
+	 * Example: Given the current date is "2009-10-31"
+	 *
+	 * @Given /^the current date is "([^"]*)"$/
+	 */
+	public function givenTheCurrentDateIs($date) {
+		$newDatetime = \DateTime::createFromFormat('Y-m-d', $date);
+		if(!$newDatetime) {
+			throw new InvalidArgumentException(sprintf('Invalid date format: %s (requires "Y-m-d")', $date));
+		}
+
+		$state = $this->testSessionEnvironment->getState();
+		$oldDatetime = \DateTime::createFromFormat('Y-m-d H:i:s', isset($state->datetime) ? $state->datetime : null);
+		if($oldDatetime) {
+			$newDatetime->setTime($oldDatetime->format('H'), $oldDatetime->format('i'), $oldDatetime->format('s'));
+		}
+		$state->datetime = $newDatetime->format('Y-m-d H:i:s');
+		$this->testSessionEnvironment->applyState($state);
+	}
+
+	/**
+	 * Sets the current time. Relies on the underlying functionality using
+	 * {@link \SS_Datetime::now()} rather than PHP's system time methods like date().
+	 * Supports ISO fomat: H:i:s
+	 * Example: Given the current time is "20:31:50"
+	 *
+	 * @Given /^the current time is "([^"]*)"$/
+	 */
+	public function givenTheCurrentTimeIs($time) {
+		$newDatetime = \DateTime::createFromFormat('H:i:s', $date);
+		if(!$newDatetime) {
+			throw new InvalidArgumentException(sprintf('Invalid date format: %s (requires "H:i:s")', $date));
+		}
+
+		$state = $this->testSessionEnvironment->getState();
+		$oldDatetime = \DateTime::createFromFormat('Y-m-d H:i:s', isset($state->datetime) ? $state->datetime : null);
+		if($oldDatetime) {
+			$newDatetime->setDate($oldDatetime->format('Y'), $oldDatetime->format('m'), $oldDatetime->format('d'));
+		}
+		$state->datetime = $newDatetime->format('Y-m-d H:i:s');
+		$this->testSessionEnvironment->applyState($state);
+	}
+
 }
