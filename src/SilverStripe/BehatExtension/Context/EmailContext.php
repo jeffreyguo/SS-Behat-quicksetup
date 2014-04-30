@@ -142,10 +142,28 @@ class EmailContext extends BehatContext
         assertNotNull($linkEl);
         $link = $linkEl->attr('href');
         assertNotNull($link);
-
+        
         return new Step\When(sprintf('I go to "%s"', $link));
     }
 
+    /**
+     * @When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)" titled "([^"]*)"$/
+     */
+    public function iGoToInTheEmailToTitled($linkSelector, $direction, $email, $title)
+    {
+        $to = ($direction == 'to') ? $email : null;
+        $from = ($direction == 'from') ? $email : null;
+        $match = $this->mailer->findEmail($to, $from, $title);
+        assertNotNull($match);
+
+        $crawler = new Crawler($match->Content);
+        $linkEl = $crawler->selectLink($linkSelector);
+        assertNotNull($linkEl);
+        $link = $linkEl->attr('href');
+        assertNotNull($link);
+        return new Step\When(sprintf('I go to "%s"', $link));
+    }
+    
     /**
      * Assumes an email has been identified by a previous step,
      * e.g. through 'Given there should be an email to "test@test.com"'.
