@@ -80,7 +80,10 @@ class TestMailer extends \Mailer {
 	 */
 	public function findEmail($to = null, $from = null, $subject = null, $content = null) {
 		$matches = $this->findEmails($to, $from, $subject, $content);
-		return $matches ? $matches[0] : null;
+                //got the count of matches emails
+                $emailCount = count($matches);
+                //get the last(latest) one
+		return $matches ? $matches[$emailCount-1] : null;
 	}
 
 	/**
