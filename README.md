@@ -514,7 +514,10 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	    - Selects option in select field with specified id|name|label|value.
 
 	 When /^(?:|I )additionally select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)"$/
-	    - Selects additional option in select field with specified id|name|label|value.
+		- Selects additional option in select field with specified id|name|label|value.
+
+	 When /^I select the "([^"]*)" radio button$/
+		- Selects a radio button with the given id|name|label|value
 
 	 When /^(?:|I )check "(?P<option>(?:[^"]|\\")*)"$/
 	    - Checks checkbox with specified id|name|label|value.

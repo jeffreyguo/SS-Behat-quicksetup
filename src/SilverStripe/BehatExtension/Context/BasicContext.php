@@ -629,4 +629,17 @@ JS;
         
     }
 
+	/**
+	 * Selects the specified radio button
+	 * 
+	 * @Given /^I select the "([^"]*)" radio button$/
+	 */
+	public function iSelectTheRadioButton($radioLabel) {
+		$session = $this->getSession();
+		$radioButton = $session->getPage()->findField($radioLabel);
+		assertNotNull($radioButton);
+		assertEquals('radio', $radioButton->getAttribute('type'));
+		$session->getDriver()->click($radioButton->getXPath());
+	}
+
 }
