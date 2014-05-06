@@ -134,7 +134,7 @@ JS;
         }
 
         $javascript = <<<JS
-if ('undefined' !== typeof window.jQuery) {
+if ('undefined' !== typeof window.jQuery && 'undefined' !== typeof window.jQuery.fn.on) {
     window.jQuery(document).on('ajaxStart.ss.test.behaviour', function(){
         window.__ajaxStatus = function() {
             return 'waiting';
@@ -180,7 +180,7 @@ JS;
         $this->handleAjaxTimeout();
 
         $javascript = <<<JS
-if ('undefined' !== typeof window.jQuery) {
+if ('undefined' !== typeof window.jQuery && 'undefined' !== typeof window.jQuery.fn.off) {
 window.jQuery(document).off('ajaxStart.ss.test.behaviour');
 window.jQuery(document).off('ajaxComplete.ss.test.behaviour');
 window.jQuery(document).off('ajaxSuccess.ss.test.behaviour');
