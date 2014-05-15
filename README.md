@@ -569,6 +569,10 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^I type "([^"]*)" into the dialog$/
 
+	Given /^I (?:press|follow) the "([^"]*)" (?:button|link), confirming the dialog$/
+
+	Given /^I (?:press|follow) the "([^"]*)" (?:button|link), dismissing the dialog$/
+
 	Given /^I confirm the dialog$/
 
 	Given /^I dismiss the dialog$/

@@ -332,6 +332,18 @@ JS;
     }
 
     /**
+     * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
+     * Example: I follow the "Remove current combo" link, dismissing the dialog
+     * 
+     * @Given /^I (?:press|follow) the "([^"]*)" (?:button|link), dismissing the dialog$/
+     */
+    public function stepIPressTheButtonDismissingTheDialog($button)
+    {
+		$this->stepIPressTheButton($button);
+		$this->iDismissTheDialog();
+    }
+
+    /**
      * @Given /^I click "([^"]*)" in the "([^"]*)" element$/
      */
     public function iClickInTheElement($text, $selector)
