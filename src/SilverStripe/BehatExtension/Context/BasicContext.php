@@ -648,9 +648,10 @@ JS;
 	 */
 	public function iSelectTheRadioButton($radioLabel) {
 		$session = $this->getSession();
-		$radioButton = $session->getPage()->findField($radioLabel);
+		$radioButton = $session->getPage()->find('named', array(
+                      'radio', $this->getSession()->getSelectorsHandler()->xpathLiteral($radioLabel)
+                  ));
 		assertNotNull($radioButton);
-		assertEquals('radio', $radioButton->getAttribute('type'));
 		$session->getDriver()->click($radioButton->getXPath());
 	}
 
