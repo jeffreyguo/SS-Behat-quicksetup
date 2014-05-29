@@ -1,38 +1,39 @@
 {
-    "name": "silverstripe/behat-extension",
-    "type": "behat-extension",
-    "description": "SilverStripe framework extension for Behat",
-    "keywords": ["framework", "web", "bdd", "silverstripe"],
-    "homepage": "http://silverstripe.org",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Michal Ochman",
-            "email": "ochman.d.michal@gmail.com"
-        },
-        {
-            "name": "Ingo Schommer",
-            "email": "ingo@silverstripe.com"
-        }
-    ],
+	"name": "silverstripe/behat-extension",
+	"type": "behat-extension",
+	"description": "SilverStripe framework extension for Behat",
+	"keywords": ["framework", "web", "bdd", "silverstripe"],
+	"homepage": "http://silverstripe.org",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Michal Ochman",
+			"email": "ochman.d.michal@gmail.com"
+		},
+		{
+			"name": "Ingo Schommer",
+			"email": "ingo@silverstripe.com"
+		}
+	],
 
-    "require": {
-        "php": ">=5.3.2",
-        "phpunit/phpunit": "3.7.*",
-        "behat/behat": "2.5.*@stable",
-        "behat/mink": "1.5.*@stable",
-        "behat/mink-extension": "1.3.*@stable",
-        "silverstripe/mink-selenium2-driver": "1.1.*-dev",
-        "symfony/dom-crawler": "*@stable",
-        "behat/mink-goutte-driver": "*",
-        "silverstripe/testsession": "*",
-        "silverstripe/framework": "~3.1"
-    },
-	
-    "autoload": {
-        "psr-0": {
-            "SilverStripe\\BehatExtension": "src/"
-        }
-    },
-    "minimum-stability": "dev"
+	"require": {
+		"php": ">=5.3.2",
+		"phpunit/phpunit": "3.7.*",
+		"behat/behat": "2.5.*@stable",
+		"behat/mink": "1.6.*-dev",
+		"behat/mink-extension": "1.3.*-dev",
+		"behat/mink-selenium2-driver": "1.2.*-dev",
+		"symfony/dom-crawler": "*@stable",
+		"fabpot/goutte": "1.*@stable",
+		"behat/mink-goutte-driver": "1.1.*-dev",
+		"silverstripe/testsession": "*",
+		"silverstripe/framework": "~3.1"
+	},
+
+	"autoload": {
+		"psr-0": {
+			"SilverStripe\\BehatExtension": "src/"
+		}
+	},
+	"minimum-stability": "dev"
 }

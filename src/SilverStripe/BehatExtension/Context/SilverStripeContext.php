@@ -412,4 +412,73 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		$this->testSessionEnvironment->applyState($state);
 	}
 
+	/**
+	 * Selects option in select field with specified id|name|label|value.
+	 *
+	 * @override /^(?:|I )select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)"$/
+	 */
+	public function selectOption($select, $option) {
+		// Find field
+		$field = $this
+			->getSession()
+			->getPage()
+			->findField($this->fixStepArgument($select));
+
+		// If field is visible then select it as per normal
+		if($field && $field->isVisible()) {
+			parent::selectOption($select, $option);
+		} else {
+			$this->selectOptionWithJavascript($select, $option);
+		}
+	}
+
+	/**
+	 * Selects option in select field with specified id|name|label|value using javascript
+	 * This method uses javascript to allow selection of options that may be
+	 * overridden by javascript libraries, and thus hide the element.
+	 *
+	 * @When /^(?:|I )select "(?P<option>(?:[^"]|\\")*)" from "(?P<select>(?:[^"]|\\")*)" with javascript$/
+	 */
+	public function selectOptionWithJavascript($select, $option) {
+		$select = $this->fixStepArgument($select);
+		$option = $this->fixStepArgument($option);
+		$page = $this->getSession()->getPage();
+
+		// Find field
+		$field = $page->findField($select);
+		if (null === $field) {
+			throw $page->elementNotFound('form field', 'id|name|label|value', $select);
+		}
+
+		// Find option
+		$opt = $field->find('named', array(
+			'option', $this->getSession()->getSelectorsHandler()->xpathLiteral($option)
+		));
+		if (null === $opt) {
+			throw $field->elementNotFound('select option', 'value|text', $option);
+		}
+
+		// Merge new option in with old handling both multiselect and single select
+		$value = $field->getValue();
+		$newValue = $opt->getAttribute('value');
+		if(is_array($value)) {
+			if(!in_array($newValue, $value)) $value[] = $newValue;
+		} else {
+			$value = $newValue;
+		}
+		$valueEncoded = json_encode($value);
+
+		// Inject this value via javascript
+		$fieldID = $field->getAttribute('ID');
+		$script = <<<EOS
+			(function($) {
+				$("#$fieldID")
+					.val($valueEncoded)
+					.trigger('liszt:updated')
+					.trigger('chosen:updated');
+			})(jQuery);
+EOS;
+		$this->getSession()->getDriver()->executeScript($script);
+	}
+
 }
