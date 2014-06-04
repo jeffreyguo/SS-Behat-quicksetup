@@ -597,6 +597,27 @@ JS;
     }
 
     /**
+     * Fills in a field in a specfic region similar to (@see iFollowInTheRegion or @see iSeeTextInRegion) 
+     *
+     * Example: Given I fill in "Hello" with "World"
+     *
+     * @Given /^I fill in "(?P<field>[^"]*)" with "(?P<value>[^"]*)" in the "(?P<region>[^"]*)" region$/
+     */
+    public function iFillinTheRegion($field, $value, $region){
+        $context = $this->getMainContext();
+        $regionObj = $context->getRegionObj($region);
+        assertNotNull($regionObj, "Region Object is null");
+
+        $fieldObj = $regionObj->findField($field);
+        if (empty($fieldObj)) {
+            throw new \Exception(sprintf('The field "%s" was not found in the region "%s" on the page %s', $field, $region, $this->getSession()->getCurrentUrl()));
+        }
+
+        $regionObj->fillField($field, $value);
+    }
+    
+
+    /**
      * Asserts text in a specific region (an element identified by a CSS selector, a "data-title" attribute,
      * or a named region mapped to a CSS selector via Behat configuration).
      * Supports regular expressions in text value.
