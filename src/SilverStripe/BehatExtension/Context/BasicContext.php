@@ -676,4 +676,78 @@ JS;
 		$session->getDriver()->click($radioButton->getXPath());
 	}
 
+    /**
+     * @Then /^the "([^"]*)" table should contain "([^"]*)"$/
+     */
+    public function theTableShouldContain($selector, $text) {
+        $table = $this->getTable($selector);
+
+        $element = $table->find('named', array('content', "'$text'"));
+        assertNotNull($element, sprintf('Element containing `%s` not found in `%s` table', $text, $selector));
+    }
+
+    /**
+     * @Then /^the "([^"]*)" table should not contain "([^"]*)"$/
+     */
+    public function theTableShouldNotContain($selector, $text) {
+        $table = $this->getTable($selector);
+
+        $element = $table->find('named', array('content', "'$text'"));
+        assertNull($element, sprintf('Element containing `%s` not found in `%s` table', $text, $selector));
+    }
+
+    /**
+     * @Given /^I click on "([^"]*)" in the "([^"]*)" table$/
+     */
+    public function iClickOnInTheTable($text, $selector) {
+        $table = $this->getTable($selector);
+
+        $element = $table->find('xpath', sprintf('//*[count(*)=0 and contains(.,"%s")]', $text));
+        assertNotNull($element, sprintf('Element containing `%s` not found', $text));
+        $element->click();
+    }
+
+    /**
+     * Finds the first visible table by various factors:
+     * - table[id]
+     * - table[title]
+     * - table *[class=title]
+     * - fieldset[data-name] table
+     * - table caption
+     *
+     * @return Behat\Mink\Element\NodeElement
+     */
+    protected function getTable($selector) {
+        $selector = $this->getSession()->getSelectorsHandler()->xpathLiteral($selector);
+        $page = $this->getSession()->getPage();
+        $candidates = $page->findAll(
+            'xpath',
+            $this->getSession()->getSelectorsHandler()->selectorToXpath(
+                "xpath", ".//table[(./@id = $selector or  contains(./@title, $selector))]"
+            )
+        );
+
+        // Find tables by a <caption> field
+        $candidates += $page->findAll('xpath', "//table//caption[contains(normalize-space(string(.)), $selector)]/ancestor-or-self::table[1]");
+
+        // Find tables by a .title node
+        $candidates += $page->findAll('xpath', "//table//*[@class='title' and contains(normalize-space(string(.)), $selector)]/ancestor-or-self::table[1]");
+
+        // Some tables don't have a visible title, so look for a fieldset with data-name instead
+        $candidates += $page->findAll('xpath', "//fieldset[@data-name=$selector]//table");
+
+        assertTrue((bool)$candidates, 'Could not find any table elements');
+
+        $table = null;
+        foreach($candidates as $candidate) {
+            if(!$table && $candidate->isVisible()) {
+                $table = $candidate;
+            }
+        }
+
+        assertTrue((bool)$table, 'Found table elements, but none are visible');
+
+        return $table;
+    }
+
 }
