@@ -24,8 +24,6 @@
 		"behat/mink-extension": "1.3.*-dev",
 		"behat/mink-selenium2-driver": "1.2.*-dev",
 		"symfony/dom-crawler": "*@stable",
-		"fabpot/goutte": "1.*@stable",
-		"behat/mink-goutte-driver": "1.1.*-dev",
 		"silverstripe/testsession": "*",
 		"silverstripe/framework": "~3.1"
 	},
