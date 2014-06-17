@@ -470,6 +470,12 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^I wait (?:for )?([\d\.]+) second(?:s?)$/
 
+	Then /^the "([^"]*)" table should contain "([^"]*)"$/
+
+	Then /^the "([^"]*)" table should not contain "([^"]*)"$/
+
+	Given /^I click on "([^"]*)" in the "([^"]*)" table$/
+
 ### Navigation
 
 	Given /^(?:|I )am on homepage$/
@@ -609,12 +615,6 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	 When /^I expand the "([^"]*)" CMS Panel$/
 
 	 When /^I click the "([^"]*)" CMS tab$/
-
-	 Then /^the "([^"]*)" table should contain "([^"]*)"$/
-
-	 Then /^the "([^"]*)" table should not contain "([^"]*)"$/
-
-	Given /^I click on "([^"]*)" in the "([^"]*)" table$/
 
 	 Then /^I can see the preview panel$/
 
