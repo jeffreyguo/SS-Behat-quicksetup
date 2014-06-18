@@ -131,22 +131,33 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 	/**
 	 * Returns MinkElement based off region defined in .yml file.
 	 * Also supports direct CSS selectors and regions identified by a "data-title" attribute.
-	 * 
+	 * When using the "data-title" attribute, ensure not to include double quotes.
+	 *
 	 * @param String $region Region name or CSS selector
 	 * @return MinkElement|null
 	 */
 	public function getRegionObj($region) {
-		// Try to find regions directly by CSS selector
-		$regionObj = $this->getSession()->getPage()->find('css', 
-                        $this->getSession()->getSelectorsHandler()->xpathLiteral($region));
+		// Try to find regions directly by CSS selector.
+		$regionObj = $this->getSession()->getPage()->find(
+			'css',
+			// Escape CSS selector
+			(false !== strpos($region, "'")) ? str_replace("'", "\'", $region) : $region
+		);
 		if($regionObj) {
 			return $regionObj;
 		}
 
-		// Fall back to region identified by data-tilte
-		$regionObj = $this->getSession()->getPage()->find('css', '[data-title="' . $region . '"]');
-		if($regionObj) {
-			return $regionObj;
+		// Fall back to region identified by data-title.
+		// Only apply if no double quotes exist in search string,
+		// which would break the CSS selector.
+		if(false === strpos($region, '"')) {
+			$regionObj = $this->getSession()->getPage()->find(
+				'css',
+				'[data-title="' . $region . '"]'
+			);
+			if($regionObj) {
+				return $regionObj;
+			}
 		}
 
 		// Look for named region
