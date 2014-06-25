@@ -459,7 +459,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		// Find field
 		$field = $page->findField($select);
 		if (null === $field) {
-			throw $page->elementNotFound('form field', 'id|name|label|value', $select);
+			throw new ElementNotFoundException($this->getSession(), 'form field', 'id|name|label|value', $select);
 		}
 
 		// Find option
@@ -467,7 +467,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 			'option', $this->getSession()->getSelectorsHandler()->xpathLiteral($option)
 		));
 		if (null === $opt) {
-			throw $field->elementNotFound('select option', 'value|text', $option);
+			throw new ElementNotFoundException($this->getSession(), 'select option', 'value|text', $option);
 		}
 
 		// Merge new option in with old handling both multiselect and single select
