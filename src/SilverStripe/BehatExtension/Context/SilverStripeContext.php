@@ -486,6 +486,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 			(function($) {
 				$("#$fieldID")
 					.val($valueEncoded)
+					.change()
 					.trigger('liszt:updated')
 					.trigger('chosen:updated');
 			})(jQuery);
