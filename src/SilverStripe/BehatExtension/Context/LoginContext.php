@@ -124,7 +124,7 @@ class LoginContext extends BehatContext
     public function stepILogInWith($email, $password)
     {        
         $page = $this->getSession()->getPage();
-        $forms = $page->findAll('css', 'form[action="Security/LoginForm"]');
+        $forms = $page->findAll('xpath', '//form[contains(@action, "Security/LoginForm")]');
         assertNotNull($forms, 'Login form not found');
 
         // Try to find visible forms on current page
@@ -142,7 +142,7 @@ class LoginContext extends BehatContext
             $loginUrl = $c->joinUrlParts($c->getBaseUrl(), $c->getLoginUrl());
             $this->getSession()->visit($loginUrl);
             $page = $this->getSession()->getPage();
-            $forms = $page->findAll('css', 'form[action="Security/LoginForm"]');
+            $forms = $page->findAll('xpath', '//form[contains(@action, "Security/LoginForm")]');
         }
 
         // Try to find visible forms again on login page.
