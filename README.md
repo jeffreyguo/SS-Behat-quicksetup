@@ -361,10 +361,10 @@ Refer to configuration section above to know how to set up the screenshot path.
 If you are unable to debug using the information collected with the above
 methods, it is possible to delay the step execution by adding the following step:
 
-    And I wait for "10000"
+    And I put a breakpoint
 
-where `10000` is the number of millisecods you wish the session to wait.
-It is very useful when you want to look at the error or developer console
+This will stop the execution of the tests until you press the return key in the 
+terminal. This is very useful when you want to look at the error or developer console
 inside the browser or if you want to interact with the session page manually.
 
 ### Can I set breakpoints through XDebug?
