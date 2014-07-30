@@ -750,4 +750,26 @@ JS;
         return $table;
     }
 
+	/**
+	 * Checks the order of two texts.
+	 * Assumptions: the two texts appear in their conjunct parent element once
+	 * @Then /^I should see the text "(?P<textBefore>(?:[^"]|\\")*)" (before|after) the text "(?P<textAfter>(?:[^"]|\\")*)" in the "(?P<element>[^"]*)" element$/
+	 */
+	public function theTextBeforeAfter($textBefore, $order, $textAfter, $element) {
+		$ele = $this->getSession()->getPage()->find('css', $element);
+		assertNotNull($ele, sprintf('%s not found', $element));
+
+		// Check both of the texts exist in the element
+		$text = $ele->getText();
+		assertTrue(strpos($text, $textBefore) !== 'FALSE', sprintf('%s not found in the element %s', $textBefore, $element));
+		assertTrue(strpos($text, $textAfter) !== 'FALSE', sprintf('%s not found in the element %s', $textAfter, $element));
+
+		/// Use strpos to get the position of the first occurrence of the two texts (case-sensitive)
+		// and compare them with the given order (before or after)
+		if($order === 'before') {
+			assertTrue(strpos($text, $textBefore) < strpos($text, $textAfter));
+		} else {
+			assertTrue(strpos($text, $textBefore) > strpos($text, $textAfter));
+		}
+	}
 }
