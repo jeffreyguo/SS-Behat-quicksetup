@@ -197,13 +197,15 @@ class FeatureContext extends SilverStripeContext {
         $factory->define('Member', $blueprint);
 
         // Auto-publish pages
-        foreach(\ClassInfo::subclassesFor('SiteTree') as $id => $class) {
-            $blueprint = \Injector::inst()->create('FixtureBlueprint', $class);
-            $blueprint->addCallback('afterCreate', function($obj, $identifier, &$data, &$fixtures) {
-                $obj->publish('Stage', 'Live');
-            });
-            $factory->define($class, $blueprint);
-        } 
+        if (class_exists('SiteTree')) {
+            foreach(\ClassInfo::subclassesFor('SiteTree') as $id => $class) {
+                $blueprint = \Injector::inst()->create('FixtureBlueprint', $class);
+                $blueprint->addCallback('afterCreate', function($obj, $identifier, &$data, &$fixtures) {
+                    $obj->publish('Stage', 'Live');
+                });
+                $factory->define($class, $blueprint);
+            }
+        }
     }
 
     public function setMinkParameters(array $parameters) {
