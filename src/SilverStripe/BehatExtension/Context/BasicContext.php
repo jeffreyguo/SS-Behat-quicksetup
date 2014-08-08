@@ -76,9 +76,13 @@ class BasicContext extends BehatContext
     public function appendErrorHandlerBeforeStep(StepEvent $event)
     {
         $javascript = <<<JS
-window.onerror = function(msg) {
+window.onerror = function(message, file, line, column, error) {
     var body = document.getElementsByTagName('body')[0];
-    body.setAttribute('data-jserrors', '[captured JavaScript error] ' + msg);
+	var msg = message + " in " + file + ":" + line + ":" + column;
+	if(error !== undefined && error.stack !== undefined) {
+		msg += "\\nSTACKTRACE:\\n" + error.stack;
+	}
+	body.setAttribute('data-jserrors', '[captured JavaScript error] ' + msg);
 }
 if ('undefined' !== typeof window.jQuery) {
     window.jQuery('body').ajaxError(function(event, jqxhr, settings, exception) {
@@ -217,7 +221,7 @@ JS;
 
     /**
      * Delete any created files and folders from assets directory
-     * 
+     *
      * @AfterScenario @assets
      */
     public function cleanAssetsAfterScenario(ScenarioEvent $event)
@@ -244,7 +248,7 @@ JS;
 
         \Filesystem::makeFolder($path);
         $path = realpath($path);
-        
+
         if (!file_exists($path)) {
             file_put_contents('php://stderr', sprintf('"%s" is not valid directory and failed to create it' . PHP_EOL, $path));
             return;
@@ -284,7 +288,7 @@ JS;
     /**
      * @Given /^the page can't be found/
      */
-    public function stepPageCantBeFound() 
+    public function stepPageCantBeFound()
     {
         $page = $this->getSession()->getPage();
         assertTrue(
@@ -320,9 +324,9 @@ JS;
 
     /**
      * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
-     * Example1: I press the "Remove current combo" button, confirming the dialog 
+     * Example1: I press the "Remove current combo" button, confirming the dialog
      * Example2: I follow the "Remove current combo" link, confirming the dialog
-     * 
+     *
      * @Given /^I (?:press|follow) the "([^"]*)" (?:button|link), confirming the dialog$/
      */
     public function stepIPressTheButtonConfirmingTheDialog($button)
@@ -334,7 +338,7 @@ JS;
     /**
      * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
      * Example: I follow the "Remove current combo" link, dismissing the dialog
-     * 
+     *
      * @Given /^I (?:press|follow) the "([^"]*)" (?:button|link), dismissing the dialog$/
      */
     public function stepIPressTheButtonDismissingTheDialog($button)
@@ -454,7 +458,7 @@ JS;
 	 * Transforms relative time statements compatible with strtotime().
 	 * Example: "time of 1 hour ago" might return "22:00:00" if its currently "23:00:00".
 	 * Customize through {@link setTimeFormat()}.
-	 * 
+	 *
 	 * @Transform /^(?:(the|a)) time of (?<val>.*)$/
 	 */
 	public function castRelativeToAbsoluteTime($prefix, $val) {
@@ -470,9 +474,9 @@ JS;
 
 	/**
 	 * Transforms relative date and time statements compatible with strtotime().
-	 * Example: "datetime of 2 days ago" might return "2013-10-10 22:00:00" if its currently 
+	 * Example: "datetime of 2 days ago" might return "2013-10-10 22:00:00" if its currently
 	 * the 12th of October 2013. Customize through {@link setDatetimeFormat()}.
-	 * 
+	 *
 	 * @Transform /^(?:(the|a)) datetime of (?<val>.*)$/
 	 */
 	public function castRelativeToAbsoluteDatetime($prefix, $val) {
@@ -488,9 +492,9 @@ JS;
 
 	/**
 	 * Transforms relative date statements compatible with strtotime().
-	 * Example: "date 2 days ago" might return "2013-10-10" if its currently 
+	 * Example: "date 2 days ago" might return "2013-10-10" if its currently
 	 * the 12th of October 2013. Customize through {@link setDateFormat()}.
-	 * 
+	 *
 	 * @Transform /^(?:(the|a)) date of (?<val>.*)$/
 	 */
 	public function castRelativeToAbsoluteDate($prefix, $val) {
@@ -539,13 +543,13 @@ JS;
     public function stepFieldShouldBeDisabled($name, $type, $negate) {
         $page = $this->getSession()->getPage();
         if($type == 'field') {
-            $element = $page->findField($name);    
+            $element = $page->findField($name);
         } else {
             $element = $page->find('named', array(
                 'button', $this->getSession()->getSelectorsHandler()->xpathLiteral($name)
             ));
         }
-        
+
         assertNotNull($element, sprintf("Element '%s' not found", $name));
 
         $disabledAttribute = $element->getAttribute('disabled');
@@ -577,27 +581,27 @@ JS;
     /**
      * Clicks a link in a specific region (an element identified by a CSS selector, a "data-title" attribute,
      * or a named region mapped to a CSS selector via Behat configuration).
-     * 
-     * Example: Given I follow "Select" in the "header .login-form" region 
-     * Example: Given I follow "Select" in the "My Login Form" region 
-     * 
+     *
+     * Example: Given I follow "Select" in the "header .login-form" region
+     * Example: Given I follow "Select" in the "My Login Form" region
+     *
      * @Given /^I (?:follow|click) "(?P<link>[^"]*)" in the "(?P<region>[^"]*)" region$/
      */
     public function iFollowInTheRegion($link, $region) {
         $context = $this->getMainContext();
         $regionObj = $context->getRegionObj($region);
         assertNotNull($regionObj);
-        
+
         $linkObj = $regionObj->findLink($link);
         if (empty($linkObj)) {
             throw new \Exception(sprintf('The link "%s" was not found in the region "%s" on the page %s', $link, $region, $this->getSession()->getCurrentUrl()));
         }
 
-        $linkObj->click();        
+        $linkObj->click();
     }
 
     /**
-     * Fills in a field in a specfic region similar to (@see iFollowInTheRegion or @see iSeeTextInRegion) 
+     * Fills in a field in a specfic region similar to (@see iFollowInTheRegion or @see iSeeTextInRegion)
      *
      * Example: Given I fill in "Hello" with "World"
      *
@@ -615,16 +619,16 @@ JS;
 
         $regionObj->fillField($field, $value);
     }
-    
+
 
     /**
      * Asserts text in a specific region (an element identified by a CSS selector, a "data-title" attribute,
      * or a named region mapped to a CSS selector via Behat configuration).
      * Supports regular expressions in text value.
-     * 
-     * Example: Given I should see "My Text" in the "header .login-form" region 
-     * Example: Given I should not see "My Text" in the "My Login Form" region 
-     * 
+     *
+     * Example: Given I should see "My Text" in the "header .login-form" region
+     * Example: Given I should not see "My Text" in the "My Login Form" region
+     *
      * @Given /^I should (?P<negate>(?:(not |)))see "(?P<text>[^"]*)" in the "(?P<region>[^"]*)" region$/
      */
     public function iSeeTextInRegion($negate, $text, $region) {
@@ -639,7 +643,7 @@ JS;
         if(trim($negate)) {
             if (preg_match($regex, $actual)) {
                 $message = sprintf(
-                    'The text "%s" was found in the text of the "%s" region on the page %s.', 
+                    'The text "%s" was found in the text of the "%s" region on the page %s.',
                     $text,
                     $region,
                     $this->getSession()->getCurrentUrl()
@@ -659,12 +663,12 @@ JS;
                 throw new \Exception($message);
             }
         }
-        
+
     }
 
 	/**
 	 * Selects the specified radio button
-	 * 
+	 *
 	 * @Given /^I select the "([^"]*)" radio button$/
 	 */
 	public function iSelectTheRadioButton($radioLabel) {
