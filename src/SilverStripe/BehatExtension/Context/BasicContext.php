@@ -800,4 +800,90 @@ JS;
 			assertTrue(strpos($text, $textBefore) > strpos($text, $textAfter));
 		}
 	}
+
+	/**
+	* Wait until a certain amount of seconds till I see an element  identified by a CSS selector.
+	*
+	* Example: Given I wait for 10 seconds until I see the ".css_element" element
+	*
+	* @Given /^I wait for (\d+) seconds until I see the "([^"]*)" element$/
+	**/
+	public function iWaitXUntilISee($wait, $selector) {
+		$page = $this->getSession()->getPage();
+
+		$this->spin(function($page) use ($page, $selector){
+			$element = $page->find('css', $selector);
+
+			if(empty($element)) {
+				return false;
+			} else {
+				return $element->isVisible();
+			}
+
+		}, $wait);
+	}
+
+            /**
+	* Waits until it can see an element identified by a CSS selector, 
+	* or until it timeouts (default is 60 seconds)
+	*
+	* Example: Given I wait until I see the ".css_element" element
+	*  
+	* @Given /^I wait until I see the "([^"]*)" element$/
+	*  
+	*/
+	public function iWaitUntilISee($selector) {
+		$page = $this->getSession()->getPage();
+
+		$this->spin(function($page) use ($page, $selector){
+			$element = $page->find('css', $selector);
+
+			if(empty($element)) {
+				return false;
+			} else {
+				return $element->isVisible();
+			}
+		});
+	}
+
+	/**
+	* Waits until it can see a certain text in the page, or until it timeouts (default is 60 seconds)
+	*
+	* Example: Given I wait until I see the text "Hello World"
+	* 
+	* @Given /^I wait until I see the text "([^"]*)"$/
+	*/
+	public function iWaitUntilISeeText($text) {
+		$page = $this->getSession()->getPage();
+
+
+		$this->spin(function($page) use ($page, $text){
+			// returns true if text is contained within the page
+			return (strpos($page->getText(), $text) !== false);
+		});
+    	}
+
+	/**
+	* Continuously poll until callback returns true. Read more about the use of
+	* the spin function (@link http://docs.behat.org/en/v2.5/cookbook/using_spin_functions.html) 
+	* If the callback doesn't return true within $wait, timeout and throw error
+	* 
+	* @param  callback  $lambda  function to run continuously
+	* @param  integer   $wait    Timeout, default is 60 secs.
+	* 
+	* @return boolean  Returns true or false depending on the spin function
+	*/
+	public function spin($lambda, $wait = 5, $sleep = 0.5) {
+		for ($i = 0; $i < $wait; $i++){
+			try {
+				if ($lambda($this)) return true;
+			} catch (\Exception $e) {
+				// do nothing
+			}
+			
+			sleep($sleep);
+		}
+
+		throw new \Exception ("Timeout thrown: Callback does not return true");
+	}
 }
