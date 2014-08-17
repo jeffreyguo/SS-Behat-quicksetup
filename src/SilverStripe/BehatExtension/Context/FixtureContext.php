@@ -219,7 +219,59 @@ class FixtureContext extends BehatContext
 		}
 	}
 
-  
+ 	/**
+	 * Assign a type of object to another type of object
+	 * The base object will be created if it does not exist already
+	 * Assumption: one object has relationship  (has_one, has_many or many_many ) with the other object
+	 * @example I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1"
+	 * @Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"$/
+	 */
+	public function stepIAssignObjToObj($type, $value, $relationType, $relationId) {
+		$class = $this->convertTypeToClass($type);
+		$relationClass = $this->convertTypeToClass($relationType);
+
+		// Check if this fixture object already exists - if not, we create it
+		$relationObj = $this->fixtureFactory->get($relationClass, $relationId);
+		if(!$relationObj) $relationObj = $this->fixtureFactory->createObject($relationClass, $relationId);
+
+		// Check if there is relationship defined in many_many (includes belongs_many_many)
+		$manyField = null;
+		$oneField = null;
+		if ($relationObj->many_many()) {
+			$manyField = array_search($class, $relationObj->many_many());
+		}
+		if(empty($manyField) && $relationObj->has_many()) {
+			$manyField = array_search($class, $relationObj->has_many());
+		}
+		if(empty($manyField) && $relationObj->has_one()) {
+			$oneField = array_search($class, $relationObj->has_one());
+		}
+		if(empty($manyField) && empty($oneField)) {
+			throw new \Exception("'$relationClass' has no relationship (has_one, has_many and many_many) with '$class'!");
+		}
+
+		// Get the searchable field to check if the fixture object already exists 
+		$temObj = new $class;
+		if(isset($temObj->Name)) $field = "Name";
+		else if(isset($temObj->Title)) $field = "Title";
+		else $field = "ID";
+
+		// Check if the fixture object exists - if not, we create it
+		$obj = \DataObject::get()->filter($field, $value)->first();
+		if(!$obj) $obj = $this->fixtureFactory->createObject($class, $value);
+		// If has_many or many_many, add this fixture object to the relation object
+		// If has_one, set value to the joint field with this fixture object's ID
+		if($manyField) {
+			$relationObj->$manyField()->add($obj);
+		} else if($oneField) {
+			// E.g. $has_one = array('PanelOffer' => 'Offer');
+			// then the join field is PanelOfferID. This is the common rule in the CMS
+			$relationObj->{$oneField . 'ID'} = $obj->ID;
+		} 
+		
+		$relationObj->write();
+	}
+ 
 	 /**
 	 * Example: Given the "page" "Page 1" is not published 
 	 * 
