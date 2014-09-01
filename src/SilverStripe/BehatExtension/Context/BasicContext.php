@@ -97,21 +97,6 @@ JS;
         $this->getSession()->executeScript($javascript);
     }
 
-	/**
-	 * @BeforeStep ~@resizes&&~@modal
-	 *
-	 * Resize the window to maximum size, unless the step will resize itself
-	 */
-	public function maximiseWindowBeforeStep(StepEvent $event) {
-		$driver = $this->getSession()->getDriver();
-		if($screenSize = getenv('BEHAT_SCREEN_SIZE')) {
-			list($screenWidth, $screenHeight) = explode('x', $screenSize);
-			$driver->resizeWindow((int)$screenWidth, (int)$screenHeight);
-		} else {
-			$driver->resizeWindow(1024, 768);
-		}
-	}
-
     /**
      * @AfterStep ~@modal
      *

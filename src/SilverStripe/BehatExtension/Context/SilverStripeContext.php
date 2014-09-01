@@ -62,7 +62,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 	protected $context;
 
 	protected $testSessionEnvironment;
-	
+
 
 	/**
 	 * Initializes context.
@@ -205,17 +205,18 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 			$this->testSessionEnvironment->loadFixtureIntoDb($fixtureFile);
 		}
 
-
 		if($screenSize = getenv('BEHAT_SCREEN_SIZE')) {
 			list($screenWidth, $screenHeight) = explode('x', $screenSize);
 			$this->getSession()->resizeWindow((int)$screenWidth, (int)$screenHeight);
+		} else {
+			$this->getSession()->resizeWindow(1024, 768);
 		}
 	}
 
 	/**
 	 * Returns a parameter map of state to set within the test session.
 	 * Takes TESTSESSION_PARAMS environment variable into account for run-specific configurations.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getTestSessionState() {
@@ -350,10 +351,10 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		if($fields) foreach($fields as $field) {
 			if($field->isVisible()) {
 				$field->setValue($value);
-				return;        
+				return;
 			}
 		}
-		
+
 		throw new ElementNotFoundException(
 			$this->getSession(), 'form field', 'id|name|label|value', $field
 		);
@@ -370,7 +371,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		if($links) foreach($links as $l) {
 			if($l->isVisible()) {
 				$l->click();
-				return;        
+				return;
 			}
 		}
 		throw new ElementNotFoundException(
