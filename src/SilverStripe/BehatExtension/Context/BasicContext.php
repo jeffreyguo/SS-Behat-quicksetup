@@ -114,10 +114,11 @@ JS;
         }
 
         $javascript = <<<JS
-(function() {
-    var body = document.getElementsByTagName('body')[0];
-    body.removeAttribute('data-jserrors');
-})();
+if ('undefined' !== typeof window.jQuery) {
+	$(document).ready(function() {
+		window.jQuery('body').removeAttribute('data-jserrors');
+	});
+}
 JS;
 
         $this->getSession()->executeScript($javascript);
