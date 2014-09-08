@@ -115,8 +115,8 @@ JS;
 
         $javascript = <<<JS
 if ('undefined' !== typeof window.jQuery) {
-	$(document).ready(function() {
-		window.jQuery('body').removeAttribute('data-jserrors');
+	window.jQuery(document).ready(function() {
+		window.jQuery('body').removeAttr('data-jserrors');
 	});
 }
 JS;
