@@ -215,13 +215,34 @@ JS;
      *
      * @AfterStep
      */
-    public function takeScreenshotAfterFailedStep(StepEvent $event)
-    {
-        if (4 === $event->getResult()) {
-            $this->takeScreenshot($event);
-        }
-    }
+	public function takeScreenshotAfterFailedStep(StepEvent $event)
+	{
+		if (4 === $event->getResult()) {
+			$this->takeScreenshot($event);
+		}
+	}
 
+	/**
+	 * Close modal dialog if test scenario fails on CMS page
+	 *
+	 * @AfterScenario
+	 */
+	public function closeModalDialog(ScenarioEvent $event) {
+		// Only for failed tests on CMS page
+		if (4 === $event->getResult()) {
+			$cmsElement = $this->getSession()->getPage()->find('css', '.cms');
+			if($cmsElement) {
+				try {
+					// Navigate away triggered by reloading the page
+					$this->getSession()->reload();
+					$this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
+				} catch(\WebDriver\Exception $e) {
+					// no-op, alert might not be present
+				}
+			}
+		}
+	}
+	
     /**
      * Delete any created files and folders from assets directory
      *
