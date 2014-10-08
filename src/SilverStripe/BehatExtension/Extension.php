@@ -54,6 +54,7 @@ class Extension implements ExtensionInterface
         $container->setParameter('behat.silverstripe_extension.admin_url', $config['admin_url']);
         $container->setParameter('behat.silverstripe_extension.login_url', $config['login_url']);
         $container->setParameter('behat.silverstripe_extension.screenshot_path', $config['screenshot_path']);
+        $container->setParameter('behat.silverstripe_extension.create_temp_database', $config['create_temp_database']);
         $container->setParameter('behat.silverstripe_extension.ajax_timeout', $config['ajax_timeout']);
         if (isset($config['ajax_steps'])) {
             $container->setParameter('behat.silverstripe_extension.ajax_steps', $config['ajax_steps']);
@@ -82,6 +83,9 @@ class Extension implements ExtensionInterface
     {
         $builder->
             children()->
+                scalarNode('create_temp_database')->
+                    defaultValue(true)->
+                end()->
                 scalarNode('framework_path')->
                     defaultValue('framework')->
                 end()->

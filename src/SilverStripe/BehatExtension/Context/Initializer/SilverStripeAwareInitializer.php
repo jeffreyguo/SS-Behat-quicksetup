@@ -24,8 +24,13 @@ use SilverStripe\BehatExtension\Context\SilverStripeAwareContextInterface;
  */
 class SilverStripeAwareInitializer implements InitializerInterface
 {
-    
-    private $databaseName;
+
+    /**
+     * @var bool
+     */
+    protected $createTempDatabase;
+
+    protected $databaseName;
     
     /**
      * @var Array
@@ -57,40 +62,36 @@ class SilverStripeAwareInitializer implements InitializerInterface
 	 */
 	protected $testSessionEnvironment;
 
-    /**
-     * Initializes initializer.
-     */
-    public function __construct($frameworkPath)
-    {
-        $this->bootstrap($frameworkPath);
+	protected $frameworkPath;
 
-		file_put_contents('php://stdout', "Creating test session environment" . PHP_EOL);
+	public function initTestSession() {
+		$this->bootstrap($this->frameworkPath);
 
-		$testEnv = \Injector::inst()->get('TestSessionEnvironment');
-		$testEnv->startTestSession(array(
-			'createDatabase' => true
-		));
+		if($this->createTempDatabase) {
+			file_put_contents('php://stdout', "Creating test session environment" . PHP_EOL);
 
-		$state = $testEnv->getState();
+			$testEnv = \Injector::inst()->get('TestSessionEnvironment');
+			$testEnv->startTestSession();
 
-		$this->databaseName = $state->database;
-		$this->testSessionEnvironment = $testEnv;
+			$state = $testEnv->getState();
+			$this->databaseName = $state->database;
+			$this->testSessionEnvironment = $testEnv;
 
-		file_put_contents('php://stdout', "Temp Database: $this->databaseName" . PHP_EOL . PHP_EOL);
+			file_put_contents('php://stdout', "Temp Database: $this->databaseName" . PHP_EOL . PHP_EOL);
 
-        register_shutdown_function(array($this, '__destruct'));
-    }
+			register_shutdown_function(array($this, 'killTestSession'));
+		}
+	}
 
-    public function __destruct()
-    {
-        file_put_contents('php://stdout', "Killing test session environment...");
+	public function killTestSession() {
+		file_put_contents('php://stdout', "Killing test session environment...");
 
-        if($this->testSessionEnvironment) {
-            $this->testSessionEnvironment->endTestSession();
-        }
+		if($this->testSessionEnvironment) {
+			$this->testSessionEnvironment->endTestSession();
+		}
 
-        file_put_contents('php://stdout', " done!" . PHP_EOL);
-    }
+		file_put_contents('php://stdout', " done!" . PHP_EOL);
+	}
 
     /**
      * Checks if initializer supports provided context.
@@ -111,6 +112,7 @@ class SilverStripeAwareInitializer implements InitializerInterface
      */
     public function initialize(ContextInterface $context)
     {
+        $context->setCreateTempDatabase($this->createTempDatabase);
         $context->setDatabase($this->databaseName);
         $context->setAjaxSteps($this->ajaxSteps);
         $context->setAjaxTimeout($this->ajaxTimeout);
@@ -118,6 +120,18 @@ class SilverStripeAwareInitializer implements InitializerInterface
         $context->setRegionMap($this->regionMap);
         $context->setAdminUrl($this->adminUrl);
         $context->setLoginUrl($this->loginUrl);
+
+        $this->initTestSession();
+    }
+
+    public function setFrameworkPath($path)
+    {
+        $this->frameworkPath = $path;
+    }
+
+    public function setCreateTempDatabase($bool)
+    {
+        $this->createTempDatabase = $bool;
     }
 
     public function setAjaxSteps($ajaxSteps)
