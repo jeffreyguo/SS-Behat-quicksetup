@@ -135,7 +135,6 @@ Example: behat.yml
 	      base_url:  http://localhost/
 	      default_session: selenium2
 	      javascript_session: selenium2
-	      goutte: ~
 	      selenium2:
 	        browser: firefox
 
