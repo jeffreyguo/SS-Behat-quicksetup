@@ -641,6 +641,8 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is (?<state>[^"]*)$/
 	    - Example: Given the "page" "Page 1" is not published
+	    - Example: Given the "page" "Page 1" is published
+	    - Example: Given the "page" "Page 1" is deleted
 
 	Given /^there are the following ([^\s]*) records$/
 	    - Accepts YAML fixture definitions similar to the ones used in SilverStripe unit testing.
