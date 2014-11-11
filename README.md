@@ -652,7 +652,8 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^(?:(an|a|the) )"group" "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
 	    - Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
-	    # SilverStripe\Cms\Test\Behaviour\FixtureContext::stepCreateGroupWithPermissions()
+	Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"$/
+	    - Example: I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1"
 
 ### Environment
 
