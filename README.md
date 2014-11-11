@@ -638,6 +638,7 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is a (?<relation>[^\s]*) of (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"/
 	    - Example: Given the "page" "Page 1.1" is a child of the "page" "Page1"
+	      Note that this change is not published by default
 
 	Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is (?<state>[^"]*)$/
 	    - Example: Given the "page" "Page 1" is not published

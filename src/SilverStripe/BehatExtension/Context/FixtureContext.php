@@ -189,7 +189,8 @@ class FixtureContext extends BehatContext
 	}
 
 	/**
-	 * Example: Given the "page" "Page 1.1" is a child of the "page" "Page1" 
+	 * Example: Given the "page" "Page 1.1" is a child of the "page" "Page1".
+	 * Note that this change is not published by default
 	 * 
 	 * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" is a (?<relation>[^\s]*) of (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"/
 	 */
