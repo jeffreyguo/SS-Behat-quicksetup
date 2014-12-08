@@ -258,7 +258,7 @@ class FixtureContext extends BehatContext
 		else $field = "ID";
 
 		// Check if the fixture object exists - if not, we create it
-		$obj = \DataObject::get()->filter($field, $value)->first();
+		$obj = \DataObject::get($class)->filter($field, $value)->first();
 		if(!$obj) $obj = $this->fixtureFactory->createObject($class, $value);
 		// If has_many or many_many, add this fixture object to the relation object
 		// If has_one, set value to the joint field with this fixture object's ID
