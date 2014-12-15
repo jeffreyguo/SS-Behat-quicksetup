@@ -655,13 +655,38 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^(?:(an|a|the) )"group" "(?<id>[^"]+)" (?:(with|has)) permissions (?<permissionStr>.*)$/
 	    - Example: Given a "group" "Admin" with permissions "Access to 'Pages' section" and "Access to 'Files' section"
+	
 	Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"$/
 	    - Example: I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1"
 
+	Given /^the CMS settings have the following data$/
+		- Example: Given the CMS settings has the following data
+		- Note: It only works with the SilverStripe CMS module installed
+
 ### Environment
 
-   Given /^the current date is "([^"]*)"$/
-   Given /^the current time is "([^"]*)"$/
+	Given /^the current date is "([^"]*)"$/
+	Given /^the current time is "([^"]*)"$/
+
+### Email
+
+	Given /^there should (not |)be an email (to|from) "([^"]*)"$/
+	
+	Given /^there should (not |)be an email (to|from) "([^"]*)" titled "([^"]*)"$/
+
+	Given /^the email should (not |)contain "([^"]*)"$/
+		- Example: Given the email should contain "Thank you for registering!"
+
+	When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)"$/
+
+	When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)" titled "([^"]*)"$/
+
+	When /^I click on the "([^"]*)" link in the email"$/
+
+	Given /^I clear all emails$/
+
+	Then /^the email should (not |)contain the following data:$/
+		Example: Then the email should contain the following data:
 
 ### Transformations
 

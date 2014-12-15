@@ -107,25 +107,32 @@ class EmailContext extends BehatContext
     }
 
     /**
-     * Example: Given the email contains "Thank you for registering!".
+     * Example: Given the email should contain "Thank you for registering!".
      * Assumes an email has been identified by a previous step,
      * e.g. through 'Given there should be an email to "test@test.com"'.
      * 
-     * @Given /^the email should contain "([^"]*)"$/
-     */
-    public function thereTheEmailContains($content)
-    {
-        if(!$this->lastMatchedEmail) {
-            throw new \LogicException('No matched email found from previous step');
-        }
+	 * @Given /^the email should (not |)contain "([^"]*)"$/
+	 */
+	public function thereTheEmailContains($negate, $content)
+	{
+		if(!$this->lastMatchedEmail) {
+			throw new \LogicException('No matched email found from previous step');
+		}
 
-        $email = $this->lastMatchedEmail;
-        if($email->Content) {
-            assertContains($content, $email->Content);
-        } else {
-            assertContains($content, $email->PlainContent);
-        }
-    }
+		$email = $this->lastMatchedEmail;
+		$emailContent = null;
+		if($email->Content) {
+			$emailContent = $email->Content;
+		} else {
+			$emailContent = $email->PlainContent;
+		}
+
+		if(trim($negate)) {
+			assertNotContains($content, $emailContent);
+		} else {
+			assertContains($content, $emailContent);
+		}
+	}
 
     /**
      * @When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)"$/
@@ -194,4 +201,39 @@ class EmailContext extends BehatContext
         $this->lastMatchedEmail = null;
         return $this->mailer->clearEmails();
     }
+
+	/**
+	 * Example: Then the email should contain the following data:
+	 * | row1 |
+	 * | row2 |
+	 * Assumes an email has been identified by a previous step.
+	 * @Then /^the email should (not |)contain the following data:$/
+	 */
+	public function theEmailContainFollowingData($negate, TableNode $table) {
+		if(!$this->lastMatchedEmail) {
+			throw new \LogicException('No matched email found from previous step');
+		}
+
+		$email = $this->lastMatchedEmail;
+		$emailContent = null;
+		if($email->Content) {
+			$emailContent = $email->Content;
+		} else {
+			$emailContent = $email->PlainContent;
+		}
+		// Convert html content to plain text
+		$emailContent = strip_tags($emailContent);
+		$rows = $table->getRows();
+		
+		// For "should not contain"
+		if(trim($negate)) {
+			foreach($rows as $row) {
+				assertNotContains($row[0], $emailContent);
+			}
+		} else {
+			foreach($rows as $row) {
+				assertContains($row[0], $emailContent);
+			}
+		}
+	}
 }
