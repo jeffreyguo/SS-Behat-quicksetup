@@ -98,7 +98,8 @@ class LoginContext extends BehatContext
             $member->FirstName = $permCode;
             $member->Surname = "User";
             $member->Email = "$permCode@example.org";
-            $member->changePassword('secret');
+            $member->PasswordEncryption = "none";
+            $member->changePassword('Secret!123');
             $member->write();
             $group->Members()->add($member);
             \Member::set_password_validator($validator);
@@ -106,7 +107,7 @@ class LoginContext extends BehatContext
             $this->cache_generatedMembers[$permCode] = $member;
         }
 
-        return new Step\Given(sprintf('I log in with "%s" and "%s"', "$permCode@example.org", 'secret'));
+        return new Step\Given(sprintf('I log in with "%s" and "%s"', "$permCode@example.org", 'Secret!123'));
     }
 
     /**
