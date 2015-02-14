@@ -197,22 +197,31 @@ class FixtureContext extends BehatContext
 	 */
 	public function stepUpdateRecordRelation($type, $id, $relation, $relationType, $relationId) {
 		$class = $this->convertTypeToClass($type);
+
 		$relationClass = $this->convertTypeToClass($relationType);
-		
-		$obj = $this->fixtureFactory->get($class, $id);
-		if(!$obj) $obj = $this->fixtureFactory->createObject($class, $id);
-		
 		$relationObj = $this->fixtureFactory->get($relationClass, $relationId);
 		if(!$relationObj) $relationObj = $this->fixtureFactory->createObject($relationClass, $relationId);
-		
+
+		$data = array();
+		if($relation == 'child') {
+			$data['ParentID'] = $relationObj->ID;
+		}
+
+		$obj = $this->fixtureFactory->get($class, $id);
+		if($obj) {
+			$obj->update($data);
+			$obj->write();
+		} else {
+			$obj = $this->fixtureFactory->createObject($class, $id, $data);
+		}
+
 		switch($relation) {
 			case 'parent':
 				$relationObj->ParentID = $obj->ID;
 				$relationObj->write();
 				break;
 			case 'child':
-				$obj->ParentID = $relationObj->ID;
-				$obj->write();
+				// already written through $data above
 				break;
 			default:
 				throw new \InvalidArgumentException(sprintf(
