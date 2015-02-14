@@ -144,8 +144,9 @@ class FixtureContext extends BehatContext
    
 	/**
 	 * Example: Given a "page" "Page 1" with "URL"="page-1" and "Content"="my page 1" 
+	 * Example: Given the "page" "Page 1" has "URL"="page-1" and "Content"="my page 1" 
 	 * 
-	 * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" with (?<data>.*)$/
+	 * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" (?:(with|has)) (?<data>".*)$/
 	 */
 	public function stepCreateRecordWithData($type, $id, $data) {
 		$class = $this->convertTypeToClass($type);
