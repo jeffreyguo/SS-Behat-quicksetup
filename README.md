@@ -47,12 +47,16 @@ Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 Now get the latest Selenium2 server (requires Java):
 
-	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.39.0.jar
+	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.41.0.jar
 
 On OSX, you can also use [Homebrew](http://brew.sh/): `brew install selenium-server-standalone`.
 If you are having issues running Selenium with your browser please check 
 that you're on the [latest driver](https://code.google.com/p/selenium/downloads/list),
 since the download link above might be out of date.
+
+Ensure you have a supported version of firefox installed:
+
+	wget https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/26.0/mac/en-GB/Firefox%2026.0.dmg
 
 Now install the SilverStripe project as usual by opening it in a browser and following the instructions.
 Protip: You can skip this step by using `[SS_DATABASE_CHOOSE_NAME]` in a global 
@@ -71,7 +75,11 @@ in your project root, or set is as an environment variable in your terminal sess
 
 You can run the server locally in a separate Terminal session:
 
-    java -jar selenium-server-standalone-2.39.0.jar
+    java -jar selenium-server-standalone-2.41.0.jar
+
+In some cases it may be necessary to start a specific version of firefox
+
+	java -jar selenium-server-standalone-2.41.0.jar -Dwebdriver.firefox.bin="/Applications/Firefox26.app/Contents/MacOS/firefox-bin"
 
 ### Running the Tests
 
