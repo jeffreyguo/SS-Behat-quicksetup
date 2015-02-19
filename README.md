@@ -47,7 +47,7 @@ Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 Now get the latest Selenium2 server (requires Java):
 
-	wget https://selenium.googlecode.com/files/selenium-server-standalone-2.41.0.jar
+	wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar
 
 On OSX, you can also use [Homebrew](http://brew.sh/): `brew install selenium-server-standalone`.
 If you are having issues running Selenium with your browser please check 
