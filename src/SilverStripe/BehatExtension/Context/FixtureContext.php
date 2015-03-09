@@ -139,13 +139,23 @@ class FixtureContext extends BehatContext
 			$class,
 			array($field => $value)
 		);
-		$this->fixtureFactory->createObject($class, $id, $fields);
+		// We should check if this fixture object already exists - if it does, we update it. If not, we create it
+		if($existingFixture = $this->fixtureFactory->get($class, $id)) {
+			// Merge existing data with new data, and create new object to replace existing object
+			foreach($fields as $k => $v) {
+				$existingFixture->$k = $v;
+			}
+			$existingFixture->write();
+		} else {
+			$this->fixtureFactory->createObject($class, $id, $fields);
+		}
 	}
    
 	/**
 	 * Example: Given a "page" "Page 1" with "URL"="page-1" and "Content"="my page 1" 
+	 * Example: Given the "page" "Page 1" has "URL"="page-1" and "Content"="my page 1" 
 	 * 
-	 * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" with (?<data>.*)$/
+	 * @Given /^(?:(an|a|the) )"(?<type>[^"]+)" "(?<id>[^"]+)" (?:(with|has)) (?<data>".*)$/
 	 */
 	public function stepCreateRecordWithData($type, $id, $data) {
 		$class = $this->convertTypeToClass($type);
@@ -159,7 +169,16 @@ class FixtureContext extends BehatContext
 			array_combine($matches['key'], $matches['value'])
 		);
 		$fields = $this->prepareFixture($class, $id, $fields);
-		$this->fixtureFactory->createObject($class, $id, $fields);
+		// We should check if this fixture object already exists - if it does, we update it. If not, we create it
+		if($existingFixture = $this->fixtureFactory->get($class, $id)) {
+			// Merge existing data with new data, and create new object to replace existing object
+			foreach($fields as $k => $v) {
+				$existingFixture->$k = $v;
+			}
+			$existingFixture->write();
+		} else {
+			$this->fixtureFactory->createObject($class, $id, $fields);
+		}
 	}
 
 	/**
@@ -196,22 +215,31 @@ class FixtureContext extends BehatContext
 	 */
 	public function stepUpdateRecordRelation($type, $id, $relation, $relationType, $relationId) {
 		$class = $this->convertTypeToClass($type);
+
 		$relationClass = $this->convertTypeToClass($relationType);
-		
-		$obj = $this->fixtureFactory->get($class, $id);
-		if(!$obj) $obj = $this->fixtureFactory->createObject($class, $id);
-		
 		$relationObj = $this->fixtureFactory->get($relationClass, $relationId);
 		if(!$relationObj) $relationObj = $this->fixtureFactory->createObject($relationClass, $relationId);
-		
+
+		$data = array();
+		if($relation == 'child') {
+			$data['ParentID'] = $relationObj->ID;
+		}
+
+		$obj = $this->fixtureFactory->get($class, $id);
+		if($obj) {
+			$obj->update($data);
+			$obj->write();
+		} else {
+			$obj = $this->fixtureFactory->createObject($class, $id, $data);
+		}
+
 		switch($relation) {
 			case 'parent':
 				$relationObj->ParentID = $obj->ID;
 				$relationObj->write();
 				break;
 			case 'child':
-				$obj->ParentID = $relationObj->ID;
-				$obj->write();
+				// already written through $data above
 				break;
 			default:
 				throw new \InvalidArgumentException(sprintf(
