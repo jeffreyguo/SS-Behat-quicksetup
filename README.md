@@ -669,6 +669,9 @@ It's based on the `vendor/bin/behat -di @cms` output.
 	Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"$/
 	    - Example: I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1"
 
+	Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)" in the "(?<relationName>[^"]+)" relation$
+		- Example: I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1" in the "Terms" relation
+
 	Given /^the CMS settings have the following data$/
 		- Example: Given the CMS settings has the following data
 		- Note: It only works with the SilverStripe CMS module installed

@@ -248,14 +248,26 @@ class FixtureContext extends BehatContext
 		}
 	}
 
- 	/**
-	 * Assign a type of object to another type of object
-	 * The base object will be created if it does not exist already
-	 * Assumption: one object has relationship  (has_one, has_many or many_many ) with the other object
+	/**
+	 * Assign a type of object to another type of object. The base object will be created if it does not exist already.
+	 * If the last part of the string (in the "X" relation) is omitted, then the first matching relation will be used.
+	 *
 	 * @example I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1"
 	 * @Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)"$/
 	 */
 	public function stepIAssignObjToObj($type, $value, $relationType, $relationId) {
+		self::stepIAssignObjToObjInTheRelation($type, $value, $relationType, $relationId, null);
+	}
+
+ 	/**
+	 * Assign a type of object to another type of object. The base object will be created if it does not exist already.
+	 * If the last part of the string (in the "X" relation) is omitted, then the first matching relation will be used.
+	 * Assumption: one object has relationship  (has_one, has_many or many_many ) with the other object
+	 * 
+	 * @example I assign the "TaxonomyTerm" "For customers" to the "Page" "Page1" in the "Terms" relation
+	 * @Given /^I assign (?:(an|a|the) )"(?<type>[^"]+)" "(?<value>[^"]+)" to (?:(an|a|the) )"(?<relationType>[^"]+)" "(?<relationId>[^"]+)" in the "(?<relationName>[^"]+)" relation$/
+	 */
+	public function stepIAssignObjToObjInTheRelation($type, $value, $relationType, $relationId, $relationName) {
 		$class = $this->convertTypeToClass($type);
 		$relationClass = $this->convertTypeToClass($relationType);
 
@@ -268,12 +280,15 @@ class FixtureContext extends BehatContext
 		$oneField = null;
 		if ($relationObj->many_many()) {
 			$manyField = array_search($class, $relationObj->many_many());
+			if($manyField && strlen($relationName) > 0) $manyField = $relationName;
 		}
 		if(empty($manyField) && $relationObj->has_many()) {
 			$manyField = array_search($class, $relationObj->has_many());
+			if($manyField && strlen($relationName) > 0) $manyField = $relationName;
 		}
 		if(empty($manyField) && $relationObj->has_one()) {
 			$oneField = array_search($class, $relationObj->has_one());
+			if($oneField && strlen($relationName) > 0) $oneField = $relationName;
 		}
 		if(empty($manyField) && empty($oneField)) {
 			throw new \Exception("'$relationClass' has no relationship (has_one, has_many and many_many) with '$class'!");
