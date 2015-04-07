@@ -23,7 +23,7 @@
 		"behat/mink": "1.6.*@stable",
 		"behat/mink-extension": "1.3.*-dev",
 		"behat/mink-selenium2-driver": "1.2.*@stable",
-		"symfony/dom-crawler": "*@stable",
+		"symfony/dom-crawler": "2.6.*@stable",
 		"symfony/console": "2.6.*@stable",
         "symfony/config": "2.6.*@stable",
         "symfony/dependency-injection": "2.6.*@stable",
