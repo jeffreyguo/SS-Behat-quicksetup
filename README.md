@@ -1,5 +1,7 @@
 # SilverStripe Integration for Behat
 
+[![Build Status](https://travis-ci.org/silverstripe-labs/silverstripe-behat-extension.svg?branch=master)](https://travis-ci.org/silverstripe-labs/silverstripe-behat-extension)
+
 ## Overview
 
 [Behat](http://behat.org) is a testing framework for behaviour-driven development.

@@ -33,5 +33,15 @@
 			"SilverStripe\\BehatExtension": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-0": {
+			"SilverStripe\\BehatExtension\\Tests": "tests/"
+		},
+		"classmap": [
+			"testsession/code",
+			"framework",
+			"vendor/phpunit/phpunit"
+		]
+	},
 	"minimum-stability": "dev"
 }
