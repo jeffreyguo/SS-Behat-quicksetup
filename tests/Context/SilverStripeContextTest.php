@@ -27,15 +27,24 @@ class SilverStripeContextTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetRegionObjFindsBySelector() {
 		$context = $this->getContextMock();
-		$context = $this->returnsElement($context);
+		$context->getSession()->getPage()
+			->expects($this->any())
+			->method('find')
+			->will($this->returnValue($this->getElementMock()));
 		$obj = $context->getRegionObj('.some-selector');
 		$this->assertNotNull($obj);
 	}
 
 	public function testGetRegionObjFindsByRegion() {
 		$context = $this->getContextMock();
-		$context = $this->returnsElement($context);
-		$context->setRegionMap(array('MyRegion' => '.my-region'));
+		$el = $this->getElementMock();
+		$context->getSession()->getPage()
+			->expects($this->any())
+			->method('find')
+			->will($this->returnCallback(function($type, $selector) use ($el) {
+				return ($selector == '.my-region') ? $el : null;
+			}));
+		$context->setRegionMap(array('MyRegion' => '.my-asdf'));
 		$obj = $context->getRegionObj('.my-region');
 		$this->assertNotNull($obj);
 	}
@@ -64,15 +73,9 @@ class SilverStripeContextTest extends \PHPUnit_Framework_TestCase {
 		return $context;
 	}
 
-	protected function returnsElement($context) {
-		$el = $this->getMockBuilder('Behat\Mink\Element\Element')
+	protected function getElementMock() {
+		return $this->getMockBuilder('Behat\Mink\Element\Element')
 			->disableOriginalConstructor()
 			->getMock();
-		$context->getSession()->getPage()
-			->expects($this->any())
-			->method('find')
-			->will($this->returnValue($el));
-
-		return $context;
 	}
 }
