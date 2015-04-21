@@ -807,6 +807,51 @@ JS;
 		});
 	}
 
+    /**
+     * Wait until a particular element is visible, using a CSS selector. Useful for content loaded via AJAX, or only
+     * populated after JS execution.
+     *
+     * Example: Given I wait until I see the "header .login-form" element
+     *
+     * @Given /^I wait until I see the "([^"]*)" element$/
+     */
+    public function iWaitUntilISee($selector) {
+        $page = $this->getSession()->getPage();
+        $this->spin(function($page) use ($page, $selector){
+            $element = $page->find('css', $selector);
+            if(empty($element)){
+                return false;
+            } else{
+                return ($element->isVisible());
+            }
+        });
+    }
+
+    /**
+     * Wait until a particular string is found on the page. Useful for content loaded via AJAX, or only populated after
+     * JS execution.
+     *
+     * Example: Given I wait until I see the text "Welcome back, John!"
+     *
+     * @Given /^I wait until I see the text "([^"]*)"$/
+     */
+    public function iWaitUntilISeeText($text){
+        $page = $this->getSession()->getPage();
+        $session = $this->getSession();
+        $this->spin(function($page) use ($page, $session, $text) {
+            $element = $page->find(
+                'xpath',
+                $session->getSelectorsHandler()->selectorToXpath("xpath", ".//*[contains(text(), '$text')]")
+            );
+
+            if(empty($element)) {
+                return false;
+            } else {
+                return ($element->isVisible());
+            }
+        });
+    }
+
 	/**
 	 * @Given /^I scroll to the bottom$/
 	 */
@@ -865,4 +910,36 @@ JS;
 		$js = sprintf("document.getElementById('%s').scrollIntoView(true);", $id);
 		$this->getSession()->executeScript($js);
 	}
+
+    /**
+     * Continuously poll the dom until callback returns true, code copied from
+     * (@link http://docs.behat.org/cookbook/using_spin_functions.html)
+     * If not found within a given wait period, timeout and throw error
+     *
+     * @param callback $lambda The function to run continuously
+     * @param integer $wait Timeout in seconds
+     * @return bool Returns true if the lambda returns successfully
+     * @throws \Exception Thrown if the wait threshold is exceeded without the lambda successfully returning
+     */
+    public function spin($lambda, $wait = 60) {
+        for ($i = 0; $i < $wait; $i++) {
+            try {
+                if($lambda($this)) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // do nothing
+            }
+
+            sleep(1);
+        }
+
+        $backtrace = debug_backtrace();
+
+        throw new \Exception(sprintf(
+            "Timeout thrown by %s::%s()\n.",
+            $backtrace[1]['class'],
+            $backtrace[1]['function']
+        ));
+    }
 }
