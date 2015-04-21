@@ -73,7 +73,7 @@ We'll see all steps marked as "not implemented" (orange).
 Thankfully Behat already comes with a lot of step definitions,
 so our next move is to review what's already available:
 
-	vendor/bin/behat --di @mysite
+	vendor/bin/behat @mymodule --definitions=i
 
 The step definitions include form interactions, so we only
 need to adjust our steps a bit to make them executable.
