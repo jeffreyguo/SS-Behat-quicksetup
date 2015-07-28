@@ -30,8 +30,8 @@ class TestMailer extends \Mailer {
 			'Subject' => $subject,
 			'Content' => $plainContent,
 			'PlainContent' => $plainContent,
-			'AttachedFiles' => implode(',', $attachedFiles),
-			'CustomHeaders' => implode(',', $customHeaders),
+			'AttachedFiles' => $attachedFiles,
+			'CustomHeaders' => $customHeaders,
 		));
 
 		return true;
@@ -51,8 +51,8 @@ class TestMailer extends \Mailer {
 			'Subject' => $subject,
 			'Content' => $htmlContent,
 			'PlainContent' => $plainContent,
-			'AttachedFiles' => implode(',', $attachedFiles),
-			'CustomHeaders' => implode(',', $customHeaders),
+			'AttachedFiles' => $attachedFiles,
+			'CustomHeaders' => $customHeaders,
 		));
 
 		return true;
