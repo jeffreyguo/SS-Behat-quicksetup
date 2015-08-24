@@ -351,9 +351,9 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		$fields = $this->getSession()->getPage()->findAll('named', array(
 			'field', $this->getSession()->getSelectorsHandler()->xpathLiteral($field)
 		));
-		if($fields) foreach($fields as $field) {
-			if($field->isVisible()) {
-				$field->setValue($value);
+		if($fields) foreach($fields as $f) {
+			if($f->isVisible()) {
+				$f->setValue($value);
 				return;
 			}
 		}
