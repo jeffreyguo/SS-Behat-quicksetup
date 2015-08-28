@@ -21,7 +21,14 @@ class CoreInitializationPass implements CompilerPassInterface
         $frameworkPath = $container->getParameter('behat.silverstripe_extension.framework_path');
         $_GET['flush'] = 1;
         require_once $frameworkPath . '/core/Core.php';
-        \TestRunner::use_test_manifest();
+        
+        if(class_exists('TestRunner')) {
+            // 3.x compat
+            \TestRunner::use_test_manifest();
+        } else {
+            \SapphireTest::use_test_manifest();
+        }
+
         unset($_GET['flush']);
 
         // Remove the error handler so that PHPUnit can add its own
