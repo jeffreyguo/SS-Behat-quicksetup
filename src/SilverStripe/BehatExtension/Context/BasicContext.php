@@ -76,7 +76,8 @@ class BasicContext extends BehatContext
      * because modal dialogs stop any JS interaction
      */
 	public function appendErrorHandlerBeforeStep(StepEvent $event) {
-        $javascript = <<<JS
+		try{
+			$javascript = <<<JS
 window.onerror = function(message, file, line, column, error) {
     var body = document.getElementsByTagName('body')[0];
 	var msg = message + " in " + file + ":" + line + ":" + column;
@@ -93,7 +94,10 @@ if ('undefined' !== typeof window.jQuery) {
 }
 JS;
 
-        $this->getSession()->executeScript($javascript);
+			$this->getSession()->executeScript($javascript);
+        }catch(\WebDriver\Exception $e){
+        	$this->logException($e);
+        }
     }
 
     /**
@@ -103,15 +107,16 @@ JS;
      * because modal dialogs stop any JS interaction
      */
 	public function readErrorHandlerAfterStep(StepEvent $event) {
-        $page = $this->getSession()->getPage();
-
-        $jserrors = $page->find('xpath', '//body[@data-jserrors]');
-        if (null !== $jserrors) {
-            $this->takeScreenshot($event);
-            file_put_contents('php://stderr', $jserrors->getAttribute('data-jserrors') . PHP_EOL);
-        }
-
-        $javascript = <<<JS
+		try{
+	        $page = $this->getSession()->getPage();
+	
+	        $jserrors = $page->find('xpath', '//body[@data-jserrors]');
+	        if (null !== $jserrors) {
+	            $this->takeScreenshot($event);
+	            file_put_contents('php://stderr', $jserrors->getAttribute('data-jserrors') . PHP_EOL);
+	        }
+	
+	        $javascript = <<<JS
 if ('undefined' !== typeof window.jQuery) {
 	window.jQuery(document).ready(function() {
 		window.jQuery('body').removeAttr('data-jserrors');
@@ -119,7 +124,10 @@ if ('undefined' !== typeof window.jQuery) {
 }
 JS;
 
-        $this->getSession()->executeScript($javascript);
+			$this->getSession()->executeScript($javascript);
+		}catch(\WebDriver\Exception $e){
+			$this->logException($e);
+        }
     }
 
     /**
@@ -130,14 +138,15 @@ JS;
      * @BeforeStep
      */
 	public function handleAjaxBeforeStep(StepEvent $event) {
-        $ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
-        $ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
+		try{
+			$ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
+			$ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
 
-        if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
-            return;
-        }
+			if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
+				return;
+			}
 
-        $javascript = <<<JS
+			$javascript = <<<JS
 if ('undefined' !== typeof window.jQuery && 'undefined' !== typeof window.jQuery.fn.on) {
     window.jQuery(document).on('ajaxStart.ss.test.behaviour', function(){
         window.__ajaxStatus = function() {
@@ -160,8 +169,11 @@ if ('undefined' !== typeof window.jQuery && 'undefined' !== typeof window.jQuery
     });
 }
 JS;
-        $this->getSession()->wait(500); // give browser a chance to process and render response
-        $this->getSession()->executeScript($javascript);
+			$this->getSession()->wait(500); // give browser a chance to process and render response
+			$this->getSession()->executeScript($javascript);
+		}catch(\WebDriver\Exception $e){
+			$this->logException($e);
+        }
     }
 
     /**
@@ -173,23 +185,27 @@ JS;
      * @AfterStep ~@modal
      */
 	public function handleAjaxAfterStep(StepEvent $event) {
-        $ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
-        $ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
+		try{
+			$ajaxEnabledSteps = $this->getMainContext()->getAjaxSteps();
+			$ajaxEnabledSteps = implode('|', array_filter($ajaxEnabledSteps));
 
-        if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
-            return;
-        }
+			if (empty($ajaxEnabledSteps) || !preg_match('/(' . $ajaxEnabledSteps . ')/i', $event->getStep()->getText())) {
+				return;
+			}
 
-        $this->handleAjaxTimeout();
+			$this->handleAjaxTimeout();
 
-        $javascript = <<<JS
+			$javascript = <<<JS
 if ('undefined' !== typeof window.jQuery && 'undefined' !== typeof window.jQuery.fn.off) {
 window.jQuery(document).off('ajaxStart.ss.test.behaviour');
 window.jQuery(document).off('ajaxComplete.ss.test.behaviour');
 window.jQuery(document).off('ajaxSuccess.ss.test.behaviour');
 }
 JS;
-        $this->getSession()->executeScript($javascript);
+			$this->getSession()->executeScript($javascript);
+		}catch(\WebDriver\Exception $e){
+			$this->logException($e);
+        }
     }
 
 	public function handleAjaxTimeout() {
@@ -212,7 +228,11 @@ JS;
      */
 	public function takeScreenshotAfterFailedStep(StepEvent $event) {
 		if (4 === $event->getResult()) {
-			$this->takeScreenshot($event);
+			try{
+				$this->takeScreenshot($event);
+			}catch(\WebDriver\Exception $e){
+				$this->logException($e);
+			}
 		}
 	}
 
@@ -222,18 +242,22 @@ JS;
 	 * @AfterScenario
 	 */
 	public function closeModalDialog(ScenarioEvent $event) {
-		// Only for failed tests on CMS page
-		if (4 === $event->getResult()) {
-			$cmsElement = $this->getSession()->getPage()->find('css', '.cms');
-			if($cmsElement) {
-				try {
-					// Navigate away triggered by reloading the page
-					$this->getSession()->reload();
-					$this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
-				} catch(\WebDriver\Exception $e) {
-					// no-op, alert might not be present
+		try{
+			// Only for failed tests on CMS page
+			if (4 === $event->getResult()) {
+				$cmsElement = $this->getSession()->getPage()->find('css', '.cms');
+				if($cmsElement) {
+					try {
+						// Navigate away triggered by reloading the page
+						$this->getSession()->reload();
+						$this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
+					} catch(\WebDriver\Exception $e) {
+						// no-op, alert might not be present
+					}
 				}
 			}
+		}catch(\WebDriver\Exception $e){
+			$this->logException($e);
 		}
 	}
 	
@@ -942,4 +966,14 @@ JS;
             $backtrace[1]['function']
         ));
     }
+	
+	
+	
+	/**
+	 * We have to catch exceptions and log somehow else otherwise behat falls over
+	 */
+	protected function logException($e){
+		file_put_contents('php://stderr', 'Exception caught: '.$e);
+	}
+	
 }
