@@ -2,17 +2,11 @@
 
 namespace SilverStripe\BehatExtension\Context;
 
-use Behat\Behat\Context\ClosuredContextInterface,
-	Behat\Behat\Context\TranslatedContextInterface,
-	Behat\Behat\Context\BehatContext,
-	Behat\Behat\Context\Step,
-	Behat\Behat\Event\StepEvent,
-	Behat\Behat\Event\FeatureEvent,
+use Behat\Behat\Context\BehatContext,
 	Behat\Behat\Event\ScenarioEvent,
-	Behat\Behat\Exception\PendingException,
-	Behat\Mink\Driver\Selenium2Driver,
 	Behat\Gherkin\Node\PyStringNode,
-	Behat\Gherkin\Node\TableNode;
+	Behat\Gherkin\Node\TableNode,
+	SilverStripe\Filesystem\Storage\AssetStore;
 
 // PHPUnit
 require_once 'PHPUnit/Autoload.php';
@@ -548,13 +542,13 @@ class FixtureContext extends BehatContext
 	protected function prepareAsset($class, $identifier, $data = null) {
 		if(!$data) $data = array();
 		$relativeTargetPath = (isset($data['Filename'])) ? $data['Filename'] : $identifier;
-		$relativeTargetPath = preg_replace('/^' . ASSETS_DIR . '/', '', $relativeTargetPath);
-		$targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
+		$relativeTargetPath = preg_replace('/^' . ASSETS_DIR . '\/?/', '', $relativeTargetPath);
 		$sourcePath = $this->joinPaths($this->getFilesPath(), basename($relativeTargetPath));
 		
 		// Create file or folder on filesystem
+		$parent = \Folder::find_or_make(dirname($relativeTargetPath));
 		if($class == 'Folder' || is_subclass_of($class, 'Folder')) {
-			$parent = \Folder::find_or_make($relativeTargetPath);
+			$targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
 		} else {
 			if(!file_exists($sourcePath)) {
 				throw new \InvalidArgumentException(sprintf(
@@ -563,16 +557,41 @@ class FixtureContext extends BehatContext
 					$sourcePath
 				));
 			}
-			$parent = \Folder::find_or_make(dirname($relativeTargetPath));
-			copy($sourcePath, $targetPath);
+			// Load file into APL and retrieve tuple
+			$asset = $this->getAssetStore()->setFromLocalFile(
+				$sourcePath,
+				$relativeTargetPath,
+				null,
+				null,
+				AssetStore::CONFLICT_OVERWRITE
+			);
+			$data['FileFilename'] = $asset['Filename'];
+			$data['FileHash'] = $asset['Hash'];
+			$data['FileVariant'] = $asset['Variant'];
+			
+			// Strip base from url to get dir relative to base
+			$url = $this->getAssetStore()->getAsURL($asset['Filename'], $asset['Hash'], $asset['Variant']);
+			$targetPath = $this->joinPaths(BASE_PATH, substr($url, strlen(\Director::baseURL())));
 		}
-		$data['Filename'] = $this->joinPaths(ASSETS_DIR, $relativeTargetPath);
-		if(!isset($data['Name'])) $data['Name'] = basename($relativeTargetPath);
-		if($parent) $data['ParentID'] = $parent->ID;
+		unset($data['Filename']);
+		if(!isset($data['Name'])) {
+			$data['Name'] = basename($relativeTargetPath);
+		}
+		if($parent) {
+			$data['ParentID'] = $parent->ID;
+		}
 
 		$this->createdFilesPaths[] = $targetPath;
 
 		return $data;
+	}
+
+	/**
+	 *
+	 * @return AssetStore
+	 */
+	protected function getAssetStore() {
+		return singleton('AssetStore');
 	}
 
 	/**

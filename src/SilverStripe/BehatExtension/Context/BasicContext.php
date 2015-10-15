@@ -2,13 +2,10 @@
 
 namespace SilverStripe\BehatExtension\Context;
 
-use Behat\Behat\Context\ClosuredContextInterface,
-    Behat\Behat\Context\TranslatedContextInterface,
-    Behat\Behat\Context\BehatContext,
+use Behat\Behat\Context\BehatContext,
     Behat\Behat\Context\Step,
     Behat\Behat\Event\StepEvent,
-    Behat\Behat\Event\ScenarioEvent,
-    Behat\Behat\Exception\PendingException;
+    Behat\Behat\Event\ScenarioEvent;
 
 use Behat\Mink\Driver\Selenium2Driver;
 
@@ -268,8 +265,9 @@ JS;
      */
 	public function cleanAssetsAfterScenario(ScenarioEvent $event) {
         foreach(\File::get() as $file) {
-            if(file_exists($file->getFullPath())) $file->delete();
+            $file->delete();
         }
+		\Filesystem::removeFolder(ASSETS_PATH, true);
     }
 
     public function takeScreenshot(StepEvent $event) {
