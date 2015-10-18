@@ -546,10 +546,12 @@ class FixtureContext extends BehatContext
 		$sourcePath = $this->joinPaths($this->getFilesPath(), basename($relativeTargetPath));
 		
 		// Create file or folder on filesystem
-		$parent = \Folder::find_or_make(dirname($relativeTargetPath));
+		$parent = null;
 		if($class == 'Folder' || is_subclass_of($class, 'Folder')) {
+			$parent = \Folder::find_or_make($relativeTargetPath);
 			$targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
 		} else {
+			$parent = \Folder::find_or_make(dirname($relativeTargetPath));
 			if(!file_exists($sourcePath)) {
 				throw new \InvalidArgumentException(sprintf(
 					'Source file for "%s" cannot be found in "%s"',
