@@ -92,6 +92,10 @@ Now you can run the tests (for example for the `framework` module):
 In order to run specific tests only, use their feature file name:
 
 	vendor/bin/behat @framework/login.feature
+	
+Or even run a single scenario by it's name (supports regular expressions):
+
+	vendor/bin/behat --name 'My scenario title' @framework
 
 This will start a Firefox browser by default. Other browsers and profiles can be configured in `behat.yml`.
 
