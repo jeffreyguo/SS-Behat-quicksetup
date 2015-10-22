@@ -381,18 +381,20 @@ JS;
     }
 
     /**
-     * @Given /^I click "([^"]*)" in the "([^"]*)" element$/
+     * @Given /^I (click|double click) "([^"]*)" in the "([^"]*)" element$/
      */
-	public function iClickInTheElement($text, $selector) {
+    public function iClickInTheElement($clickType, $text, $selector) {
+        $clickTypeMap = array(
+            "double click" => "doubleclick",
+            "click" => "click"
+        );
         $page = $this->getSession()->getPage();
-
         $parentElement = $page->find('css', $selector);
         assertNotNull($parentElement, sprintf('"%s" element not found', $selector));
-
         $element = $parentElement->find('xpath', sprintf('//*[count(*)=0 and contains(.,"%s")]', $text));
         assertNotNull($element, sprintf('"%s" not found', $text));
-
-        $element->click();
+        $clickTypeFn = $clickTypeMap[$clickType];
+        $element->$clickTypeFn();
     }
 
     /**

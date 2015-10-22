@@ -584,7 +584,7 @@ It's based on the `vendor/bin/behat -di @cms` output.
 
 	Given /^I press the "([^"]*)" button$/
 
-	Given /^I click "([^"]*)" in the "([^"]*)" element$/
+	Given /^I (click|double click) "([^"]*)" in the "([^"]*)" element$/
 
 	Given /^I type "([^"]*)" into the dialog$/
 
