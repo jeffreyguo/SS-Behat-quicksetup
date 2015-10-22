@@ -394,6 +394,27 @@ JS;
 
         $element->click();
     }
+    
+    /**
+    * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
+    * Example: I click "Delete" in the ".actions" element, confirming the dialog
+    *
+    * @Given /^I (click|double click) "([^"]*)" in the "([^"]*)" element, confirming the dialog$/
+    */
+   public function iClickInTheElementConfirmingTheDialog($clickType, $text, $selector) {
+       $this->iClickInTheElement($clickType, $text, $selector);
+       $this->iConfirmTheDialog();
+   }
+   /**
+    * Needs to be in single command to avoid "unexpected alert open" errors in Selenium.
+    * Example: I click "Delete" in the ".actions" element, dismissing the dialog
+    *
+    * @Given /^I (click|double click) "([^"]*)" in the "([^"]*)" element, dismissing the dialog$/
+    */
+   public function iClickInTheElementDismissingTheDialog($clickType, $text, $selector) {
+       $this->iClickInTheElement($clickType, $text, $selector);
+       $this->iDismissTheDialog();
+   }
 
     /**
      * @Given /^I type "([^"]*)" into the dialog$/
