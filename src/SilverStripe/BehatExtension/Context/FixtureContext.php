@@ -550,6 +550,7 @@ class FixtureContext extends BehatContext
 		if($class == 'Folder' || is_subclass_of($class, 'Folder')) {
 			$parent = \Folder::find_or_make($relativeTargetPath);
 			$targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
+			$data['ID'] = $parent->ID;
 		} else {
 			$parent = \Folder::find_or_make(dirname($relativeTargetPath));
 			if(!file_exists($sourcePath)) {
@@ -559,6 +560,8 @@ class FixtureContext extends BehatContext
 					$sourcePath
 				));
 			}
+			$data['ParentID'] = $parent->ID;
+			
 			// Load file into APL and retrieve tuple
 			$asset = $this->getAssetStore()->setFromLocalFile(
 				$sourcePath,
@@ -575,12 +578,8 @@ class FixtureContext extends BehatContext
 			$url = $this->getAssetStore()->getAsURL($asset['Filename'], $asset['Hash'], $asset['Variant']);
 			$targetPath = $this->joinPaths(BASE_PATH, substr($url, strlen(\Director::baseURL())));
 		}
-		unset($data['Filename']);
 		if(!isset($data['Name'])) {
 			$data['Name'] = basename($relativeTargetPath);
-		}
-		if($parent) {
-			$data['ParentID'] = $parent->ID;
 		}
 
 		$this->createdFilesPaths[] = $targetPath;
