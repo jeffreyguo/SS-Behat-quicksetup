@@ -200,7 +200,7 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 		}
 
 		// Fixtures
-		$fixtureFile = (!empty($params['fixture'])) ? $params['fixture'] : null;
+		$fixtureFile = (!empty($state['fixture'])) ? $state['fixture'] : null;
 		if($fixtureFile) {
 			$this->testSessionEnvironment->loadFixtureIntoDb($fixtureFile);
 		}
