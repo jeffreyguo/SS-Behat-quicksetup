@@ -134,6 +134,28 @@ class EmailContext extends BehatContext
 		}
 	}
 
+	/**
+	 * Example: Given the email contains "Thank you for <strong>registering!<strong>".
+	 * Then the email should contain plain text "Thank you for registering!"
+	 * Assumes an email has been identified by a previous step,
+	 * e.g. through 'Given there should be an email to "test@test.com"'.
+	 * 
+	 * @Given /^the email should contain plain text "([^"]*)"$/
+	 */
+	public function thereTheEmailContainsPlainText($content)
+	{
+		if(!$this->lastMatchedEmail) {
+			throw new \LogicException('No matched email found from previous step');
+		}
+
+		$email = $this->lastMatchedEmail;
+		$emailContent = ($email->Content) ? ($email->Content) : ($email->PlainContent);
+		$emailPlainText = strip_tags($emailContent);
+		$emailPlainText = preg_replace("/\h+/", " ", $emailPlainText);
+
+		assertContains($content, $emailPlainText);
+	}
+
     /**
      * @When /^I click on the "([^"]*)" link in the email (to|from) "([^"]*)"$/
      */
@@ -223,6 +245,7 @@ class EmailContext extends BehatContext
 		}
 		// Convert html content to plain text
 		$emailContent = strip_tags($emailContent);
+		$emailContent = preg_replace("/\h+/", " ", $emailContent);
 		$rows = $table->getRows();
 		
 		// For "should not contain"
