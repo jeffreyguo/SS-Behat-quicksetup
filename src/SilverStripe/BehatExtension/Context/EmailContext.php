@@ -236,4 +236,56 @@ class EmailContext extends BehatContext
 			}
 		}
 	}
+
+	/**
+	 * @Then /^there should (not |)be an email titled "([^"]*)"$/
+	 */
+	public function thereIsAnEmailTitled($negate, $subject)
+	{
+		$match = $this->mailer->findEmail(null, null, $subject);
+		if(trim($negate)) {
+			assertNull($match);
+		} else {
+			$msg = sprintf(
+				'Could not find email titled "%s".',
+				$subject
+			);
+			assertNotNull($match,$msg);
+		}
+		$this->lastMatchedEmail = $match;
+	}
+
+	/**
+	 * @Then /^the email should (not |)be sent from "([^"]*)"$/
+	 */
+	public function theEmailSentFrom($negate, $from)
+	{
+		if(!$this->lastMatchedEmail) {
+			throw new \LogicException('No matched email found from previous step');
+		}
+
+		$match = $this->lastMatchedEmail;
+		if(trim($negate)) {
+			assertNotContains($from, $match->From);
+		} else {
+			assertContains($from, $match->From);
+		}
+	}
+
+	/**
+	 * @Then /^the email should (not |)be sent to "([^"]*)"$/
+	 */
+	public function theEmailSentTo($negate, $to)
+	{
+		if(!$this->lastMatchedEmail) {
+			throw new \LogicException('No matched email found from previous step');
+		}
+
+		$match = $this->lastMatchedEmail;
+		if(trim($negate)) {
+			assertNotContains($to, $match->To);
+		} else {
+			assertContains($to, $match->To);
+		}
+	}
 }
