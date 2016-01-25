@@ -497,26 +497,5 @@ class SilverStripeContext extends MinkContext implements SilverStripeAwareContex
 EOS;
 		$this->getSession()->getDriver()->executeScript($script);
 	}
-	
-	
-	/**
-	 * @Override "When /^(?:|I )go to "(?P<page>[^"]+)"$/"
-	 * We override this function to detect issues with .htaccess external redirects.
-	 *
-	 * For instance, if the behat test is being run with a base_url which includes a
-	 * path, e.g. "http://localhost/behat-test-abc123/", .htaccess redirects may take the browser
-	 * to the wrong base path, e.g. "http://localhost/", which will then probably generate
-	 * a apache 404 response, which is pretty standard and we can detect it and give a better
-	 * error message.
-	 */
-	public function visit($page){
-		parent::visit($page);
-			
-		// We now check the response body. We would check for the response status code,
-		// but that is not quite possible yet, so this is the best we can do.
-		$page = $this->getSession()->getPage();
-		$title = $page->find('css', 'title')->getHtml(); // getText returns empty string, so have to use getHtml
-		assertNotEquals('404 Not Found', $title, 'A 404 response was detected from the server. If you intended to test an apache 404 response, please write a specific 404 test step.');
-	}
-	
+
 }
