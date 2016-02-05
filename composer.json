@@ -50,10 +50,5 @@
 			"vendor/phpunit/phpunit"
 		]
 	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "2.0.x-dev"
-		}
-	},
 	"minimum-stability": "dev"
 }
