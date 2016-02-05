@@ -2,11 +2,17 @@
 
 namespace SilverStripe\BehatExtension\Context;
 
-use Behat\Behat\Context\BehatContext,
+use Behat\Behat\Context\ClosuredContextInterface,
+	Behat\Behat\Context\TranslatedContextInterface,
+	Behat\Behat\Context\BehatContext,
+	Behat\Behat\Context\Step,
+	Behat\Behat\Event\StepEvent,
+	Behat\Behat\Event\FeatureEvent,
 	Behat\Behat\Event\ScenarioEvent,
+	Behat\Behat\Exception\PendingException,
+	Behat\Mink\Driver\Selenium2Driver,
 	Behat\Gherkin\Node\PyStringNode,
-	Behat\Gherkin\Node\TableNode,
-	SilverStripe\Filesystem\Storage\AssetStore;
+	Behat\Gherkin\Node\TableNode;
 
 // PHPUnit
 require_once 'PHPUnit/Autoload.php';
@@ -542,7 +548,8 @@ class FixtureContext extends BehatContext
 	protected function prepareAsset($class, $identifier, $data = null) {
 		if(!$data) $data = array();
 		$relativeTargetPath = (isset($data['Filename'])) ? $data['Filename'] : $identifier;
-		$relativeTargetPath = preg_replace('/^' . ASSETS_DIR . '\/?/', '', $relativeTargetPath);
+		$relativeTargetPath = preg_replace('/^' . ASSETS_DIR . '/', '', $relativeTargetPath);
+		$targetPath = $this->joinPaths(ASSETS_PATH, $relativeTargetPath);
 		$sourcePath = $this->joinPaths($this->getFilesPath(), basename($relativeTargetPath));
 		
 		// Create file or folder on filesystem
@@ -585,14 +592,6 @@ class FixtureContext extends BehatContext
 		$this->createdFilesPaths[] = $targetPath;
 
 		return $data;
-	}
-
-	/**
-	 *
-	 * @return AssetStore
-	 */
-	protected function getAssetStore() {
-		return singleton('AssetStore');
 	}
 
 	/**
