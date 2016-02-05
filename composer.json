@@ -32,7 +32,8 @@
 		"symfony/yaml": "~2.0",
 		"symfony/finder": "~2.0",
 		"silverstripe/testsession": "*",
-		"silverstripe/framework": ">=3.1.0"
+		"silverstripe/framework": ">=3.1.0",
+		"chillu/fakedatabase": "*"
 	},
 
 	"autoload": {
