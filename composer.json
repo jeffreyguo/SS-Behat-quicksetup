@@ -1,7 +1,7 @@
 {
-	"name": "silverstripe/behat-extension",
-	"type": "behat-extension",
-	"description": "SilverStripe framework extension for Behat",
+	"name": "silverstripe/behat-quicksetup",
+	"type": "behat-quicksetup",
+	"description": "Set up SilverStripe framework extension for Behat quickly",
 	"keywords": ["framework", "web", "bdd", "silverstripe"],
 	"homepage": "http://silverstripe.org",
 	"license": "MIT",

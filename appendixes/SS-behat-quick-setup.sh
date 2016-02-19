@@ -13,10 +13,10 @@ path="$( pwd )"
 # config "base_url" in behat.yml
 echo "${green}Copying behat.yml file...${reset}"
 cp -fv $path/vendor/silverstripe/behat-extension/appendixes/behat.yml $path/behat.yml
-echo "${green}Please enter the site URL which you want Behat test to run against and then press ENTER: "
+echo "${yellow}Please enter the site URL which you want Behat test to run against and then press ENTER: "
 read base_url
 sed -i "" "s@base_url:.*@base_url: $base_url@g" $path/behat.yml
-echo "base_url: $base_url is set in your behat.yml file successfully!"
+echo "${green}base_url: $base_url is set in your behat.yml file successfully!"
 
 # copy files for SS Behat test session running
 echo "\n${green}Copying files for SS Behat test session running...${reset}"
@@ -26,7 +26,6 @@ echo "Appending TestSessionEnvironment and TestSessionController to $path/mysite
 echo "\n" >> $path/mysite/_config/config.yml
 cat $path/vendor/silverstripe/behat-extension/appendixes/mysite/_config/config.yml >> $path/mysite/_config/config.yml
 cp -Rv $path/vendor/silverstripe/behat-extension/appendixes/mysite/code/testing/ $path/mysite/code/testing/
-cp -Rv $path/vendor/chillu/fakedatabase/src/ $path/mysite/code/testing/
 cp -Rv $path/vendor/silverstripe/behat-extension/appendixes/mysite/tests/ $path/mysite/tests/
 echo "" > $path/mysite/tests/fixtures/FakeDatabase.json
 

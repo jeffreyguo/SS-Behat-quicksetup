@@ -11,7 +11,7 @@ class FakeManagerRequestFilter {
 
     public function preRequest($req, $session, $model) {
         if(class_exists('TestSessionEnvironment')) {
-            // Set in App\Test\Behaviour\FeatureContext
+            // Set in Mysite\Test\Behaviour\FeatureContext
             $testState = Injector::inst()->get('TestSessionEnvironment')->getState();
 
             if($testState && isset($testState->fakeDatabasePath) && $testState->fakeDatabasePath) {

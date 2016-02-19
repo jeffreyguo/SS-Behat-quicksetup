@@ -63,6 +63,18 @@ class FeatureContext extends SilverStripeContext {
                 $factory->define($class, $blueprint);
             }
         }
+
+        $manager = \Injector::inst()->get(
+            'FakeManager',
+            true,
+            // Creates a new database automatically. Session doesn't exist here yet,
+            // so we need to take fake database path from internal config.
+            // The same path is then set in the browser session
+            // and reused across scenarios (see resetFakeDatabase()).
+            array(new \FakeDatabase($this->getFakeDatabasePath()))
+        );
+        
+        $this->manager = $manager;
     }
 
     public function setMinkParameters(array $parameters) {
@@ -106,6 +118,13 @@ class FeatureContext extends SilverStripeContext {
 
     public function getFakeDatabasePath() {
         return BASE_PATH . '/FakeDatabase.json';
+    }
+    
+    /**
+     * @BeforeScenario
+     */
+    public function resetFakeDatabase() {
+        $this->manager->getDb()->reset(true);
     }
     //
     // Place your definition and hook methods here:

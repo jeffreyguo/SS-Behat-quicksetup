@@ -112,7 +112,7 @@ class FakeManagerTestSessionExtension extends Extension {
     }
 
     /**
-     * A similar reset is also performed in App\Tests\Behaviour\FeatureContext->resetFakeDatabase().
+     * A similar reset is also performed in Mysite\Tests\Behaviour\FeatureContext->resetFakeDatabase().
      * We can't reset Behat CLI runs through this measure because the CLI has a persistent connection
      * to the underlying SQLite database file, so the browser can't remove it.
      */
