@@ -1,5 +1,5 @@
 {
-    "name": "ss/behat-quicksetup",
+    "name": "ssbehat/behat-quicksetup",
     "description": "Set up SilverStripe framework extension for Behat quickly",
     "keywords": ["framework", "web", "bdd", "silverstripe"],
     "homepage": "http://silverstripe.org",
