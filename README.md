@@ -45,7 +45,7 @@ Skip this step if adding the module to an existing project.
 Switch to the newly created webroot, and add the SilverStripe Behat extension.
 
 	cd my-test-project
-	composer require "silverstripe/behat-extension:*"
+	composer require "ss/behat-quicksetup:*"
 
 Run the following Shell script to help you setup Behat test session environment.
 
